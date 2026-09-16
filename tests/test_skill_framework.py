@@ -147,6 +147,14 @@ class SkillFrameworkTests(unittest.TestCase):
         self.assertIn("Explicit read-only, no-write, or plan-only requests still prevent saving.", contract)
         self.assertNotIn("### 7. Preview, approve, and save", text)
 
+    def test_final_delivery_requires_visible_absolute_paths(self):
+        text = SKILL.read_text(encoding="utf-8")
+        contract = (SKILL_DIR / "references" / "session-output.md").read_text(encoding="utf-8")
+        self.assertIn("each saved Wiki's full absolute file path", text)
+        self.assertIn("Paths must be visibly written out", text)
+        self.assertIn("full absolute output-directory path", contract)
+        self.assertIn("Verify each saved path exists", contract)
+
     def test_every_type_uses_the_shared_source_entry(self):
         for wiki_type, template in TEMPLATES.items():
             with self.subTest(wiki_type=wiki_type):
@@ -234,7 +242,7 @@ class SkillFrameworkTests(unittest.TestCase):
         for document in (ROOT / "README.md", SKILL):
             with self.subTest(document=document):
                 self.assertIn(
-                    "Version: 0.6.0. Last reviewed: 2026-09-16.",
+                    "Version: 0.6.1. Last reviewed: 2026-09-16.",
                     document.read_text(encoding="utf-8"),
                 )
 

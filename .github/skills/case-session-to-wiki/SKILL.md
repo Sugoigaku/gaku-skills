@@ -5,7 +5,7 @@ description: "Extract reusable, de-identified knowledge from support sessions in
 
 # Case Session to Wiki
 
-Version: 0.6.0. Last reviewed: 2026-09-16.
+Version: 0.6.1. Last reviewed: 2026-09-16.
 
 ## Purpose
 
@@ -260,8 +260,13 @@ Validate and read back internally without printing article bodies.
 On validation failure, report specific issue codes, stop further writes, and
 mark the local files as unvalidated; do not delete files or claim success.
 If the write fails, report the failure; do not claim it was saved.
-The final response contains only a short outcome, file links, and material
-validation/coverage issues. Do not paste the Wiki, evidence, or full article plan.
+The final response contains a short outcome, the full absolute output-directory
+path, and each saved Wiki's full absolute file path, plus clickable links and
+material validation/coverage issues. Paths must be visibly written out, not
+hidden only in hyperlink targets or shortened to filenames. Include the actual
+batch subfolder and collision suffix, and list the evidence companion separately.
+Verify that every path reported as saved exists. Do not paste article bodies,
+the evidence contents, or the full article plan.
 
 No automatic staging, committing, pushing, publishing, email, Teams messages,
 case closure, memory/RAG ingestion, or telemetry. Human review of a local draft
@@ -272,10 +277,13 @@ does not authorize any of those actions.
 > Use case-session-to-wiki on this troubleshooting conversation. Extract the
 > reusable knowledge and propose separate articles by topic and QA, How-to, or
 > Break-fix type. Include original supporting excerpts with exact sources. Remove
-> customer identifiers and save the files under that session. Return the file links.
+> customer identifiers and save the files under that session. Return the file links
+> and write out the full absolute paths.
 
 ## Changelog
 
+- 0.6.1 (2026-09-16): Final delivery now visibly lists the full absolute output
+  directory and each saved Wiki path, with clickable links and separate evidence paths.
 - 0.6.0 (2026-09-16): Made concise articles the default: direct Q&A, action-only
   procedural steps, important impact up front, compact references, and optional
   final Double-check items. Detailed metadata stays in the evidence companion;

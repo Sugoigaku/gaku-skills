@@ -90,7 +90,9 @@ Avoid redundant main-body retelling; use optional related-article links for navi
 5. Add sibling links only after the target files exist, within the saved set.
    Recheck the links and the files changed by that navigation pass.
 6. Return one result per planned article, using `saved`, `blocked`, `failed`, or
-   `deferred`, with its path or specific reason. Do not paste article bodies,
+   `deferred`, with its full absolute file path visibly written out or a specific
+   reason. Include the full output-directory path and clickable links; a hidden
+   hyperlink target or filename alone is insufficient. Do not paste article bodies,
    evidence excerpts, or full planning tables into the final response.
 
 No index page or other extra file is created unless the engineer asks for it.

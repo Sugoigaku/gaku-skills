@@ -149,7 +149,7 @@ Open this repository in a new Copilot session and explicitly request the skill:
 > Use case-session-to-wiki to extract reusable troubleshooting knowledge from
 > this conversation. Propose separate articles by topic and QA, How-to, or
 > Break-fix type. Include original supporting excerpts and exact sources.
-> Save the files under that session and return only the file links.
+> Save the files under that session and return the file links and full absolute paths.
 
 Or choose a format explicitly:
 
@@ -206,7 +206,9 @@ not complete case history. Current-context-only extraction remains partial.
   session directory. The skill never guesses from the working directory.
 - The request authorizes a new folder and de-identified files without another
   confirmation. Plans, article bodies, and evidence previews stay off the console.
-  The final response contains only file links and material validation issues.
+  The final response visibly lists the full absolute output-directory path and
+  every saved Wiki path, with clickable links and material validation issues.
+  Paths are not hidden only inside hyperlinks. Evidence files are listed separately.
 - Repeated runs create new folders. Existing drafts are never overwritten or
   automatically moved. Explicit no-write requests still prevent saving.
 - Local drafts may be mechanically checked while semantic review remains pending.
@@ -255,4 +257,4 @@ wikis, publication, and closure automation are not part of v0.6.0.
 - [About agent skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)
 - [Adding skills to Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills)
 
-Version: 0.6.0. Last reviewed: 2026-09-16.
+Version: 0.6.1. Last reviewed: 2026-09-16.

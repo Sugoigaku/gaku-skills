@@ -64,6 +64,12 @@ write articles, execute procedures, or certify de-identification.
 7. Report saved, blocked, failed, or deferred articles concisely. A failed or
    incomplete file is not a successful/validated output. Partial source coverage
    alone does not prevent a narrowly supported local draft.
+8. Write out the full absolute output-directory path and each saved Wiki's full
+   absolute file path visibly, alongside clickable links. Do not hide paths only
+   in link targets or report just a folder/filename. Use actual resolved Windows
+   paths including any batch subfolder and suffix. List evidence.json separately.
+   Verify each saved path exists; label blocked or failed entries without implying
+   they were saved. This is a delivery summary, not a console preview of the Wiki.
 
 Review happens on the saved files. Local save authorization is not independent
 semantic review, approval to share restricted sources, or publication consent.
