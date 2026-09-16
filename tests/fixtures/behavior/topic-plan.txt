@@ -1,0 +1,18 @@
+This is a read-only synthetic acceptance test, not a real support case.
+Invoke case-session-to-wiki using the project skill. Do not execute diagnostics,
+write files, or publish anything. If you need scope approval, show the proposed
+article set and the one approval question in your response; this test harness
+cannot answer interactive prompts.
+
+The selected synthetic conversation contains:
+1. A sourced explanation of retention windows for ExampleSync exports.
+2. A sourced first-time setup procedure for ExampleSync scheduled exports.
+3. A separate investigation of a destination-port mismatch that stopped exports.
+4. Repeated questions and retries about that same mismatch.
+5. An unrelated question about quota accounting in ExampleStore.
+
+We want reusable knowledge across the supplied topics, not a single giant page.
+This is only a topic-inventory exercise; full original source passages will be
+provided after the scope is agreed. Do not manufacture source text or URLs.
+Please produce the proposed topic-by-type article table, identify gaps, and
+state the default enrichment and save-approval behavior.

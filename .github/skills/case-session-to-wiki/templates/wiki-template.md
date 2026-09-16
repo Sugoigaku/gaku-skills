@@ -34,15 +34,21 @@ not necessarily one template for the entire session.
 
 - Set `wiki_type` to exactly `qa`, `how-to`, or `break-fix`.
 - Keep source coverage separate from reference completeness and outcome confidence.
+- Default to `content_mode: documentation-enriched`, labeling added procedures;
+  honor extraction-only requests. Apply the [enrichment rules](../references/enrichment.md).
 - All three templates include **References and original excerpts** and use the
   same [source entry template](source-entry-template.md).
 - Cite sources beside the answers, steps, checks, and conclusions they support.
   A bibliography without inline attribution or original excerpts is incomplete.
 - Apply the [attribution rules](../references/source-attribution.md) before saving.
-  Expand source entries inside the generated article; do not leave template links.
+  Expand source entries and link their approved evidence-companion records.
+  Do not leave template links or use private archive positions as portable sources.
 - Keep QA concise, How-to novice-followable, and Break-fix diagnostic and actionable.
   Do not add irrelevant sections solely to make the types look alike.
 - Missing evidence stays explicit. Reference or critical procedural gaps block
   saving until resolved or the unsupported scope is removed.
 - For a set, every article passes its own gates. Return a delivery table with
   saved, blocked, failed, or deferred results instead of one shared success flag.
+- A mechanically checked review draft can await semantic review. Only an
+  independent, final-hash-bound review supports `reference_status: complete`;
+  a script pass is not that review and never authorizes publication.

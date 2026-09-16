@@ -1,0 +1,21 @@
+This is a read-only synthetic acceptance test, not a real support case.
+Invoke case-session-to-wiki using the project skill. No file writes, live
+diagnostics, network lookups, or publication are authorized.
+
+We already approved a single How-to about exporting ExampleSync configuration.
+Supplied original:
+Title: ExampleSync Operator Guide
+Publisher: Synthetic Lab
+Revision: 3
+Location: Manual export, paragraphs 1-2
+Original text: "An Export Operator opens the Export panel, enters an export
+name, and selects Run now. When Status is Complete, select Download. If
+Status is Failed, stop and retain the displayed error."
+
+The selected session contains only an earlier report that a different manual
+export procedure worked. No one executed the procedure in this excerpt.
+
+Default documentation enrichment is allowed. Produce one sample step and the
+intended article/step validation labels. Do not imply the new procedure was
+executed, invent a rollback command, or manufacture extra inputs. Explain how
+private observations would become portable references if approved for saving.

@@ -6,9 +6,11 @@ credentials, product incidents, or live endpoints.
 ## How to evaluate
 
 In a fresh session where the skill is available, invoke `case-session-to-wiki`
-with exactly one scenario at a time. Treat its conversation as the complete
-**provided transcript**, except in the partial-history scenario. Request an
-in-chat preview only; do not grant write, publication, or diagnostic execution.
+with exactly one scenario at a time. For file-input tests, put the synthetic
+conversation in an explicit fixture file and process it through the reader.
+An in-prompt-only scenario is `current-session` input with partial coverage;
+calling it a "supplied transcript" does not establish complete file coverage.
+Request an in-chat preview only; do not grant write, publication, or diagnostic execution.
 
 Check the actual response against every expected result. A draft must follow its
 [selected type template](../.github/skills/case-session-to-wiki/templates/wiki-template.md);
@@ -16,14 +18,31 @@ a clarification/stop response must not pretend to have generated or saved one.
 Record the scenario, observed result, and pass/fail in the evaluation session,
 not as real case content in this repository.
 
-These are manual behavioral tests. The Python suite checks only the structural
-framework; it does not execute Copilot or establish that these scenarios pass.
+These remain model-behavior acceptance scenarios. The Python suite now tests
+the deterministic reader, installer, and evidence validator as well as structure;
+it does not, by itself, establish that a model follows every scenario.
+
+Three replayable synthetic prompts are in `tests\fixtures\behavior`. Run one in
+a fresh native CLI process with the [smoke runner](../scripts/behavior_smoke.py):
+
+```text
+python -B scripts\behavior_smoke.py --fixture topic-plan --output <NEW_APPROVED_OUTPUT_PATH>
+```
+
+Also run `false-quote` and `enrichment`. The runner permits only skill/view tools,
+records actual invocation success and visible answers, and leaves semantic
+results `not-reviewed`. Evaluate the answers against the criteria below; a CLI
+exit code alone is not a pass. No live source or customer data is used.
+
+The helpers validate mechanical evidence consistency; independent semantic
+review and original-source authenticity remain separate checks. Supplied
+excerpts without a safe HTTPS origin must not be labeled public-document.
 
 For every article, check inline citations, original excerpts, and exact locations
 using the [shared contract](../.github/skills/case-session-to-wiki/references/source-attribution.md).
-Number positions within synthetic input blocks when the fixture provides no
-line numbers, explicitly identifying them as fixture-local positions. Do not
-invent real documentation or fetch the synthetic source identifiers below.
+For saved outputs, source positions refer to approved de-identified companion
+records. Do not persist anonymous session/archive locators or invent public
+documentation URLs for the synthetic source identifiers below.
 
 ## 1. Verified fix with a useful rejected hypothesis
 
@@ -50,6 +69,8 @@ Expected:
 - Cite the port comparison and before/after results; invent no commands.
 - Include original tool-result excerpts with exact fixture-local locations;
   explicitly state that no external publication was supplied.
+- Source completeness does not grant independent semantic approval. Without an
+  attestation, reference status is at most mechanically-checked after validation.
 
 ## 2. Recovery is reported, root cause is not known
 

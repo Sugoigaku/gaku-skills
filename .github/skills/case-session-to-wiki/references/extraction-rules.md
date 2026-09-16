@@ -70,9 +70,12 @@ support a workaround while leaving the root cause unknown.
 
 ## Commands and validation
 
-Include commands only when they are useful and present in the source. Distinguish
-executed commands from proposals. Preserve syntax and intent while replacing
-environment-specific values with clearly marked placeholders.
+Follow the [content mode](enrichment.md). In extraction-only mode, include only
+useful commands in the selected source or its cited originals. In default
+documentation-enriched mode, documented additions or adaptations are allowed
+but require explicit step provenance, execution state, source citations, and
+companion enrichment records. Distinguish observed actions from new proposals.
+Replace environment-specific values with clearly marked placeholders.
 
 State the recorded prerequisites, read/write impact, observed output, and the
 decision it supports. If a risk, expected output, rollback step, or prerequisite
@@ -118,11 +121,14 @@ the original addresses. If placeholders change the meaning, ask before saving.
 Review all output surfaces, including evidence excerpts, Markdown link targets,
 URL query strings, front matter, filenames, code comments, and image references.
 Do not attach raw logs, screenshots, transcripts, or a reversible identity map.
+An explicitly approved, de-identified evidence companion is allowed; it must
+contain only selected safe passages and reproducible locators within those
+passages, never the private source archive or a mapping back to identities.
 
 Use source labels with minimal sanitized excerpts and exact safe locators, not
-vague labels such as "the docs" or "an earlier tool result." Use supplied line or
-turn numbers when available; otherwise explicitly number positions within the
-selected input, without claiming they are original archive IDs. See
+vague labels such as "the docs" or "an earlier tool result." For private
+observations, cite the approved companion record and its local line positions.
+Anonymous archive record numbers alone do not make evidence retrievable. See
 [exact locations](source-attribution.md#exact-locations-and-original-excerpts).
 Do not persist a session ID, case URL, or identifying local path for traceability.
 If de-identification would destroy a precise locator, request a shareable source
@@ -137,10 +143,11 @@ Ask one focused question at a time when:
 - No reusable technical content exists.
 - Conflicting evidence prevents a trustworthy resolution claim.
 - Essential information cannot be safely de-identified.
-- A required original excerpt or precise source location is missing.
+- A required original excerpt or portable, precise source location is missing.
 - A How-to lacks a necessary prerequisite, step, or expected result.
 - The correct wiki type or same-issue criteria are ambiguous.
 - The local destination is unapproved or already exists.
+- The sanitized evidence companion has not been approved.
 
 Missing nonessential details can remain explicit gaps in a draft. Missing proof
 is not an invitation to infer a stronger conclusion.

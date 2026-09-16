@@ -40,7 +40,23 @@ HEADINGS = {
 }
 
 
+def markdown_links(text):
+    prose = re.sub(r"(?ms)^(`{3,}|~{3,})[^\n]*\n.*?^\1[ \t]*(?=\n|$)", "", text)
+    prose = re.sub(r"(`+).*?\1", "", prose, flags=re.DOTALL)
+    return re.findall(r"\[[^\]]+\]\(([^)]+)\)", prose)
+
+
 class SkillFrameworkTests(unittest.TestCase):
+    def test_markdown_examples_are_not_treated_as_live_links(self):
+        text = (
+            "[real](README.md)\n"
+            "`[inline example](missing.json)`\n"
+            "```markdown\n[example](missing.md)\n```\n"
+            "~~~text\n[example](#missing)\n~~~\n"
+            "[other](tests/scenarios.md)\n"
+        )
+        self.assertEqual(markdown_links(text), ["README.md", "tests/scenarios.md"])
+
     def test_discoverable_skill_has_required_front_matter(self):
         text = SKILL.read_text(encoding="utf-8")
         match = re.match(r"\A---\n(?P<fields>.*?)\n---\n", text, re.DOTALL)
@@ -67,6 +83,7 @@ class SkillFrameworkTests(unittest.TestCase):
                 "status: draft",
                 "review_status: pending-engineer-review",
                 "source_coverage: partial",
+                "content_mode: documentation-enriched",
                 "reference_status: incomplete",
             ):
                 with self.subTest(wiki_type=wiki_type, field=field):
@@ -139,6 +156,7 @@ class SkillFrameworkTests(unittest.TestCase):
         text = SOURCE_ENTRY.read_text(encoding="utf-8")
         fields = (
             "Source type",
+            "Evidence record",
             "Title",
             "Publisher or source role",
             "Origin",
@@ -169,6 +187,8 @@ class SkillFrameworkTests(unittest.TestCase):
         text = TEMPLATES["how-to"].read_text(encoding="utf-8")
         self.assertRegex(text, r"(?m)^### Step 1 - ")
         fields = (
+            "Provenance",
+            "Execution validation",
             "Where",
             "Inputs",
             "Action",
@@ -189,6 +209,8 @@ class SkillFrameworkTests(unittest.TestCase):
             text,
         )
         for field in (
+            "Provenance",
+            "Execution validation",
             "Prerequisites and impact",
             "Action",
             "Expected result",
@@ -205,6 +227,12 @@ class SkillFrameworkTests(unittest.TestCase):
             "references/extraction-rules.md",
             "references/source-attribution.md",
             "references/article-planning.md",
+            "references/session-input.md",
+            "references/enrichment.md",
+            "references/evidence-validation.md",
+            "references/semantic-review.md",
+            "tools/session_reader.py",
+            "tools/validate_wiki.py",
             "templates/wiki-template.md",
             "templates/source-entry-template.md",
         ):
@@ -217,7 +245,7 @@ class SkillFrameworkTests(unittest.TestCase):
         documents.extend(SKILL_DIR.rglob("*.md"))
         for document in documents:
             text = document.read_text(encoding="utf-8")
-            for link in re.findall(r"\[[^\]]+\]\(([^)]+)\)", text):
+            for link in markdown_links(text):
                 parsed = urlsplit(link)
                 if parsed.scheme or parsed.netloc:
                     continue
@@ -243,9 +271,30 @@ class SkillFrameworkTests(unittest.TestCase):
         for document in (ROOT / "README.md", SKILL):
             with self.subTest(document=document):
                 self.assertIn(
-                    "Version: 0.3.0. Last reviewed: 2026-09-16.",
+                    "Version: 0.4.0. Last reviewed: 2026-09-16.",
                     document.read_text(encoding="utf-8"),
                 )
+
+    def test_independent_semantic_review_is_wired_before_complete_status(self):
+        text = SKILL.read_text(encoding="utf-8")
+        self.assertIn("--require-semantic-review", text)
+        self.assertIn("mechanically-checked", text)
+        review = (SKILL_DIR / "references" / "semantic-review.md").read_text(encoding="utf-8")
+        self.assertIn("reviewer must be separate from the generator", review)
+        self.assertIn("prior attestation is stale", review)
+
+    def test_reader_coverage_is_mapped_not_treated_as_case_completeness(self):
+        text = SKILL.read_text(encoding="utf-8")
+        for requirement in (
+            "source_kind: session-events",
+            "coverage.visible_snapshot_complete: true",
+            "coverage.gaps",
+            "coverage.unread_segments",
+            "Current-context-only input is always partial.",
+            'even when called a "supplied transcript,"',
+        ):
+            with self.subTest(requirement=requirement):
+                self.assertIn(requirement, text)
 
     def test_case_artifact_paths_are_ignored_but_skill_is_not(self):
         paths = (

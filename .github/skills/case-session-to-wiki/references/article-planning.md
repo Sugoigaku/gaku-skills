@@ -53,6 +53,13 @@ If the source or output is too large to handle reliably, propose explicit batche
 from this inventory and obtain agreement. Do not silently cap the article count,
 omit later corrections, or delegate raw case content to make the problem disappear.
 Keep the plan in the conversation; do not create a persistent raw-source manifest.
+The approved sanitized evidence companion is a different artifact: propose its
+contents and destination explicitly, and never fill it with the reader's raw output.
+Respect the documented validator limits when proposing each batch: at most
+32 articles, 256 sources, and 512 claims/enrichments per article; files are limited
+to 2 MiB and individual text fields to 4,096 characters. Keep original excerpts
+short. Larger sets need separately approved batch directories/companions, not
+silent omission of the remaining topics or unannounced weakening of validation.
 
 ## Per-article validation
 
@@ -62,19 +69,22 @@ material that article actually uses. A blocked How-to must not inherit a sibling
 QA's complete references or a Break-fix's verification status.
 
 Embed the necessary source entries in each article. Shared references can be
-reused, but each quote must support that article's own claim. A sibling article
-is not an original reference. Avoid redundant main-body retelling; use optional
-related-article links for navigation.
+reused from the approved companion with consistent IDs, but each quote must
+support that article's own claim. A sibling article is not an original reference.
+Avoid redundant main-body retelling; use optional related-article links for navigation.
 
 ## Set delivery
 
 1. Show the drafts and one row per article with its gates and exact proposed path.
+   Include the proposed evidence companion and its privacy status.
 2. Ask for approval for the files to save. If some articles are blocked, offer
    the ready subset and explicitly identify what remains; do not silently choose.
 3. Check every destination before writing. If two topics yield the same filename
    or a destination already exists, ask for distinct approved paths. Do not
    overwrite, auto-merge, or silently invent a suffix.
-4. Write only approved articles whose individual gates pass. Read back each file.
+4. Write the approved sanitized companion first, then approved review articles.
+   Mechanical validation and independent semantic review remain distinct.
+   Read back each file and run the documented validator.
    If a write fails, stop further writes and report the saved and unsaved subset.
    Do not delete earlier successful files or claim an atomic all-or-nothing save.
 5. Add sibling links only after the target files exist, within the approved set.
@@ -83,5 +93,6 @@ related-article links for navigation.
    `deferred`, with its path or specific reason. A discussed preview is not saved.
 
 No index page or other extra file is created unless the engineer asks for it.
+The evidence companion is permitted only after its separate content/path approval.
 Existing prohibitions on Git staging, publication, messages, and memory writes
 still apply to the entire set.

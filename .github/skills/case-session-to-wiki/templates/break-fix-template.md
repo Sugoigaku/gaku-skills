@@ -4,8 +4,9 @@ wiki_type: break-fix
 status: draft
 review_status: pending-engineer-review
 product: "<Product and relevant version, or Not recorded>"
-source_kind: "<current-session or provided-transcript>"
+source_kind: "<current-session, provided-transcript, or local-session>"
 source_coverage: partial
+content_mode: documentation-enriched
 reference_status: incomplete
 root_cause_status: unknown
 resolution_status: unverified
@@ -46,6 +47,10 @@ supported by the source, with explicit conditions for applying them.
 
 ### Step 1 - <Repair action>
 
+**Provenance:** <observed-in-session, documentation-enriched, or adapted-from-documentation>
+
+**Execution validation:** <not-run, syntax-only, or lab-tested>
+
 **Prerequisites and impact:** <Required access, applicability, and read/write risks.>
 
 **Action:** <Recorded or documented action, with clearly identified placeholders.>
@@ -60,6 +65,8 @@ supported by the source, with explicit conditions for applying them.
 
 Do not describe proposed actions as completed or a temporary mitigation as a
 permanent fix. Do not run these instructions during knowledge extraction.
+Record material additions/adaptations in the approved companion with this
+section heading, source IDs, and separate execution-validation status.
 
 ## Verification
 
@@ -86,6 +93,7 @@ information, and the specific points requiring engineer confirmation.
 State source coverage and verification limitations. Embed one full
 [source entry](source-entry-template.md) per cited passage, with original text
 and an exact safe locator. Replace the template link with actual source entries.
+Each source entry links to its record in the approved evidence companion.
 
 ## Review checklist
 

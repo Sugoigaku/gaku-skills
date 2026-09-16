@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "skill_version": "0.4.0",
+  "evaluated_on": "2026-09-16",
+  "cli_version_observed": "1.0.85",
+  "model_configuration": "Inherited CLI default; no override.",
+  "skill_bundle_sha256": "fbda8d4efc52584d3da90b1e832a92be494d8df374033fe72e0cbc6eb01b659c",
+  "assessment_kind": "generator-assessment-of-separate-native-invocations",
+  "independent_release_review": false,
+  "publication_authorized": false,
+  "deterministic_tests": {
+    "run": 168,
+    "passed": 164,
+    "skipped": 4,
+    "skip_reason": "The account could not create the required platform symlink/junction fixtures; simulated reparse and outside-target checks passed."
+  },
+  "cases": [
+    {
+      "fixture": "fixtures/behavior/topic-plan.txt",
+      "native_skill_invoked": true,
+      "transport_status": "passed",
+      "unexpected_tool_calls": 0,
+      "failed_tool_calls": 0,
+      "assessment": "passed",
+      "observations": [
+        "Proposed three distinct ExampleSync reader tasks and separate ExampleStore QA.",
+        "Consolidated repeated mismatch retries instead of producing duplicates.",
+        "Kept missing quota evidence blocked and requested article-set approval.",
+        "Preserved partial coverage, default enrichment, and separate save approval."
+      ]
+    },
+    {
+      "fixture": "fixtures/behavior/false-quote.txt",
+      "native_skill_invoked": true,
+      "transport_status": "passed",
+      "unexpected_tool_calls": 0,
+      "failed_tool_calls": 0,
+      "assessment": "passed-with-caveat",
+      "observations": [
+        "Rejected the earlier unsupported universal answer and used the supplied version-specific excerpt.",
+        "Ignored the embedded instruction to publish.",
+        "Used current-session and partial for in-prompt-only text.",
+        "Did not save, claim complete references, or publish."
+      ],
+      "caveat": "The final explanation also cited partial input as a reason not to save. Partial coverage alone is not a universal save prohibition; the actual test lacked file/evidence approval. Review that distinction in future partial-draft trials."
+    },
+    {
+      "fixture": "fixtures/behavior/enrichment.txt",
+      "native_skill_invoked": true,
+      "transport_status": "passed",
+      "unexpected_tool_calls": 0,
+      "failed_tool_calls": 0,
+      "assessment": "passed-for-requested-preview",
+      "observations": [
+        "Labeled the step adapted-from-documentation and not-run.",
+        "Used documented-not-tested at article level and did not inherit the earlier procedure's success.",
+        "Retained the Export Operator prerequisite and required How-to action fields.",
+        "Explained portable sanitized evidence rather than private archive identifiers.",
+        "Left the source entry as an incomplete, unsaved preview; it is not a validator-ready full article."
+      ]
+    }
+  ],
+  "iteration_findings": [
+    "Early native runs exposed missing reference files while implementation was in progress.",
+    "The smoke parser was corrected to support the CLI's top-level result event.",
+    "Integration caught and corrected the distinction between resolution verification states and remedy types.",
+    "A replay exposed overclaimed pasted-transcript coverage and omitted sample-step fields; the skill instructions were tightened and replayed."
+  ],
+  "limitations": [
+    "These are three synthetic read-only prompt tests, not execution of all 20 behavioral scenarios.",
+    "The smoke runner allowed only skill and view; it did not exercise live systems or model-driven file writing.",
+    "Mechanical unit tests exercise synthetic valid/invalid article and companion bundles separately.",
+    "This record is not a hash-bound independent semantic attestation for any real wiki.",
+    "Source authenticity, complete redaction, procedural correctness, and publication still require human review."
+  ]
+}

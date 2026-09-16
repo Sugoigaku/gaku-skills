@@ -8,8 +8,12 @@ Turn a troubleshooting conversation into reusable technical knowledge at case
 closure. This is **not a transcript dump, a chronological case summary, or an
 automatic case-closing tool**.
 
-This is an instruction-driven framework. It chooses an article format based on
-what the reader needs, then extracts the supported knowledge from the session.
+The skill combines instructions with read-only Python helpers for session input
+and evidence validation. It chooses article formats by reader task and separates
+observed findings from documentation-based additions.
+
+Requires Python 3.10+ for the helpers. No Python packages, credentials, or network
+services are needed by those helpers themselves.
 
 ### Three wiki formats
 
@@ -56,22 +60,52 @@ the inspected source; an AI paraphrase is not an original excerpt. Redactions an
 omissions must be marked. Non-English originals remain in their original language.
 
 If a required original or exact locator is missing, the skill shows the gap and
-requests it; it does not invent a citation or save a reference-complete wiki.
-Case observations may cite primary session evidence, but must not masquerade as
-published documentation or establish an unsupported general product guarantee.
+requests it. Private observations use approved, de-identified records in a
+portable `evidence.json` companion, not anonymous archive-line references.
+The engineer approves the companion's contents and destination before it is saved.
+
+### Default enrichment, explicit provenance
+
+Documentation-based enrichment is enabled by default, as selected by the
+engineer. The skill may inspect relevant official documentation to fill a named
+gap, using generic technical terms rather than private case data. Request
+`extraction-only` to disallow new technical procedures.
+
+Each procedural step identifies observed, documentation-enriched, or adapted
+provenance and whether execution was not run, syntax-only, or lab-tested.
+New commands do not inherit a historical experiment's success.
+
+### Mechanical checks are not semantic approval
+
+- `incomplete`: required evidence is still missing.
+- `mechanically-checked`: the supplied articles/companion pass local consistency
+  checks; semantic review remains pending.
+- `complete`: a separate reviewer checked all substantive claims and supplied an
+  attestation bound to the final content hashes.
+
+The validator compares quotations against the supplied passages, rejects stale
+review hashes, and flags known identifier patterns. It does not authenticate the
+reviewer, fetch originals, judge entailment, detect every private name, or
+authorize publication. A true quote attached to an unrelated claim can pass
+mechanical matching and still fail semantic review.
+
+Public reference URLs retain version selectors. The validator allows the safe
+query keys `view`, `preserve-view`, and `tabs`; other query forms need a safe
+canonical source rather than silently dropping identity-bearing parameters.
 
 ### Workflow
 
 ```text
 Explicit request near case closure
+    -> Read only the exact selected session/transcript through the bounded reader
     -> Inventory topics and propose topic-by-type articles
     -> Confirm article scope and source coverage
-    -> Build a source catalog and inspect cited originals
+    -> Inspect originals and label documentation-based enrichment
     -> Extract reusable findings and decisions
-    -> De-identify the content
+    -> De-identify the articles and portable evidence companion
     -> Compose with the selected template and inline citations
-    -> Check format quality, reference completeness, and engineer approval
-    -> Save approved articles and report each result separately
+    -> Approve local review files, validate mechanically, and report each result
+    -> Obtain separate semantic review before any publication-ready claim
 ```
 
 ### Files
@@ -81,12 +115,16 @@ Explicit request near case closure
 | [SKILL.md](.github/skills/case-session-to-wiki/SKILL.md) | Trigger, workflow, input/output contract, and safety boundaries |
 | [Extraction rules](.github/skills/case-session-to-wiki/references/extraction-rules.md) | Knowledge selection, evidence classification, and de-identification |
 | [Article planning](.github/skills/case-session-to-wiki/references/article-planning.md) | Topic inventory, type selection, scope approval, and multi-article delivery |
+| [Session input](.github/skills/case-session-to-wiki/references/session-input.md) | Exact-ID/transcript reader CLI, schema, pagination, and coverage |
+| [Enrichment](.github/skills/case-session-to-wiki/references/enrichment.md) | Default documentation enrichment and execution/provenance labels |
 | [Template selector](.github/skills/case-session-to-wiki/templates/wiki-template.md) | Format selection and shared requirements |
 | [QA template](.github/skills/case-session-to-wiki/templates/qa-template.md) | Topic-focused questions and answers |
 | [How-to template](.github/skills/case-session-to-wiki/templates/how-to-template.md) | Detailed procedure with checkpoints and failure branches |
 | [Break-fix template](.github/skills/case-session-to-wiki/templates/break-fix-template.md) | Issue identification, repair, and verification |
 | [Source attribution](.github/skills/case-session-to-wiki/references/source-attribution.md) | Mandatory citation, original-excerpt, and exact-location rules |
 | [Source entry template](.github/skills/case-session-to-wiki/templates/source-entry-template.md) | Shared reference record embedded in every article |
+| [Evidence validation](.github/skills/case-session-to-wiki/references/evidence-validation.md) | Companion schema, claim mappings, mechanical checks, and review attestations |
+| [Semantic review](.github/skills/case-session-to-wiki/references/semantic-review.md) | Independent claim-level review and final-hash approval requirements |
 | [Evaluation scenarios](tests/scenarios.md) | Synthetic behavioral cases and acceptance criteria |
 | [Framework tests](tests/test_skill_framework.py) | Dependency-free structural checks |
 
@@ -106,15 +144,37 @@ Or choose a format explicitly:
 
 For an existing case session, the skill must also be available there. A project
 skill in this repository is not automatically available in unrelated workspaces.
-For reuse across projects, the whole `case-session-to-wiki` directory can later
-be installed under `%USERPROFILE%\.copilot\skills`. This scaffold does **not**
-install anything globally or change other repositories.
+Install a new personal copy from this repository:
 
-The skill uses the conversation actually available to Copilot, or a local
-transcript explicitly supplied by the engineer. It cannot recover missing turns,
-hidden reasoning, or omitted tool output. Current-context input is marked
-`partial`; a fully read supplied transcript is only
-`complete-for-provided-transcript`, not proof of complete case history.
+```text
+python -B scripts\install_skill.py
+```
+
+The [installer](scripts/install_skill.py) verifies file hashes. Identical installs
+are a no-op. Different or locally edited destinations are refused, not overwritten;
+use a new explicitly selected destination for staged upgrade review. It does not
+change other repositories. The already-installed pre-v0.4 personal copy requires
+a separately reviewed migration, not a force overwrite.
+
+Start a fresh Copilot process after installation and use `copilot skill list`
+to check discovery. Discovery is not proof that a skill has been invoked.
+
+### Supported session input
+
+> Use case-session-to-wiki on the exact local session ID I provide. Propose an
+> article set and label any documentation-based additions. Do not execute the
+> procedures or save the evidence until I approve it.
+
+The bundled [session reader](.github/skills/case-session-to-wiki/tools/session_reader.py)
+accepts an exact local ID or explicit UTF-8 transcript path. It pages supported
+visible messages and tool-result text without loading hidden reasoning, system
+events, attachments, or other sessions. See the input contract for exact options
+and supported archive shape.
+
+This is not an automatic redactor or permission bypass. Stop on access denial,
+unsupported records, or missing input; request a supported transcript rather
+than inventing an archive parser. A completed visible-source snapshot is still
+not complete case history. Current-context-only extraction remains partial.
 
 ### Output and privacy
 
@@ -122,12 +182,13 @@ hidden reasoning, or omitted tool output. Current-context input is marked
 - Drafts retain uncertainty: recovery does not prove a root cause.
 - Source completeness and source coverage are separate. A partial conversation
   can support a narrowly scoped, fully attributed draft, not a complete case history.
-- The skill may read already-cited originals using available, authorized tools.
-  It does not send case details to search services or launch a new investigation.
+- Default enrichment may inspect targeted official originals through authorized
+  tools. It never sends case details to search services or runs a new investigation.
 - Customer/case identifiers and credentials must be removed before persistence.
 - The skill proposes `wiki-drafts\<wiki-type>-<technical-topic>.md` in an approved
-  workspace. It previews the article, passes the reference gate, and obtains
-  approval for the local destination.
+  workspace. It previews the articles and sanitized companion and obtains
+  approval for each local destination. Local review drafts may be mechanically
+  checked while separate semantic review is still pending.
 - `wiki-drafts` and `private-inputs` are ignored **in this repository only**.
   Git ignore is not a privacy guarantee or permission to store real transcripts.
 - No automatic publishing, Git commits of generated wikis, uploads, case-system
@@ -141,21 +202,33 @@ From this repository:
 python -B -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-Structural tests verify packaging and template contracts, not the factual
-accuracy of an AI-generated article. Use the [synthetic scenarios](tests/scenarios.md)
-for behavioral evaluation before trying an approved, de-identified real case.
-No real case data is included in this repository.
+Tests cover packaging, installation, reader pagination/exclusions, evidence
+matching, invalid inputs, negative cases, and stale semantic-review attestations.
+They do not establish the factual accuracy of arbitrary generated articles.
+Use the [synthetic scenarios](tests/scenarios.md) for model-behavior evaluation;
+record actual outcomes separately from unit-test results. No real case data is
+included in tracked tests or fixtures.
+
+For repeatable native prompt tests, run the [smoke runner](scripts/behavior_smoke.py)
+with `--fixture topic-plan`, `false-quote`, or `enrichment` and a new approved
+`--output` path. It uses only skill/view tools, checks actual native invocation,
+and fingerprints the bundle; semantic grading remains explicitly separate.
+The [v0.4.0 evaluation record](tests/behavior-evaluation-0.4.0.json) records actual
+synthetic outcomes and caveats. It is an author assessment, not independent
+release approval or proof that all behavioral scenarios were executed.
+
+Existing v0.3 trial articles are not silently migrated to the new evidence schema
+or retroactively marked independently reviewed.
 
 ### Deliberately deferred
 
-Automatic session export/import, broad literature searches, live case evidence
-retrieval, merging into an existing wiki, wiki publication, and closure automation
-are not part of v0.3.0. Targeted read-only inspection of already-cited original
-documents is included; inaccessible sources remain explicit gaps.
+Cross-account/cloud session retrieval, attachment extraction, broad literature
+searches, live case evidence retrieval, automated redaction, merging into existing
+wikis, publication, and closure automation are not part of v0.4.0.
 
 ### Packaging references
 
 - [About agent skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)
 - [Adding skills to Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills)
 
-Version: 0.3.0. Last reviewed: 2026-09-16.
+Version: 0.4.0. Last reviewed: 2026-09-16.

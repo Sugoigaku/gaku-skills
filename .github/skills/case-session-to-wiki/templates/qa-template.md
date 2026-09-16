@@ -4,8 +4,9 @@ wiki_type: qa
 status: draft
 review_status: pending-engineer-review
 product: "<Product and relevant version, or Not recorded>"
-source_kind: "<current-session or provided-transcript>"
+source_kind: "<current-session, provided-transcript, or local-session>"
 source_coverage: partial
+content_mode: documentation-enriched
 reference_status: incomplete
 tags: []
 ---
@@ -44,6 +45,8 @@ State source coverage and any verification limitations. Embed one full
 [source entry](source-entry-template.md) per cited passage, with the original
 excerpt and exact location. Expand entries here; do not leave a template link
 or substitute a URL-only reading list.
+Link each entry to its matching approved evidence-companion record. A mechanical
+pass is not semantic approval; retain pending engineer review.
 
 ## Review checklist
 

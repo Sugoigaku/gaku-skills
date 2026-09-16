@@ -9,14 +9,18 @@ what supports the article; they are not decorative further-reading links.
    links, supplied originals, source-code locations, reports, and tool output.
    Prefer original publisher documentation over summaries when available.
 2. Inspect the relevant original passage through an authorized tool, or read the
-   engineer-supplied source. Limit retrieval to already-cited originals. Request
-   additional sources when needed; do not silently conduct a broader search.
+   engineer-supplied source. Default documentation enrichment allows targeted
+   official-source lookup for a specific gap using generic technical terms.
+   In extraction-only mode, limit retrieval to already-cited originals.
+   Follow the [enrichment boundaries](enrichment.md); do not silently expand scope.
 3. Record a unique ID such as `S1` using the
    [source entry template](../templates/source-entry-template.md). Distinguish
    documentation, transcript, and tool-output sources.
 4. Map each supported answer, instruction, matching check, diagnosis, and outcome
    to the precise passage that substantiates it. Reuse an ID only for the same
    entry and location; use another entry when a different passage is needed.
+   IDs are unique across the evidence companion and retain the same meaning in
+   every article that uses them.
 5. Preserve corrections, contradictory sources, version differences, and limits.
    Do not resolve conflicts by choosing whichever source makes the story simpler.
 
@@ -39,13 +43,13 @@ Record both the origin and a precise location within it:
 | Web documentation or KB | Actual title, canonical non-identifying URL, section/subheading or a verified anchor; revision when available |
 | PDF or supplied document | Identifiable safe title/version and page plus section/paragraph |
 | Source code | Safe repository identity, actual commit/revision, relative file, and line range |
-| Supplied transcript | Identified input block, role, and actual supplied turn/line positions |
-| Tool result or log excerpt | Identified supplied result block and record/line positions, with minimal supporting output |
+| Supplied transcript | Approved sanitized companion record and exact positions within that record; the source role stays explicit |
+| Tool result or log excerpt | Approved sanitized companion record and line positions, with minimal supporting output and tool-success qualifications |
 
-If positions were not supplied, number them explicitly within the selected input
-and label them extraction-local positions. Never pretend they are original
-archive message IDs. A source ID alone, a home page, or "earlier in the chat" is
-not an exact location.
+If positions were not supplied, number them explicitly within the approved
+sanitized record. Never pretend they are original archive message IDs. A source
+ID alone, a home page, anonymous archive record number, or "earlier in the chat"
+is not portable provenance.
 
 Quote only the short original passage necessary to support the claim, where
 quotation is permitted. Do not reproduce whole documents or substantial passages.
@@ -96,9 +100,41 @@ Every citation must resolve to exactly one embedded source entry. Include only
 sources actually used. A title or citation ID without a supporting original
 excerpt does not satisfy the contract.
 
+## Approved evidence companion
+
+The engineer permits a de-identified evidence companion beside the articles.
+Approval for its actual contents and exact path is still required per delivery.
+Use the [validator's schema](evidence-validation.md) for `evidence.json`.
+
+- Public documentation records contain their canonical safe URL, exact locator,
+  version, inspection state, and a short permitted supporting passage.
+- `public-document` requires an actual safe HTTPS origin. A supplied excerpt
+  without a canonical public URL is `sanitized-evidence`, even when it appears
+  to quote a document. Do not invent a URL or label it public just from its title.
+- Private observations become `sanitized-evidence` records with a stable
+  `approved-evidence:<safe-id>` origin and exact lines within the included
+  sanitized text. Article source entries point to the companion and source ID.
+- Do not retain source session IDs, archive paths, identity maps, full logs,
+  secrets, or a recoverable reverse map. The source's historical private
+  authenticity remains a reviewer responsibility; do not imply public verification.
+- Redacted text is compared against the approved sanitized passage, never labeled
+  as untouched verbatim text. Keep redaction decisions explicit.
+- The companion includes a claim map for each article and records material
+  procedural enrichment. A claim map is itself reviewable and may be incomplete.
+- A supplied excerpt can be valid supporting evidence with
+  `supplied-excerpt-only`; lack of independent publisher inspection alone does
+  not make its text unavailable. Semantic review remains a separate pending gate.
+- Do not generate companion text from the article and call that independent
+  evidence. First inspect the original, select the minimal passage, sanitize it,
+  and obtain human approval.
+
+If the engineer declines storing sanitized evidence, remove claims that depend
+on it or keep them as unsaved discussion. Do not replace it with unresolvable
+private archive citations.
+
 ## Reference completeness gate
 
-Set `reference_status: complete` only after checking all of the following:
+Before saving a review draft, inspect all of the following:
 
 - Every substantive assertion and instruction has appropriate inline support.
 - Each cited entry includes its identifiable origin, exact location, short
@@ -115,7 +151,17 @@ clearly labeled; do not describe it as independently checked publisher guidance.
 Reference completeness is not proof of full session coverage, source infallibility,
 successful execution, or engineer approval.
 
-On failure, keep `reference_status: incomplete`, list the exact gaps, and ask for
-the missing originals/locations or agreement to narrow the claims. An incomplete
-preview is permitted for discussion; do not save it as a completed wiki. The
-engineer's approval of a destination does not override missing evidence.
+On missing source material, keep `reference_status: incomplete`, list the exact
+gaps, and ask for originals/locations or a narrower scope. Destination approval
+does not create missing evidence.
+
+Run the [mechanical validator](../tools/validate_wiki.py) on approved local review
+files and their companion. A pass can support `reference_status:
+mechanically-checked`; rerun after changing that metadata. Quote matching proves
+consistency with the supplied passage, not its authenticity or entailment.
+
+Only a separate [semantic review](semantic-review.md), covering all substantive
+claims and bound to final article/evidence hashes, permits reference status
+`complete`. Use `--require-semantic-review` for that gate. The validator checks
+an attestation, not the reviewer's identity or correctness. Any changed bytes
+invalidate prior review; no automatic result ever authorizes publication.

@@ -4,8 +4,9 @@ wiki_type: how-to
 status: draft
 review_status: pending-engineer-review
 product: "<Product and relevant version, or Not recorded>"
-source_kind: "<current-session or provided-transcript>"
+source_kind: "<current-session, provided-transcript, or local-session>"
 source_coverage: partial
+content_mode: documentation-enriched
 reference_status: incomplete
 procedure_status: unverified
 tags: []
@@ -34,6 +35,10 @@ such as "configure it normally." Never invent missing clicks, flags, or outputs.
 
 ### Step 1 - <Verb and intended result>
 
+**Provenance:** <observed-in-session, documentation-enriched, or adapted-from-documentation>
+
+**Execution validation:** <not-run, syntax-only, or lab-tested>
+
 **Where:** <Application, page, shell, working context, or execution target.>
 
 **Inputs:** <Values to prepare, their meaning, and which placeholders to replace.>
@@ -51,6 +56,8 @@ such as "configure it normally." Never invent missing clicks, flags, or outputs.
 **Sources:** <Inline links for actions, inputs, expected results, and safety statements.>
 
 Separate documented guidance from actions actually executed in the case.
+Record material additions/adaptations in the approved companion's enrichment
+entries, with this exact section heading and supporting source IDs.
 Missing critical inputs, steps, or checkpoints block a runnable guide; request
 the original instructions instead of filling gaps with plausible behavior.
 
@@ -79,6 +86,7 @@ that still need validation. Do not call an incomplete procedure beginner-ready.
 State source coverage and verification limitations. Embed one full
 [source entry](source-entry-template.md) per cited passage, including original
 text and exact location. Replace the template link with the actual entries.
+Each source entry links to the matching record in the approved evidence companion.
 
 ## Review checklist
 
