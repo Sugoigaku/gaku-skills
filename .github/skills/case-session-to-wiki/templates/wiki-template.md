@@ -1,7 +1,8 @@
 # Wiki Template Selector
 
 This index replaces the v0.1 generic article template. Do not render this file
-as a wiki or fall back to a catch-all structure. Select one template below.
+as a wiki or fall back to a catch-all structure. Select one template per article,
+not necessarily one template for the entire session.
 
 ## Selection rules
 
@@ -18,10 +19,16 @@ as a wiki or fall back to a catch-all structure. Select one template below.
 3. A repair does not become How-to merely because it has numbered steps.
    A configuration goal does not become Break-fix merely because questions arose.
    The current requested reader task wins over incidental conversation content.
-4. If the intent is genuinely mixed or ambiguous, ask a focused scope question.
-   Propose separate, related articles when useful; do not create extra files
-   without agreement. A brief relevant Q&A can live inside a procedural article,
-   but must not hide a second independent topic or replace its required sections.
+4. For a rich session, apply the
+   [article planning contract](../references/article-planning.md). Inventory the
+   topics and propose a topic-by-type set before asking for scope approval.
+   Multiple topics can use the same type; one topic can use multiple types if
+   each addresses a distinct reader task. Do not produce a three-format cross
+   product or pad a single-issue session into three articles.
+5. If a candidate's intent is genuinely ambiguous, ask a focused scope question.
+   A brief relevant Q&A can stay in a procedural article, but must not hide a
+   second independent topic or replace required sections. An explicit single-page
+   request limits the set; ask before expanding it.
 
 ## Shared contract
 
@@ -37,3 +44,5 @@ as a wiki or fall back to a catch-all structure. Select one template below.
   Do not add irrelevant sections solely to make the types look alike.
 - Missing evidence stays explicit. Reference or critical procedural gaps block
   saving until resolved or the unsupported scope is removed.
+- For a set, every article passes its own gates. Return a delivery table with
+  saved, blocked, failed, or deferred results instead of one shared success flag.

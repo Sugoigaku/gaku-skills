@@ -1,11 +1,11 @@
 ---
 name: case-session-to-wiki
-description: "Extract reusable, de-identified knowledge from a technical support case conversation into a QA, How-to, or Break-fix Markdown wiki, with original supporting excerpts and exact source attribution. Use when the engineer explicitly asks to turn a case session into a wiki, distill a troubleshooting conversation, or capture reusable case lessons near closure. Not for live troubleshooting, ordinary case notes, or closing a case."
+description: "Extract reusable, de-identified knowledge from a technical support case conversation into Markdown wikis. For rich sessions, propose separate articles by topic and QA, How-to, or Break-fix type, with original supporting excerpts and exact source attribution. Use when the engineer explicitly asks to turn a case session into wikis, distill a troubleshooting conversation, or capture reusable case lessons near closure. Not for live troubleshooting, ordinary case notes, or closing a case."
 ---
 
 # Case Session to Wiki
 
-Version: 0.2.0. Last reviewed: 2026-09-16.
+Version: 0.3.0. Last reviewed: 2026-09-16.
 
 ## Purpose
 
@@ -21,8 +21,10 @@ was verified, and where the conclusions stop. Do not simply shorten the chat.
 - **Input:** the available current conversation or an engineer-selected local
   transcript. Inspect existing evidence and the originals of cited documents;
   no broad searches, other-session discovery, or new case-system investigation.
-- **Output:** one de-identified Markdown article per selected topic, using the
+- **Output:** an approved set of de-identified Markdown articles, split by
+  coherent topic and distinct reader task using the
   [template selector](templates/wiki-template.md): QA, How-to, or Break-fix.
+  A topic can warrant more than one type; do not generate all three automatically.
 - **Attribution:** every article must contain inline source citations, original
   supporting excerpts, and exact safe locations. A URL-only bibliography fails.
 - **Default state:** `draft`, pending engineer review. Record source coverage
@@ -54,20 +56,28 @@ exported transcript or permission to make a partial draft. Do not fabricate an
 export command, tool, old turn, attachment, or missing command output. If sources
 are combined, retain the more conservative coverage and explain each source.
 
-### 2. Select the topic and wiki type
+### 2. Inventory topics and propose the article set
 
-Use the [selection rules](templates/wiki-template.md#selection-rules).
-Honor an explicit format request; otherwise select the dominant reader intent
-and briefly explain it. Ask if multiple formats are equally plausible or the
-requested type would hide necessary safety or diagnostic information.
+Use the [article planning contract](references/article-planning.md) and
+[selection rules](templates/wiki-template.md#selection-rules). For a rich
+session, first inventory the topics throughout the available history, including
+later questions and corrections. Propose the useful topic-by-type articles
+instead of making the engineer discover and request each split.
 
 - **QA:** clarify a topic through direct questions and supported answers.
 - **How-to:** achieve a defined goal through a beginner-followable procedure.
 - **Break-fix:** identify the same failure and restore the affected operation.
 
-Keep one coherent topic per article, and one failure mode per Break-fix.
-Include useful follow-up questions. For unrelated topics, ask which to draft
-or whether to split them. Do not silently combine or discard useful topics.
+Show the proposed titles, types, scope, source coverage, blockers, and filenames.
+Explain excluded or deferred topics. Ask one focused question to approve or
+adjust the article set before drafting unless that exact scope is already
+approved. Scope approval does not authorize file writes.
+
+Honor an explicit single-topic or single-type request without expanding it.
+Keep one coherent topic per article and one failure mode per Break-fix. Split a
+topic into multiple types only for distinct, supported reader tasks, not repeated
+paraphrases of the same material. A short relevant follow-up can stay in its
+owning article. Do not silently combine or discard independent topics.
 
 If the source is only administrative chatter, say there is not enough reusable
 technical content and ask for evidence. Do not produce a success-shaped wiki.
@@ -135,6 +145,10 @@ Use exactly one selected type template and retain its section order. Replace
 template instructions with supported content. Use `Not established` or
 `Not recorded` for genuine gaps, not for hiding a missing critical prerequisite.
 Remove instructional links to the skill bundle from the rendered article.
+Apply this independently to every approved article. A complete source entry or
+verified outcome in one article does not grant that status to its siblings.
+Keep each article self-contained, with its own necessary references; sibling
+articles are navigation, not substitutes for original sources.
 
 Every substantive QA answer, How-to step, Break-fix matching check, diagnosis,
 repair, and verification claim must link to its source entry in the same article.
@@ -163,6 +177,10 @@ engineer-approved workspace. Do not infer the workspace from the installation
 directory. Saving requires the format and reference gates to pass, followed by
 approval for this draft and exact destination. Approval is not evidence that a
 missing source exists.
+For a set, show a row per article with its individual gates and exact destination.
+Use the [set delivery rules](references/article-planning.md#set-delivery).
+Do not silently drop blocked articles, overwrite colliding filenames, or call a
+partially saved set complete. Add sibling links only when their targets exist.
 
 If the destination exists, stop and ask for a different filename; automatic
 replacement and merging are not part of this version. Write only the reviewed,
@@ -176,12 +194,15 @@ does not authorize any of those actions.
 ## Example request
 
 > Use case-session-to-wiki on this troubleshooting conversation. Extract the
-> reusable knowledge, choose QA, How-to, or Break-fix, and include original
-> supporting excerpts with exact sources. Remove customer identifiers and show
-> the draft before saving.
+> reusable knowledge and propose separate articles by topic and QA, How-to, or
+> Break-fix type. Include original supporting excerpts with exact sources. Remove
+> customer identifiers and show the article plan before drafting and saving.
 
 ## Changelog
 
+- 0.3.0 (2026-09-16): Added topic-by-type article planning, explicit scope
+  approval, duplicate avoidance, and independent validation and delivery of
+  multi-article sets.
 - 0.2.0 (2026-09-16): Added QA, How-to, and Break-fix routing and templates;
   mandatory claim-level attribution, original excerpts, exact locations,
   targeted inspection of cited originals, and pre-save reference completeness.

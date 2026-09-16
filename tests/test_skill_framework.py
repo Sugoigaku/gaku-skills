@@ -10,6 +10,7 @@ SKILL_DIR = ROOT / ".github" / "skills" / "case-session-to-wiki"
 SKILL = SKILL_DIR / "SKILL.md"
 SELECTOR = SKILL_DIR / "templates" / "wiki-template.md"
 SOURCE_ENTRY = SKILL_DIR / "templates" / "source-entry-template.md"
+ARTICLE_PLANNING = SKILL_DIR / "references" / "article-planning.md"
 TEMPLATES = {
     wiki_type: SKILL_DIR / "templates" / f"{wiki_type}-template.md"
     for wiki_type in ("qa", "how-to", "break-fix")
@@ -93,6 +94,40 @@ class SkillFrameworkTests(unittest.TestCase):
             with self.subTest(template=template.name):
                 self.assertIn(f"]({template.name})", text)
 
+    def test_article_planning_is_wired_into_selection_and_delivery(self):
+        skill = SKILL.read_text(encoding="utf-8")
+        selector = SELECTOR.read_text(encoding="utf-8")
+        self.assertIn("](references/article-planning.md)", skill)
+        self.assertIn("](references/article-planning.md#set-delivery)", skill)
+        self.assertIn("](../references/article-planning.md)", selector)
+
+    def test_article_plan_has_scope_evidence_and_filename_fields(self):
+        text = ARTICLE_PLANNING.read_text(encoding="utf-8")
+        self.assertIn(
+            "| ID | Topic | Wiki type | Reader task and scope | Proposed title | "
+            "Sources and coverage | Readiness and gaps | Proposed filename |",
+            text,
+        )
+        self.assertEqual(
+            re.findall(r"(?m)^## (.+)$", text),
+            [
+                "Topic inventory",
+                "Topic-by-type decisions",
+                "Proposed article table",
+                "Per-article validation",
+                "Set delivery",
+            ],
+        )
+
+    def test_article_set_delivery_names_all_terminal_outcomes(self):
+        text = ARTICLE_PLANNING.read_text(encoding="utf-8")
+        delivery = text.split("## Set delivery\n", 1)[1]
+        for outcome in ("saved", "blocked", "failed", "deferred"):
+            with self.subTest(outcome=outcome):
+                self.assertIn(f"`{outcome}`", delivery)
+        self.assertIn("Check every destination before writing.", delivery)
+        self.assertIn("Add sibling links only after the target files exist", delivery)
+
     def test_every_type_uses_the_shared_source_entry(self):
         for wiki_type, template in TEMPLATES.items():
             with self.subTest(wiki_type=wiki_type):
@@ -169,6 +204,7 @@ class SkillFrameworkTests(unittest.TestCase):
         for target in (
             "references/extraction-rules.md",
             "references/source-attribution.md",
+            "references/article-planning.md",
             "templates/wiki-template.md",
             "templates/source-entry-template.md",
         ):
@@ -207,7 +243,7 @@ class SkillFrameworkTests(unittest.TestCase):
         for document in (ROOT / "README.md", SKILL):
             with self.subTest(document=document):
                 self.assertIn(
-                    "Version: 0.2.0. Last reviewed: 2026-09-16.",
+                    "Version: 0.3.0. Last reviewed: 2026-09-16.",
                     document.read_text(encoding="utf-8"),
                 )
 

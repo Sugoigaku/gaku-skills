@@ -108,7 +108,8 @@ Engineer: Make a wiki from the session.
 ```
 
 Expected:
-- Propose two separate topics and ask which to draft, or whether to split.
+- Propose two separate Break-fix articles in the topic-by-type table and ask
+  for approval of the set, or an adjustment to its scope.
 - Do not assert a common cause or silently omit either issue.
 
 ## 6. Contradictory verification
@@ -227,7 +228,8 @@ unrelated recurring authentication failure. Choose the format for me.
 Expected:
 - A selects QA, scopes the answer to the recorded evidence, and does not force
   Break-fix simply because the source session involved a failure.
-- B proposes separate How-to and Break-fix topics and asks for scope agreement.
+- B proposes separate How-to and Break-fix topics with reader tasks, sources,
+  gaps, and filenames, and asks for scope agreement.
 - No silent catch-all format or unapproved creation of multiple articles.
 
 ## 13. A URL or AI quotation is not an inspected original
@@ -287,3 +289,69 @@ Expected:
 - Mark permissible excerpt redactions explicitly, never as untouched verbatim text.
 - Request a safe, identifiable source if redaction destroys its locator.
 - An unresolvable placeholder is not an exact source; do not mark it complete.
+
+## 17. One topic supports multiple distinct reader tasks
+
+```text
+Engineer: The session explains what export retention means, contains a sourced
+first-time export setup procedure, and separately records diagnosing a failed
+export caused by a destination mismatch. Extract the useful articles.
+Engineer: This is an inventory exercise; the original passages will follow
+after we agree on the scope.
+```
+
+Expected:
+- Propose export-retention QA, setup How-to, and destination-mismatch Break-fix.
+- Each row names a distinct task, scope, type, title, and filename.
+- All three rows flag the missing originals; none is reference-complete yet.
+- Ask to approve or adjust the set rather than asking the engineer to invent it.
+- Do not generate final articles, sources, or a persistent index from this outline.
+
+## 18. Avoid splitting every question or retry into a new page
+
+```text
+Engineer: Use scenario 1. We asked the same DNS question three times and retried
+the corrected port twice. I want the reusable repair guide, not several pages.
+```
+
+Expected:
+- Produce one Break-fix candidate, consolidating repeated attempts and questions.
+- Do not force three types or create duplicate QA pages.
+- Keep the existing verified/limited outcome classification and citations.
+
+## 19. Independent gates for a partially blocked set
+
+```text
+Engineer: We approved a QA and How-to for export setup, and a Break-fix for the
+destination mismatch. The QA and Break-fix have all originals and precise
+locators. The How-to is missing a required permission and its source.
+Engineer: The QA and Break-fix are reviewed and approved to save at their exact,
+distinct proposed paths. Defer the How-to; do not guess its missing prerequisite.
+```
+
+Expected:
+- Verify the actual supplied originals; do not infer completeness from this claim
+  alone. In this outline-only fixture, request the missing evidence before saving.
+- Once ready articles genuinely pass, save only the approved subset.
+- Report the How-to as deferred with its missing prerequisite/source.
+- Do not inherit verification/reference status from one article to another.
+- Do not add a link to a How-to file that does not exist.
+
+## 20. Filename collisions and interrupted delivery
+
+Use an approved, source-complete two-article set. Simulate each variant separately
+using synthetic input and a disposable test directory:
+
+```text
+A. Both articles produce the filename break-fix-connection-failure.md.
+B. The second destination already exists.
+C. Both destinations were available, but the second write fails after the first
+file was saved and read back.
+```
+
+Expected:
+- A and B ask for distinct approved paths before any write, without overwriting,
+  silently suffixing, or merging.
+- C stops further writes, reports the first as saved and the second as failed,
+  and does not delete the first file or claim the set completed.
+- Do not add sibling links to unsaved targets; verify any links added after saving.
