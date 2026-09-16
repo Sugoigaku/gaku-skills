@@ -17,6 +17,7 @@ from pathlib import Path
 from itertools import islice
 from typing import Any, Iterable
 from urllib.parse import unquote, urlsplit
+import xml.etree.ElementTree as ET
 
 
 SCHEMA_VERSION = 1
@@ -35,6 +36,7 @@ LIMITATIONS = [
     "semantic-support-not-independently-verified",
     "reviewer-identity-not-authenticated",
     "no-execution-or-publication-authorization",
+    "diagram-rendering-and-meaning-not-verified",
 ]
 HEADINGS = {
     "qa": [
@@ -89,7 +91,7 @@ OUTCOMES = {
 }
 PROVENANCES = {"observed-in-session", "documentation-enriched", "adapted-from-documentation"}
 EXECUTION_VALIDATIONS = {"not-run", "syntax-only", "lab-tested"}
-SAFE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,99}\.(?:md|json)\Z")
+SAFE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]{0,99}\.(?:md|json|svg)\Z")
 SOURCE_ID = re.compile(r"S[1-9][0-9]{0,5}\Z")
 CLAIM_ID = re.compile(r"C[1-9][0-9]{0,5}\Z")
 CITATION = re.compile(r"\[(S[1-9][0-9]*)\]\(#(s[1-9][0-9]*)\)")
@@ -540,7 +542,7 @@ def _quote(value: str | None) -> str | None:
     return "\n".join(re.sub(r"^ {0,3}> ?", "", line, count=1) for line in lines)
 
 
-def _check_links(article: Article, approved: Path, declared: set[str], issues: list[Issue]) -> None:
+def _check_links(article: Article, approved: Path, declared: set[str], issues: list[Issue], svg_names: set[str] | frozenset[str] = frozenset()) -> None:
     text = article.body
     loc = article.location
     # A deliberately narrow Markdown contract makes link checking fail closed.
@@ -563,7 +565,10 @@ def _check_links(article: Article, approved: Path, declared: set[str], issues: l
     for index, link in enumerate(links):
         dest = link[2]
         location = f"{loc}:link[{index}]"
-        if link[0].startswith("!") or not dest or re.search(r"\s", dest):
+        if link[0].startswith("!") and (dest not in svg_names or not link[1].strip()):
+            issues.append(Issue("markdown-link-syntax-not-supported", location))
+            continue
+        if not dest or re.search(r"\s", dest):
             issues.append(Issue("markdown-link-syntax-not-supported", location))
             continue
         if dest.startswith("https://"):
@@ -826,12 +831,136 @@ def _check_claims_and_enrichments(article: Article, record: dict, sources: dict[
     return selected_ids
 
 
-def _check_review(value: Any, evidence_raw: bytes, articles: list[Article], records: dict[str, dict], issues: list[Issue]) -> str:
+def _check_svg(text: str, loc: str, issues: list[Issue], terms: Iterable[str]) -> None:
+    if len(text) > 100_000 or re.search(r"<!|<\?(?!xml\s)", text, re.I):
+        issues.append(Issue("svg-declaration-or-size-invalid", loc))
+        return
+    try:
+        root = ET.fromstring(text)
+    except (ET.ParseError, ValueError):
+        issues.append(Issue("svg-xml-invalid", loc))
+        return
+    namespace = "{http://www.w3.org/2000/svg}"
+    tags = {"svg", "g", "rect", "circle", "ellipse", "line", "polyline", "polygon",
+            "path", "text", "tspan", "title", "desc", "defs", "marker"}
+    attributes = {
+        "id", "viewBox", "width", "height", "x", "y", "x1", "x2", "y1", "y2",
+        "cx", "cy", "r", "rx", "ry", "d", "points", "transform", "fill", "stroke",
+        "stroke-width", "stroke-dasharray", "stroke-linecap", "stroke-linejoin",
+        "fill-opacity", "stroke-opacity", "opacity", "font-family", "font-size",
+        "font-weight", "text-anchor", "dominant-baseline", "dx", "dy",
+        "marker-start", "marker-mid", "marker-end", "markerWidth", "markerHeight",
+        "refX", "refY", "orient", "markerUnits", "preserveAspectRatio", "role",
+        "aria-label", "aria-labelledby",
+    }
+    elements = list(root.iter())
+    if root.tag != namespace + "svg" or len(elements) > 512:
+        issues.append(Issue("svg-root-or-element-limit-invalid", loc))
+        return
+    ids: set[str] = set()
+    referenced: set[str] = set()
+    for index, element in enumerate(elements):
+        eloc = f"{loc}:element[{index}]"
+        tag = element.tag.removeprefix(namespace)
+        if not element.tag.startswith(namespace) or tag not in tags:
+            issues.append(Issue("svg-element-not-allowed", eloc))
+        for key, value in element.attrib.items():
+            if key not in attributes:
+                issues.append(Issue("svg-attribute-not-allowed", eloc))
+            if key == "id":
+                if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{0,63}", value) or value in ids:
+                    issues.append(Issue("svg-id-invalid", eloc))
+                ids.add(value)
+            if re.search(r"(?i)url\s*\(", value):
+                match = re.fullmatch(r"url\(#([A-Za-z][A-Za-z0-9_-]{0,63})\)", value)
+                if not match:
+                    issues.append(Issue("svg-external-reference", eloc))
+                else:
+                    referenced.add(match[1])
+            if re.search(r"(?i)(?:https?:|data:|javascript:|@import|//)", value):
+                issues.append(Issue("svg-external-reference", eloc))
+            issues.extend(scan_sensitive(value, eloc + ":attribute", terms))
+    issues.extend(scan_sensitive(" ".join(root.itertext()), loc + ":text", terms))
+    if referenced - ids:
+        issues.append(Issue("svg-reference-unresolved", loc))
+    if not any(e.tag == namespace + "title" and (e.text or "").strip() for e in elements):
+        issues.append(Issue("svg-title-missing", loc))
+
+
+def _check_diagrams(article: Article, record: dict, svg_names: set[str], issues: list[Issue]) -> set[str]:
+    diagrams = []
+    used = set()
+    opened = None
+    offset = 0
+    for line in article.body.splitlines(keepends=True):
+        fence = re.fullmatch(r"( {0,3})(`{3,}|~{3,})([^\r\n]*)[\r\n]*", line)
+        if opened is None and fence:
+            opened = (fence[2][0], len(fence[2]), fence[3].strip(), offset, offset + len(line))
+        elif opened is not None and fence and fence[2][0] == opened[0] and len(fence[2]) >= opened[1] and not fence[3].strip():
+            if opened[2].lower() == "mermaid":
+                diagrams.append((opened[3], offset + len(line), article.body[opened[4]:offset]))
+            opened = None
+        offset += len(line)
+    if opened and opened[2].lower() == "mermaid":
+        issues.append(Issue("mermaid-fence-unclosed", article.location))
+    for match in LINK.finditer(article.visible):
+        if match[0].startswith("!"):
+            diagrams.append((match.start(), match.end(), None))
+            if match[2] in svg_names:
+                used.add(match[2])
+    refs = _reference_section(article)
+    for index, (start, end, mermaid) in enumerate(diagrams):
+        loc = f"{article.location}:diagram[{index}]"
+        if refs and start >= refs.start:
+            issues.append(Issue("diagram-outside-content", loc))
+        if mermaid is not None:
+            lines = [line.strip() for line in mermaid.splitlines() if line.strip()]
+            if len(mermaid) > 12_000 or len(lines) < 2 or not re.fullmatch(
+                r"(?:flowchart|graph) (?:TD|TB|BT|LR|RL)|sequenceDiagram", lines[0] if lines else ""
+            ):
+                issues.append(Issue("mermaid-type-or-size-invalid", loc))
+            if re.search(r"(?im)(%%|^\s*click\b|^\s*(?:style|classDef|linkStyle)\b|"
+                         r"https?://|javascript:|data:|<[/!A-Za-z]|&#|&lt;|url\s*\()", mermaid):
+                issues.append(Issue("mermaid-interactive-or-external-content", loc))
+        caption = article.body[end:].lstrip("\r\n").split("\n\n", 1)[0].strip()
+        if not caption.startswith("Diagram: ") or not CITATION.search(caption):
+            issues.append(Issue("diagram-caption-or-citation-missing", loc))
+            continue
+        caption_ids = {m[1] for m in CITATION.finditer(caption)}
+        if not any(
+            normalize_excerpt(c["text"]) in caption and set(c["source_ids"]) <= caption_ids
+            for c in record["claims"]
+        ):
+            issues.append(Issue("diagram-caption-claim-missing", loc))
+    return used
+
+
+def _check_review(value: Any, evidence_raw: bytes, articles: list[Article], records: dict[str, dict], issues: list[Issue], svg_assets: dict[str, bytes] | None = None) -> str:
     review_issues: list[Issue] = []
     loc = "review:$"
-    if not _object(value, {"schema_version", "reviewer_kind", "evidence_sha256", "articles"}, loc, review_issues):
+    svg_assets = svg_assets or {}
+    fields = {"schema_version", "reviewer_kind", "evidence_sha256", "articles"}
+    if svg_assets:
+        fields.add("assets")
+    if not _object(value, fields, loc, review_issues):
         issues.extend(Issue(i.code, i.location, "semantic") for i in review_issues)
         return "rejected"
+    if svg_assets:
+        seen_assets = set()
+        if _list(value["assets"], loc + ".assets", review_issues, MAX_ARTICLES):
+            for index, asset in enumerate(value["assets"]):
+                aloc = f"review:$.assets[{index}]"
+                if not _object(asset, {"file", "sha256"}, aloc, review_issues):
+                    continue
+                name = asset["file"]
+                if not isinstance(name, str) or name not in svg_assets or name in seen_assets:
+                    review_issues.append(Issue("review-asset-unresolved-or-duplicate", aloc))
+                    continue
+                seen_assets.add(name)
+                if asset["sha256"] != sha256_bytes(svg_assets[name]):
+                    review_issues.append(Issue("review-asset-hash-mismatch", aloc))
+        if seen_assets != set(svg_assets):
+            review_issues.append(Issue("review-asset-coverage-incomplete", loc))
     if type(value["schema_version"]) is not int or value["schema_version"] != 1:
         review_issues.append(Issue("schema-version-unsupported", loc + ".schema_version"))
     _enum(value["reviewer_kind"], {"human", "separate-agent"}, loc + ".reviewer_kind", review_issues)
@@ -932,6 +1061,7 @@ def validate_bundle(
     deny_terms: Iterable[str] = (),
     review_path: str | Path | None = None,
     require_semantic_review: bool = False,
+    svg_paths: Iterable[str | Path] = (),
 ) -> dict:
     """Validate only declared files, without writes/network. Absolute paths are mandatory."""
     issues: list[Issue] = []
@@ -944,17 +1074,21 @@ def validate_bundle(
     if any(type(term) is not str or not term.strip() for term in terms) or type(require_semantic_review) is not bool:
         return _result([Issue("argument-invalid", "arguments")])
     try:
-        if isinstance(article_paths, (str, Path)):
+        if isinstance(article_paths, (str, Path)) or isinstance(svg_paths, (str, Path)):
             raise ValueError
         paths = [Path(path) for path in article_paths]
         evidence = Path(evidence_path)
         review = Path(review_path) if review_path is not None else None
+        assets = [Path(path) for path in svg_paths]
     except (TypeError, ValueError):
         return _result([Issue("argument-invalid", "arguments")])
     if not paths or len(paths) > MAX_ARTICLES:
         return _result([Issue("article-count-invalid", "arguments:articles")])
+    if len(assets) > MAX_ARTICLES:
+        return _result([Issue("svg-count-invalid", "arguments:assets")])
     declared_paths = [(p, f"article[{i}]", ".md") for i, p in enumerate(paths)]
     declared_paths += [(evidence, "evidence", ".json")]
+    declared_paths += [(p, f"asset[{i}]", ".svg") for i, p in enumerate(assets)]
     if review is not None:
         declared_paths.append((review, "review", ".json"))
     try:
@@ -972,6 +1106,10 @@ def validate_bundle(
         names.add(path.name.casefold())
         issues.extend(scan_sensitive(path.name, loc + ":filename", terms))
         try:
+            if suffix == ".svg" and (
+                path.is_symlink() or getattr(path.lstat(), "st_file_attributes", 0) & 0x400
+            ):
+                issues.append(Issue("svg-linked-file-not-allowed", loc))
             if path.parent.resolve(strict=True) != approved:
                 issues.append(Issue("file-directory-mismatch", loc))
             resolved = str(path.resolve()).casefold()
@@ -994,6 +1132,13 @@ def validate_bundle(
         "evidence_sha256": sha256_bytes(loaded["evidence"][0]),
         "articles": [{"index": i, "sha256": sha256_bytes(loaded[f"article[{i}]"][0])} for i in range(len(paths))],
     }
+    if assets:
+        hashes["assets"] = [
+            {"index": i, "sha256": sha256_bytes(loaded[f"asset[{i}]"][0])}
+            for i in range(len(assets))
+        ]
+        for i in range(len(assets)):
+            _check_svg(loaded[f"asset[{i}]"][1], f"asset[{i}]", issues, terms)
     json_values = {}
     for name in ("evidence", "review"):
         if name not in loaded:
@@ -1017,6 +1162,8 @@ def validate_bundle(
         return _result(issues, hashes=hashes)
     articles = []
     selected: set[str] = set()
+    used_assets: set[str] = set()
+    svg_names = {p.name for p in assets}
     any_complete = False
     for index, path in enumerate(paths):
         loc = f"article[{index}]"
@@ -1049,14 +1196,20 @@ def validate_bundle(
             issues.append(Issue("article-headings-mismatch", loc + ":body"))
         if len([s for s in article.sections if s.level == 1]) != 1:
             issues.append(Issue("article-title-heading-invalid", loc + ":body"))
-        _check_links(article, approved, {p.name for p, _, _ in declared_paths}, issues)
+        _check_links(article, approved, {p.name for p, _, _ in declared_paths}, issues, svg_names)
         _check_sources(article, sources, evidence.name, issues)
+        used_assets.update(_check_diagrams(article, records[path.name], svg_names, issues))
         selected.update(_check_claims_and_enrichments(article, records[path.name], sources, issues))
     if selected != set(sources):
         issues.append(Issue("evidence-source-unused-in-bundle", "evidence:$.sources"))
+    if used_assets != svg_names:
+        issues.append(Issue("svg-asset-unused", "arguments:assets"))
     semantic = "pending"
     if "review" in json_values and len(articles) == len(paths):
-        semantic = _check_review(json_values["review"], loaded["evidence"][0], articles, records, issues)
+        semantic = _check_review(
+            json_values["review"], loaded["evidence"][0], articles, records, issues,
+            {p.name: loaded[f"asset[{i}]"][0] for i, p in enumerate(assets)},
+        )
     elif review is not None:
         semantic = "rejected"
     if (require_semantic_review or any_complete) and semantic not in {"reported-supported", "reported-qualified"}:
@@ -1076,9 +1229,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--deny-term", action="append", default=[], help="Case-insensitive reader-specific deny term; matches are never printed.")
     parser.add_argument("--review", help="Absolute separate reviewer attestation JSON path.")
     parser.add_argument("--require-semantic-review", action="store_true")
+    parser.add_argument("--svg", action="append", default=[], help="Absolute local SVG diagram path; repeat for each declared asset.")
     try:
         args = parser.parse_args(argv)
-        result = validate_bundle(args.article, args.evidence, deny_terms=args.deny_term, review_path=args.review, require_semantic_review=args.require_semantic_review)
+        result = validate_bundle(args.article, args.evidence, deny_terms=args.deny_term, review_path=args.review, require_semantic_review=args.require_semantic_review, svg_paths=args.svg)
     except ValidationError:
         result = _result([Issue("cli-arguments-invalid", "arguments")])
     print(json.dumps(result, ensure_ascii=True, sort_keys=True))

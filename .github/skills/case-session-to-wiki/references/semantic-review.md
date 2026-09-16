@@ -41,6 +41,7 @@ a new review for the changed final bytes.
 | Safety | Prerequisites, failure paths, impact, and rollback are sufficient for the claimed audience. No dangerous historical shortcut becomes a recommendation. |
 | Privacy | Review natural language, filenames, identifiers, quotations, URLs, code, and the companion; regex checks do not recognize all names or private context. |
 | Delivery | Article-level gates, approved paths, companion references, partial failures, and local-only scope are accurately reported. |
+| Diagrams | Captions, labels, arrows, and ordering match sources; hypotheses are marked; no private identifiers are exposed. Mermaid source is covered by the article hash, and SVG assets by explicit asset hashes. |
 
 For every mapped claim, record supported, qualified, or unsupported with a reason.
 A qualified claim must be explicitly limited in the article. Unknown origins,

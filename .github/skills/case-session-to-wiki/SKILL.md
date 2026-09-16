@@ -5,7 +5,7 @@ description: "Extract reusable, de-identified knowledge from support sessions in
 
 # Case Session to Wiki
 
-Version: 0.6.1. Last reviewed: 2026-09-16.
+Version: 0.7.0. Last reviewed: 2026-09-16.
 
 ## Purpose
 
@@ -19,6 +19,8 @@ The Wiki is for reading, not for displaying the validation process. Use
 `article_format: concise`: direct answers, clear actions, essential impact once
 at the beginning, short references, and actual double-check items at the end.
 Keep detailed provenance, claim mappings, and execution metadata in evidence.json.
+Optionally draw a small concept diagram when it genuinely improves understanding:
+Mermaid by default, static SVG as a fallback. Most simple articles need none.
 
 ## Contract
 
@@ -52,6 +54,7 @@ Read the [extraction rules](references/extraction-rules.md) and
 source material. Also follow the [enrichment rules](references/enrichment.md) and
 [evidence validation contract](references/evidence-validation.md). Neither
 format selection nor a passing script substitutes for semantic review.
+For diagrams, follow the [diagram contract](references/diagrams.md).
 
 ## Workflow
 
@@ -232,6 +235,15 @@ The validator accepts concise articles without legacy per-step fields; missing
 source support and misquotes still fail. Older detailed articles remain supported
 when article_format is absent; do not generate that legacy format by default.
 
+If a diagram helps, place it inside an existing relevant section, not in a
+mandatory extra section. Prefer one small Mermaid flowchart or sequence diagram.
+Use an authored local SVG for viewer compatibility or a necessary custom layout.
+Add a short sourced `Diagram:` caption immediately afterward and map its claims
+in the companion. Never invent architecture, expose customer labels, or turn
+an unverified hypothesis into a confirmed causal diagram.
+Pass SVG assets with `--svg` to the validator; their final hashes must be covered
+by any separate semantic review. A mechanical pass does not verify rendering.
+
 Keep `status: draft` and `review_status: pending-engineer-review`. List unresolved
 questions and the specific points the engineer needs to validate.
 
@@ -265,6 +277,7 @@ path, and each saved Wiki's full absolute file path, plus clickable links and
 material validation/coverage issues. Paths must be visibly written out, not
 hidden only in hyperlink targets or shortened to filenames. Include the actual
 batch subfolder and collision suffix, and list the evidence companion separately.
+List generated SVG assets separately too. Mermaid needs no separate image file.
 Verify that every path reported as saved exists. Do not paste article bodies,
 the evidence contents, or the full article plan.
 
@@ -282,6 +295,9 @@ does not authorize any of those actions.
 
 ## Changelog
 
+- 0.7.0 (2026-09-16): Added optional source-backed concept diagrams: Mermaid
+  by default and static SVG fallback, with cited captions, local asset validation,
+  and SVG hashes included in separate review attestations.
 - 0.6.1 (2026-09-16): Final delivery now visibly lists the full absolute output
   directory and each saved Wiki path, with clickable links and separate evidence paths.
 - 0.6.0 (2026-09-16): Made concise articles the default: direct Q&A, action-only

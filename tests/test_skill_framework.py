@@ -202,6 +202,7 @@ class SkillFrameworkTests(unittest.TestCase):
             "references/enrichment.md",
             "references/evidence-validation.md",
             "references/semantic-review.md",
+            "references/diagrams.md",
             "tools/session_reader.py",
             "tools/validate_wiki.py",
             "templates/wiki-template.md",
@@ -242,7 +243,7 @@ class SkillFrameworkTests(unittest.TestCase):
         for document in (ROOT / "README.md", SKILL):
             with self.subTest(document=document):
                 self.assertIn(
-                    "Version: 0.6.1. Last reviewed: 2026-09-16.",
+                    "Version: 0.7.0. Last reviewed: 2026-09-16.",
                     document.read_text(encoding="utf-8"),
                 )
 

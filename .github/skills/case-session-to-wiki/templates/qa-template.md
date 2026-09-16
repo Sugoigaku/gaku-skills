@@ -23,6 +23,9 @@ distinct questions. No per-answer Conditions and exceptions or Sources blocks.
 Keep essential version limits in the answer; say "provisional" if necessary
 rather than presenting an uncertain answer as fact.>
 
+If an answer is clearer with a small concept diagram, follow the
+[diagram rules](../references/diagrams.md). Otherwise omit diagrams entirely.
+
 ## References
 
 Include compact [source entries](source-entry-template.md) with original excerpts

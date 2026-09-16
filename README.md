@@ -36,6 +36,19 @@ References remain: linked title, exact location, and a short original excerpt.
 Detailed source provenance, claim mappings, execution status, and review metadata
 stay in the evidence companion instead of being repeated throughout the Wiki.
 
+### Optional concept diagrams
+
+The skill can draw a small diagram when it explains a concept better than prose:
+Mermaid by default, or a local static SVG when a real image/custom layout is useful.
+Most simple articles need no diagram; prefer one small illustration over repeated
+step diagrams. Each has a short cited caption, de-identified labels, and source
+support for its relationships. See the [diagram contract](.github/skills/case-session-to-wiki/references/diagrams.md).
+
+SVG files stay beside their Wiki and are declared to the validator with `--svg`.
+Active/external SVG content and remote images are rejected. Independent review
+also covers each SVG's final hash. Rendering and factual meaning are not certified
+by the mechanical checks. No online diagram editor or renderer upload is used.
+
 An explicit scope/format request takes priority. For a rich session, the skill
 first proposes an **article set organized by topic and type**, rather than
 compressing everything into one page or asking you to discover the topics.
@@ -250,11 +263,11 @@ are not rewritten automatically.
 
 Cross-account/cloud session retrieval, attachment extraction, broad literature
 searches, live case evidence retrieval, automated redaction, merging into existing
-wikis, publication, and closure automation are not part of v0.6.0.
+wikis, publication, and closure automation are not part of v0.7.0.
 
 ### Packaging references
 
 - [About agent skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)
 - [Adding skills to Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills)
 
-Version: 0.6.1. Last reviewed: 2026-09-16.
+Version: 0.7.0. Last reviewed: 2026-09-16.

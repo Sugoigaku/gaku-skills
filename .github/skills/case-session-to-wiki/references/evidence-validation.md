@@ -61,6 +61,23 @@ Privacy checks and independent, hash-bound semantic review are unchanged.
 
 ## CLI and exit contract
 
+Optional diagrams follow [the diagram contract](diagrams.md). Mermaid requires
+no additional file argument. Local static SVG images must be explicitly declared
+with repeatable `--svg <absolute-path>` arguments and kept alongside the articles.
+They are included in size/path/privacy checks and output hashes; remote images,
+undeclared assets, active SVG content, and unsupported image formats are rejected.
+SVG assets are limited to 32 per batch, 100,000 characters and 512 elements each.
+
+Every diagram has an immediately following `Diagram:` caption with inline
+citations and a mapped claim. Diagram meaning and actual rendering still need
+review; lexical Mermaid checks are not a full renderer or grammar validator.
+
+If SVGs are declared, a review attestation additionally requires top-level
+`assets: [{"file": "concept.svg", "sha256": "<actual hash>"}]` covering exactly
+those files. Without SVGs, the old review shape is unchanged. Mermaid source
+is already bound by the article hash. Changes to either format invalidate its
+corresponding final-hash review.
+
 From the skill directory, using already-approved absolute input paths:
 
 ```text

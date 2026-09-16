@@ -70,6 +70,9 @@ write articles, execute procedures, or certify de-identification.
    paths including any batch subfolder and suffix. List evidence.json separately.
    Verify each saved path exists; label blocked or failed entries without implying
    they were saved. This is a delivery summary, not a console preview of the Wiki.
+9. If a diagram uses SVG, save it in the same run/batch directory, pass its exact
+   path with `--svg` during validation, and list its full path separately.
+   Never embed remote images or silently move assets outside the output folder.
 
 Review happens on the saved files. Local save authorization is not independent
 semantic review, approval to share restricted sources, or publication consent.

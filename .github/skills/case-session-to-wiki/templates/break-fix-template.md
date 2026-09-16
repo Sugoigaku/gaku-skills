@@ -31,6 +31,9 @@ Omit this section if there is nothing material to warn about.>
 <A few decisive checks showing whether this is the same problem. Include
 lookalike exclusions only when useful; no mandatory multi-column table.>
 
+A small sourced decision diagram may help here; follow the
+[diagram rules](../references/diagrams.md). Do not repeat every step as a diagram.
+
 ## Steps
 
 ### Step 1 - <Action>

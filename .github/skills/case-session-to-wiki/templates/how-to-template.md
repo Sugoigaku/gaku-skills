@@ -19,6 +19,9 @@ tags: []
 
 <What the reader will achieve, in one or two sentences.>
 
+Optionally illustrate the overall flow here using the
+[diagram rules](../references/diagrams.md), only if clearer than text.
+
 ## Before you start
 
 <Only essential prerequisites and important impact, such as a restart or access
