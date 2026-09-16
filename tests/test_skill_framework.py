@@ -1,3 +1,4 @@
+import json
 import re
 import subprocess
 import unittest
@@ -7,27 +8,33 @@ from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL_DIR = ROOT / ".github" / "skills" / "case-session-to-wiki"
-SKILL = SKILL_DIR / "SKILL.md"
-SELECTOR = SKILL_DIR / "templates" / "wiki-template.md"
-SOURCE_ENTRY = SKILL_DIR / "templates" / "source-entry-template.md"
-ARTICLE_PLANNING = SKILL_DIR / "references" / "article-planning.md"
-TEMPLATES = {
-    wiki_type: SKILL_DIR / "templates" / f"{wiki_type}-template.md"
-    for wiki_type in ("qa", "how-to", "break-fix")
+SUPPORTING = {
+    "session-workflow.md", "authoring.md", "sources.md",
+    "evidence-review.md", "templates.md", "diagrams.md",
 }
-COMMON_ENDINGS = (
-    "References",
-    "Double-check",
-)
+ALLOWED_EXTENSIONS = {
+    ".md", ".txt", ".csv", ".json", ".yaml", ".yml", ".xml", ".html",
+    ".png", ".jpg", ".jpeg", ".gif",
+}
+PLATFORM_BYTES = 120_000
+PROJECT_RAW_BYTES = 64_000
+DETAIL_RESERVE_BYTES = 16_384
+VERSION = "Version: 0.8.0. Last reviewed: 2026-09-16."
 HEADINGS = {
-    "qa": ("Questions and answers",) + COMMON_ENDINGS,
-    "how-to": (
+    "qa": ["Questions and answers", "References", "Double-check"],
+    "how-to": [
         "Goal", "Before you start", "Steps", "Check the result",
-    ) + COMMON_ENDINGS,
-    "break-fix": (
-        "Problem", "Before you start", "Identify the issue", "Steps", "Check the result",
-    ) + COMMON_ENDINGS,
+        "References", "Double-check",
+    ],
+    "break-fix": [
+        "Problem", "Before you start", "Identify the issue", "Steps",
+        "Check the result", "References", "Double-check",
+    ],
 }
+
+
+def read(name):
+    return (SKILL_DIR / name).read_text(encoding="utf-8")
 
 
 def markdown_links(text):
@@ -36,267 +43,312 @@ def markdown_links(text):
     return re.findall(r"\[[^\]]+\]\(([^)]+)\)", prose)
 
 
+def upload_issues(files):
+    issues = set()
+    if "SKILL.md" not in files:
+        issues.add("missing-skill")
+    if len(files) - ("SKILL.md" in files) > 10:
+        issues.add("attachment-count")
+    for name in files:
+        if "/" in name or "\\" in name:
+            issues.add("not-flat")
+        if Path(name).suffix not in ALLOWED_EXTENSIONS:
+            issues.add("unsupported-type")
+    if len({name.casefold() for name in files}) != len(files):
+        issues.add("filename-collision")
+    total = sum(len(content) for content in files.values())
+    if total > PROJECT_RAW_BYTES:
+        issues.add("raw-budget")
+    estimated = total + 2 * len(files.get("SKILL.md", b"")) + DETAIL_RESERVE_BYTES
+    if estimated > PLATFORM_BYTES:
+        issues.add("estimated-platform-budget")
+    return issues
+
+
+def templates():
+    blocks = re.findall(r"(?ms)^```markdown\n(---\n.*?)^```\s*$", read("templates.md"))
+    return {
+        re.search(r"(?m)^wiki_type: (.+)$", block).group(1): block
+        for block in blocks
+    }
+
+
+class UploadContractTests(unittest.TestCase):
+    def test_actual_bundle_is_flat_document_only_and_under_budget(self):
+        files = {
+            path.relative_to(SKILL_DIR).as_posix(): path.read_bytes()
+            for path in SKILL_DIR.rglob("*") if path.is_file()
+        }
+        self.assertEqual(set(files), SUPPORTING | {"SKILL.md"})
+        self.assertEqual(upload_issues(files), set())
+        for name, content in files.items():
+            with self.subTest(name=name):
+                self.assertEqual(Path(name).suffix, ".md")
+                self.assertFalse(content.startswith(b"\xef\xbb\xbf"))
+                self.assertNotIn("\x00", content.decode("utf-8"))
+
+    def test_attachment_limit_accepts_ten_but_rejects_eleven(self):
+        files = {"SKILL.md": b"skill", **{f"file{i}.md": b"x" for i in range(10)}}
+        self.assertEqual(upload_issues(files), set())
+        files["extra.md"] = b"x"
+        self.assertIn("attachment-count", upload_issues(files))
+
+    def test_script_archive_nested_and_duplicate_names_are_rejected(self):
+        for name, code in (
+            ("reader.py", "unsupported-type"), ("skill.zip", "unsupported-type"),
+            ("tools\\notes.md", "not-flat"), ("tools/notes.md", "not-flat"),
+            ("skill.md", "filename-collision"),
+        ):
+            with self.subTest(name=name):
+                self.assertIn(code, upload_issues({"SKILL.md": b"x", name: b"x"}))
+
+    def test_main_skill_is_mandatory(self):
+        self.assertIn("missing-skill", upload_issues({"notes.md": b"x"}))
+
+    def test_raw_budget_counts_utf8_bytes_not_characters(self):
+        prefix = b"x" * (PROJECT_RAW_BYTES - 2)
+        self.assertNotIn("raw-budget", upload_issues({"SKILL.md": b"x", "a.md": prefix + b"x"}))
+        self.assertIn("raw-budget", upload_issues({
+            "SKILL.md": b"x", "a.md": prefix + "\u4e00".encode("utf-8"),
+        }))
+
+    def test_extracted_details_reserve_is_in_addition_to_raw_files(self):
+        files = {"SKILL.md": b"x" * 40_000}
+        self.assertNotIn("raw-budget", upload_issues(files))
+        self.assertIn("estimated-platform-budget", upload_issues(files))
+        files = {"SKILL.md": b"x" * 20_000}
+        files["notes.md"] = b"x" * (PLATFORM_BYTES - 60_000 - DETAIL_RESERVE_BYTES)
+        self.assertNotIn("estimated-platform-budget", upload_issues(files))
+        files["notes.md"] += b"x"
+        self.assertIn("estimated-platform-budget", upload_issues(files))
+
+    def test_upload_docs_disclose_estimate_and_actual_platform_check(self):
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+        for expected in (
+            "64,000 raw bytes", "16,384 bytes", "120,000 bytes",
+            "platform's actual total", "No successful upload",
+        ):
+            self.assertIn(expected, text)
+
+    def test_bundle_contains_no_runtime_helper_code_or_personal_identifiers(self):
+        for path in SKILL_DIR.glob("*.md"):
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(path=path.name):
+                self.assertNotRegex(text, r"(?mi)^```(?:python|powershell|bash|javascript)\s*$")
+                self.assertNotRegex(text, r"(?i)\b(?:session_reader|validate_wiki|create_output_directory)\.py\b")
+                self.assertNotRegex(text, r"(?i)\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}\b")
+                self.assertNotRegex(text, r"(?i)\b[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\b")
+                self.assertNotRegex(text, r"(?i)[a-z]:\\Users\\")
+                self.assertNotRegex(text, r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----")
+
+
 class SkillFrameworkTests(unittest.TestCase):
-    def test_markdown_examples_are_not_treated_as_live_links(self):
+    def test_discoverable_skill_has_required_front_matter(self):
+        match = re.match(r"\A---\n(.*?)\n---\n", read("SKILL.md"), re.DOTALL)
+        self.assertIsNotNone(match)
+        self.assertRegex(match.group(1), rf"(?m)^name: {SKILL_DIR.name}$")
+        description = re.search(r'(?m)^description: "(.+)"$', match.group(1))
+        self.assertIsNotNone(description)
+        self.assertLessEqual(len(description.group(1)), 1024)
+
+    def test_all_supporting_documents_are_wired_from_skill(self):
+        self.assertEqual(set(markdown_links(read("SKILL.md"))) & SUPPORTING, SUPPORTING)
+
+    def test_examples_are_not_treated_as_live_links(self):
         text = (
-            "[real](README.md)\n"
-            "`[inline example](missing.json)`\n"
+            "[real](README.md)\n`[inline](missing.json)`\n"
             "```markdown\n[example](missing.md)\n```\n"
-            "~~~text\n[example](#missing)\n~~~\n"
+            "````markdown\n```text\n[nested](missing.md)\n```\n````\n"
             "[other](tests/scenarios.md)\n"
         )
         self.assertEqual(markdown_links(text), ["README.md", "tests/scenarios.md"])
 
-    def test_discoverable_skill_has_required_front_matter(self):
-        text = SKILL.read_text(encoding="utf-8")
-        match = re.match(r"\A---\n(?P<fields>.*?)\n---\n", text, re.DOTALL)
-        self.assertIsNotNone(match, "SKILL.md must start with YAML front matter")
-        fields = match.group("fields")
-        self.assertRegex(fields, rf"(?m)^name: {re.escape(SKILL_DIR.name)}$")
-        description = re.search(r'(?m)^description: "(.+)"$', fields)
-        self.assertIsNotNone(description, "A quoted, single-line description is required")
-        self.assertLessEqual(len(description.group(1)), 1024)
-        self.assertRegex(SKILL_DIR.name, r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-
-    def test_each_type_has_its_own_sections_in_order(self):
-        for wiki_type, template in TEMPLATES.items():
-            with self.subTest(wiki_type=wiki_type):
-                text = template.read_text(encoding="utf-8")
-                headings = re.findall(r"(?m)^## (.+)$", text)
-                self.assertEqual(headings, list(HEADINGS[wiki_type]))
-
-    def test_templates_default_to_drafts_with_incomplete_references(self):
-        for wiki_type, template in TEMPLATES.items():
-            text = template.read_text(encoding="utf-8")
-            for field in (
-                f"wiki_type: {wiki_type}",
-                "article_format: concise",
-                "status: draft",
-                "review_status: pending-engineer-review",
-                "source_coverage: partial",
-                "content_mode: documentation-enriched",
-                "reference_status: incomplete",
-            ):
-                with self.subTest(wiki_type=wiki_type, field=field):
-                    self.assertRegex(text, rf"(?m)^{re.escape(field)}$")
-
-    def test_outcome_metadata_is_specific_to_the_wiki_type(self):
-        for wiki_type, template in TEMPLATES.items():
-            text = template.read_text(encoding="utf-8")
-            expected = {
-                "root_cause_status": "unknown" if wiki_type == "break-fix" else None,
-                "resolution_status": "unverified" if wiki_type == "break-fix" else None,
-                "procedure_status": "unverified" if wiki_type == "how-to" else None,
-            }
-            for field, value in expected.items():
-                with self.subTest(wiki_type=wiki_type, field=field):
-                    if value is None:
-                        self.assertNotRegex(text, rf"(?m)^{field}:")
-                    else:
-                        self.assertRegex(text, rf"(?m)^{field}: {value}$")
-
-    def test_selector_links_all_types_and_is_not_an_article_template(self):
-        text = SELECTOR.read_text(encoding="utf-8")
-        self.assertFalse(text.startswith("---"))
-        for template in TEMPLATES.values():
-            with self.subTest(template=template.name):
-                self.assertIn(f"]({template.name})", text)
-
-    def test_article_planning_is_wired_into_selection_and_delivery(self):
-        skill = SKILL.read_text(encoding="utf-8")
-        selector = SELECTOR.read_text(encoding="utf-8")
-        self.assertIn("](references/article-planning.md)", skill)
-        self.assertIn("](references/article-planning.md#set-delivery)", skill)
-        self.assertIn("](../references/article-planning.md)", selector)
-
-    def test_article_plan_has_scope_evidence_and_filename_fields(self):
-        text = ARTICLE_PLANNING.read_text(encoding="utf-8")
-        self.assertIn(
-            "| ID | Topic | Wiki type | Reader task and scope | Proposed title | "
-            "Sources and coverage | Readiness and gaps | Proposed filename |",
-            text,
-        )
-        self.assertEqual(
-            re.findall(r"(?m)^## (.+)$", text),
-            [
-                "Topic inventory",
-                "Topic-by-type decisions",
-                "Proposed article table",
-                "Per-article validation",
-                "Set delivery",
-            ],
-        )
-
-    def test_article_set_delivery_names_all_terminal_outcomes(self):
-        text = ARTICLE_PLANNING.read_text(encoding="utf-8")
-        delivery = text.split("## Set delivery\n", 1)[1]
-        for outcome in ("saved", "blocked", "failed", "deferred"):
-            with self.subTest(outcome=outcome):
-                self.assertIn(f"`{outcome}`", delivery)
-        self.assertIn("Check every destination before writing.", delivery)
-        self.assertIn("Add sibling links only after the target files exist", delivery)
-
-    def test_delivery_is_session_local_without_preview_or_routine_confirmation(self):
-        text = SKILL.read_text(encoding="utf-8")
-        contract = (SKILL_DIR / "references" / "session-output.md").read_text(encoding="utf-8")
-        for target in ("references/session-output.md", "tools/create_output_directory.py"):
-            self.assertIn(f"]({target})", text)
-            self.assertTrue((SKILL_DIR / target).is_file())
-        self.assertIn("No preview, destination question,", text)
-        self.assertIn("source session, not the invoking session", text)
-        self.assertIn("Explicit read-only, no-write, or plan-only requests still prevent saving.", contract)
-        self.assertNotIn("### 7. Preview, approve, and save", text)
-
-    def test_final_delivery_requires_visible_absolute_paths(self):
-        text = SKILL.read_text(encoding="utf-8")
-        contract = (SKILL_DIR / "references" / "session-output.md").read_text(encoding="utf-8")
-        self.assertIn("each saved Wiki's full absolute file path", text)
-        self.assertIn("Paths must be visibly written out", text)
-        self.assertIn("full absolute output-directory path", contract)
-        self.assertIn("Verify each saved path exists", contract)
-
-    def test_every_type_uses_the_shared_source_entry(self):
-        for wiki_type, template in TEMPLATES.items():
-            with self.subTest(wiki_type=wiki_type):
-                text = template.read_text(encoding="utf-8")
-                self.assertIn("](source-entry-template.md)", text)
-                self.assertIn("## References", text)
-                self.assertNotIn("## Review checklist", text)
-
-    def test_source_entry_requires_original_text_and_precise_attribution(self):
-        text = SOURCE_ENTRY.read_text(encoding="utf-8")
-        fields = ("Source", "Location", "Original excerpt")
-        for field in fields:
-            with self.subTest(field=field):
-                self.assertIn(f"**{field}:**", text)
-        self.assertRegex(text, r"(?m)^### S1$")
-        self.assertRegex(text, r"(?m)^> <.+>$")
-
-    def test_qa_is_direct_answers_with_final_double_check(self):
-        text = TEMPLATES["qa"].read_text(encoding="utf-8")
-        self.assertRegex(text, r"(?m)^### Q1\.")
-        self.assertNotIn("**Conditions and exceptions:**", text)
-        self.assertNotIn("**Sources:**", text)
-        self.assertEqual(re.findall(r"(?m)^## (.+)$", text)[-1], "Double-check")
-
-    def test_how_to_steps_have_no_repeated_forms(self):
-        text = TEMPLATES["how-to"].read_text(encoding="utf-8")
-        self.assertRegex(text, r"(?m)^### Step 1 - ")
-        self.assertIn("## Check the result", text)
-        self.assertIn("## Before you start", text)
-        self.assertEqual(re.findall(r"(?m)^\*\*([^*]+):\*\*", text), [])
-
-    def test_procedural_templates_require_detail_not_one_line_summaries(self):
-        for kind in ("how-to", "break-fix"):
-            text = TEMPLATES[kind].read_text(encoding="utf-8")
-            with self.subTest(kind=kind):
-                self.assertIn("](../references/procedural-detail.md)", text)
-                self.assertIn("numbered substeps", text)
-                self.assertIn("command", text)
-                self.assertIn("Notes", text)
-        guidance = (SKILL_DIR / "references" / "procedural-detail.md").read_text(encoding="utf-8")
-        self.assertIn("No word-count", SKILL.read_text(encoding="utf-8"))
-        self.assertIn("complete code block", guidance)
-        self.assertIn("how to apply the change", guidance)
-
-    def test_break_fix_retains_identification_and_important_impact_up_front(self):
-        text = TEMPLATES["break-fix"].read_text(encoding="utf-8")
-        self.assertLess(text.index("## Before you start"), text.index("## Steps"))
-        self.assertLess(text.index("## Identify the issue"), text.index("## Steps"))
-        self.assertEqual(re.findall(r"(?m)^\*\*([^*]+):\*\*", text), [])
-
-    def test_skill_resources_are_linked_and_portable(self):
-        text = SKILL.read_text(encoding="utf-8")
-        for target in (
-            "references/extraction-rules.md",
-            "references/source-attribution.md",
-            "references/article-planning.md",
-            "references/session-input.md",
-            "references/enrichment.md",
-            "references/evidence-validation.md",
-            "references/semantic-review.md",
-            "references/diagrams.md",
-            "references/procedural-detail.md",
-            "tools/session_reader.py",
-            "tools/validate_wiki.py",
-            "templates/wiki-template.md",
-            "templates/source-entry-template.md",
-        ):
-            with self.subTest(target=target):
-                self.assertIn(f"]({target})", text)
-                self.assertTrue((SKILL_DIR / target).is_file())
-
-    def test_local_markdown_links_and_heading_anchors_resolve(self):
+    def test_local_links_and_heading_anchors_resolve(self):
         documents = [ROOT / "README.md", ROOT / "tests" / "scenarios.md"]
-        documents.extend(SKILL_DIR.rglob("*.md"))
+        documents.extend(SKILL_DIR.glob("*.md"))
         for document in documents:
-            text = document.read_text(encoding="utf-8")
-            for link in markdown_links(text):
+            for link in markdown_links(document.read_text(encoding="utf-8")):
                 parsed = urlsplit(link)
                 if parsed.scheme or parsed.netloc:
                     continue
-                target = (
-                    (document.parent / unquote(parsed.path)).resolve()
-                    if parsed.path
-                    else document
-                )
-                with self.subTest(document=document, link=link):
+                target = (document.parent / unquote(parsed.path)).resolve() if parsed.path else document
+                with self.subTest(document=document.name, link=link):
                     self.assertTrue(target.is_relative_to(ROOT))
-                    self.assertTrue(target.is_file(), f"Missing target: {target}")
+                    self.assertTrue(target.exists(), f"Missing target: {target}")
                     if parsed.fragment:
-                        headings = re.findall(
-                            r"(?m)^#+ (.+)$", target.read_text(encoding="utf-8")
-                        )
+                        self.assertTrue(target.is_file())
+                        headings = re.findall(r"(?m)^#+ (.+)$", target.read_text(encoding="utf-8"))
                         anchors = {
                             re.sub(r"[^\w -]", "", heading.lower()).replace(" ", "-")
                             for heading in headings
                         }
                         self.assertIn(unquote(parsed.fragment), anchors)
 
-    def test_readme_and_skill_agree_on_release_version(self):
-        for document in (ROOT / "README.md", SKILL):
-            with self.subTest(document=document):
-                self.assertIn(
-                    "Version: 0.7.1. Last reviewed: 2026-09-16.",
-                    document.read_text(encoding="utf-8"),
-                )
+    def test_readme_and_skill_agree_on_release(self):
+        self.assertIn(VERSION, read("SKILL.md"))
+        self.assertIn(VERSION, (ROOT / "README.md").read_text(encoding="utf-8"))
 
-    def test_independent_semantic_review_is_wired_before_complete_status(self):
-        text = SKILL.read_text(encoding="utf-8")
-        self.assertIn("--require-semantic-review", text)
-        self.assertIn("mechanically-checked", text)
-        review = (SKILL_DIR / "references" / "semantic-review.md").read_text(encoding="utf-8")
-        self.assertIn("reviewer must be separate from the generator", review)
-        self.assertIn("prior attestation is stale", review)
+    def test_three_templates_keep_order_and_conservative_metadata(self):
+        self.assertEqual(set(templates()), set(HEADINGS))
+        for kind, text in templates().items():
+            with self.subTest(kind=kind):
+                self.assertEqual(re.findall(r"(?m)^## (.+)$", text), HEADINGS[kind])
+                self.assertEqual(len(re.findall(r"(?m)^# ", text)), 1)
+                for field in (
+                    f"wiki_type: {kind}", "article_format: concise", "status: draft",
+                    "review_status: pending-engineer-review", "validation_method: agent-checklist",
+                    "source_kind: current-session", "source_coverage: partial",
+                    "content_mode: documentation-enriched", "reference_status: incomplete",
+                ):
+                    self.assertRegex(text, rf"(?m)^{re.escape(field)}$")
+                self.assertIn("[Evidence details](evidence.json)", text)
+                self.assertNotIn("**Provenance:**", text)
+                self.assertNotIn("**Conditions and exceptions:**", text)
 
-    def test_reader_coverage_is_mapped_not_treated_as_case_completeness(self):
-        text = SKILL.read_text(encoding="utf-8")
-        for requirement in (
-            "source_kind: session-events",
-            "coverage.visible_snapshot_complete: true",
-            "coverage.gaps",
-            "coverage.unread_segments",
-            "Current-context-only input is always partial.",
-            'even when called a "supplied transcript,"',
+    def test_outcomes_are_type_specific(self):
+        for kind, text in templates().items():
+            for field, expected in {
+                "procedure_status": "unverified" if kind == "how-to" else None,
+                "root_cause_status": "unknown" if kind == "break-fix" else None,
+                "resolution_status": "unverified" if kind == "break-fix" else None,
+            }.items():
+                with self.subTest(kind=kind, field=field):
+                    if expected:
+                        self.assertRegex(text, rf"(?m)^{field}: {expected}$")
+                    else:
+                        self.assertNotRegex(text, rf"(?m)^{field}:")
+
+    def test_qa_and_steps_remain_detailed_without_repeated_forms(self):
+        self.assertRegex(templates()["qa"], r"(?m)^### Q1\.")
+        for kind in ("how-to", "break-fix"):
+            text = templates()[kind]
+            self.assertRegex(text, r"(?m)^### Step 1 - ")
+            for term in ("numbered substeps", "command block", "Notes"):
+                self.assertIn(term, text)
+            self.assertLess(text.index("## Before you start"), text.index("## Steps"))
+            self.assertNotRegex(text, r"(?m)^\*\*(?:Where|Why|Impact|Rollback):")
+        detail = read("authoring.md")
+        for term in ("how to apply/save", "Initialize required variables", "No\n  ellipses"):
+            self.assertIn(term, detail)
+
+    def test_internal_topic_plan_and_partial_set_delivery_are_preserved(self):
+        text = read("authoring.md")
+        self.assertIn("| ID | Topic | Wiki type | Reader task and scope |", text)
+        self.assertIn("three-format cross product", text)
+        self.assertIn("later\nquestions and corrections", text)
+        for outcome in ("saved", "blocked", "failed", "deferred"):
+            self.assertIn(f"`{outcome}`", text)
+
+    def test_native_input_does_not_recreate_raw_archive_reader(self):
+        text = read("session-workflow.md")
+        for term in (
+            "Never list or search other", "raw archive", "Do not improvise structural event filtering.",
+            "Do not use alternate tools to bypass access denial or content exclusion.",
+            "Do not silently switch sessions", "linked files",
         ):
-            with self.subTest(requirement=requirement):
-                self.assertIn(requirement, text)
+            self.assertIn(term.lower(), text.lower())
+        self.assertIn("reconstruct the removed helpers", read("SKILL.md"))
+
+    def test_coverage_cannot_be_promoted_from_pasted_or_summarized_input(self):
+        text = read("session-workflow.md")
+        for term in (
+            "partial` for all current-context and local-session reads",
+            "complete-for-provided-transcript", "confirmed EOF",
+            "file did not change", "Pasted text is `current-session` and partial",
+        ):
+            self.assertIn(term, text)
+
+    def test_save_requires_correct_session_create_only_and_full_readback(self):
+        text = read("session-workflow.md")
+        for term in (
+            "that source session's directory", "not the invoking session",
+            "create-only", "not\nan atomic no-overwrite guarantee",
+            "stop and report that limitation", "Read each saved file back internally",
+            "stop further writes", "Do not\n   delete partial output",
+            "each saved Wiki's", "full absolute file path", "List the evidence companion separately",
+        ):
+            self.assertIn(term, text)
+
+    def test_checklist_does_not_claim_machine_or_independent_approval(self):
+        text = read("evidence-review.md")
+        for term in (
+            "no executable validator", "agent-applied", "checklist-checked",
+            "never assigns `mechanically-checked` or `complete`",
+            "Generator self-review is not independent review",
+            "Any article/evidence edit invalidates prior review",
+        ):
+            self.assertIn(term.lower(), text.lower())
+        for check in (
+            "Claim coverage", "Original quotation", "Entailment and scope", "Privacy",
+            "Chronology", "Delivery", "Enrichment and outcomes",
+        ):
+            self.assertIn(f"| {check} |", text)
+
+    def test_privacy_and_enrichment_rules_remain_explicit(self):
+        text = read("sources.md")
+        for term in (
+            "exact", "private archive", "reverse map", "Never send customer names",
+            "`extraction-only`", "`not-run`", "cannot inherit",
+            "accept-all certificate", "preserve-view", "access-controlled",
+            "Keep interpretation outside", "original language",
+        ):
+            self.assertIn(term, text)
+
+    def test_source_entry_keeps_short_original_and_locator(self):
+        text = read("templates.md").split("## Source entry\n", 1)[1]
+        for field in ("Source", "Location", "Original excerpt"):
+            self.assertIn(f"**{field}:**", text)
+        self.assertIn("**Excerpt handling:** redacted", text)
+        self.assertRegex(text, r"(?m)^> <.+>$")
+
+    def test_mermaid_only_has_sourced_caption_and_text_fallback(self):
+        text = read("diagrams.md")
+        for term in (
+            "`Diagram:`", "companion", "No click handlers", "plain-text explanation",
+            "does not generate SVG", "rendering as unverified", "Never upload",
+        ):
+            self.assertIn(term, text)
+
+    def test_evidence_example_preserves_v1_schema_and_consistent_ids(self):
+        blocks = re.findall(r"(?ms)^```json\n(.*?)^```", read("evidence-review.md"))
+        self.assertEqual(len(blocks), 1)
+
+        def unique_object(pairs):
+            result = {}
+            for key, value in pairs:
+                self.assertNotIn(key, result, f"Duplicate example key: {key}")
+                result[key] = value
+            return result
+
+        evidence = json.loads(blocks[0], object_pairs_hook=unique_object)
+        self.assertEqual(set(evidence), {"schema_version", "sources", "articles"})
+        self.assertIs(type(evidence["schema_version"]), int)
+        self.assertEqual(evidence["schema_version"], 1)
+        source = evidence["sources"][0]
+        self.assertEqual(set(source), {
+            "id", "kind", "title", "publisher", "origin", "locator", "version",
+            "inspection_status", "text", "excerpt_handling",
+        })
+        self.assertEqual(source["kind"], "sanitized-evidence")
+        self.assertEqual(source["locator"], "Lines 1")
+        self.assertEqual(len(source["text"].splitlines()), 1)
+        article = evidence["articles"][0]
+        self.assertEqual(set(article), {"file", "claims", "enrichments"})
+        self.assertEqual(article["enrichments"], [])
+        self.assertEqual(set(article["claims"][0]), {"id", "text", "source_ids", "basis"})
+        self.assertEqual(article["claims"][0]["source_ids"], [source["id"]])
+        self.assertEqual(article["claims"][0]["basis"], "reported")
 
     def test_case_artifact_paths_are_ignored_but_skill_is_not(self):
         paths = (
-            "wiki-drafts/topic.md",
-            "private-inputs/transcript.md",
+            "wiki-drafts/topic.md", "private-inputs/transcript.md",
             "tests/__pycache__/test_skill_framework.cpython-313.pyc",
             ".github/skills/case-session-to-wiki/SKILL.md",
         )
         result = subprocess.run(
             ["git", "-C", str(ROOT), "check-ignore", "--no-index", "--stdin", "-z"],
-            input="\0".join(paths) + "\0",
-            text=True,
-            capture_output=True,
-            check=True,
+            input="\0".join(paths) + "\0", text=True, capture_output=True, check=True,
         )
-        self.assertTrue(result.stdout.endswith("\0"))
         self.assertEqual(set(result.stdout.split("\0")[:-1]), set(paths[:3]))
 
 

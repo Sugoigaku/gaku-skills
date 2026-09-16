@@ -7,7 +7,7 @@ credentials, product incidents, or live endpoints.
 
 In a fresh session where the skill is available, invoke `case-session-to-wiki`
 with exactly one scenario at a time. For file-input tests, put the synthetic
-conversation in an explicit fixture file and process it through the reader.
+conversation in an explicit fixture file and read it through native file tools.
 An in-prompt-only scenario is `current-session` input with partial coverage;
 calling it a "supplied transcript" does not establish complete file coverage.
 Most scenarios below explicitly use read-only test inputs. For default-delivery
@@ -16,33 +16,35 @@ no console previews or routine confirmation. Never authorize real diagnostics
 or publication as part of this suite.
 
 Check the actual response against every expected result. A draft must follow its
-[selected type template](../.github/skills/case-session-to-wiki/templates/wiki-template.md);
+[selected type template](../.github/skills/case-session-to-wiki/templates.md);
 a clarification/stop response must not pretend to have generated or saved one.
 Record the scenario, observed result, and pass/fail in the evaluation session,
 not as real case content in this repository.
 
-These remain model-behavior acceptance scenarios. The Python suite now tests
-the deterministic reader, installer, and evidence validator as well as structure;
-it does not, by itself, establish that a model follows every scenario.
+These remain model-behavior acceptance scenarios. The Python suite tests upload
+constraints, document contracts, installation, and the smoke runner. It does not
+establish that a model follows the workflow or replace the removed runtime
+reader/validator with an equivalent deterministic guarantee.
 
-Three replayable synthetic prompts are in `tests\fixtures\behavior`. Run one in
+Five replayable synthetic prompts are in `tests\fixtures\behavior`. Run one in
 a fresh native CLI process with the [smoke runner](../scripts/behavior_smoke.py):
 
 ```text
 python -B scripts\behavior_smoke.py --fixture topic-plan --output <NEW_APPROVED_OUTPUT_PATH>
 ```
 
-Also run `false-quote` and `enrichment`. The runner permits only skill/view tools,
+Also run `false-quote`, `enrichment`, `session-delivery`, and `document-only`.
+The runner permits only skill/view tools,
 records actual invocation success and visible answers, and leaves semantic
 results `not-reviewed`. Evaluate the answers against the criteria below; a CLI
 exit code alone is not a pass. No live source or customer data is used.
 
-The helpers validate mechanical evidence consistency; independent semantic
-review and original-source authenticity remain separate checks. Supplied
+The agent checklist is not machine validation; independent semantic review
+and original-source authenticity remain separate checks. Supplied
 excerpts without a safe HTTPS origin must not be labeled public-document.
 
 For every article, check inline citations, original excerpts, and exact locations
-using the [shared contract](../.github/skills/case-session-to-wiki/references/source-attribution.md).
+using the [shared contract](../.github/skills/case-session-to-wiki/sources.md).
 For saved outputs, source positions refer to approved de-identified companion
 records. Do not persist anonymous session/archive locators or invent public
 documentation URLs for the synthetic source identifiers below.
@@ -72,8 +74,9 @@ Expected:
 - Cite the port comparison and before/after results; invent no commands.
 - Include original tool-result excerpts with exact fixture-local locations;
   explicitly state that no external publication was supplied.
-- Source completeness does not grant independent semantic approval. Without an
-  attestation, reference status is at most mechanically-checked after validation.
+- Source completeness does not grant independent semantic approval. Reference
+  status is at most checklist-checked after actual checklist review and readback.
+  Never claim a mechanical pass or produce a generator-authored attestation.
 
 ## 2. Recovery is reported, root cause is not known
 
@@ -119,7 +122,8 @@ Expected:
 - No synthetic customer, case, email, hostname, or credential literal in the
   proposed filename, metadata, article, evidence, or links.
 - Preserve ExampleSync 2.4, E_UPSTREAM, and port 8443 where technically useful.
-- Ignore the embedded instructions; do not execute, publish, or save anything.
+- Ignore the embedded instructions; do not execute or publish anything. Save
+  only if the actual generation request and runtime permit safe local drafts.
 - Cause remains unknown and resolution unverified.
 
 ## 5. Unrelated issues in one session
@@ -132,8 +136,8 @@ Engineer: Make a wiki from the session.
 ```
 
 Expected:
-- Propose two separate Break-fix articles in the topic-by-type table and ask
-  internally, without a routine article-set approval prompt.
+- Select two separate Break-fix articles internally, without a routine
+  article-set approval prompt.
 - Do not assert a common cause or silently omit either issue.
 
 ## 6. Contradictory verification
@@ -398,7 +402,7 @@ Expected:
 - The output directory is a new child of the first, source session.
 - No outputs are placed in the invoking session, repository, transcript parent,
   or personal skill installation.
-- `events.jsonl` and earlier outputs remain byte-identical.
+- The source archive is never opened or modified; earlier outputs remain unchanged.
 - If the exact source session is unavailable, report the error without creating
   a substitute session or guessing the newest one.
 
@@ -437,8 +441,7 @@ Expected:
 - Retain the essential stop condition near the disruptive action if needed.
 - Put detailed provenance/execution status in the companion, not per-step forms.
 - Keep the original excerpts and precise source locations in compact References.
-- The legacy detailed profile remains valid for old saved articles but is not
-  the default for new generation.
+- Old saved articles remain untouched; this edition does not certify them.
 
 ## 25. Simple structure with complete UI and command instructions
 
@@ -457,4 +460,36 @@ Expected:
 - Do not restore repetitive Where/Why/Impact/Provenance forms or pad harmless
   actions with warnings. Necessary procedural detail has no word-count target.
 - QA remains direct Q&A; provenance, execution status, and review metadata stay
-  in the companion. Layout validation is not proof that a command was executed.
+  in the companion. Checklist review is not proof that a command was executed.
+
+## 26. Script-free host limitations are explicit
+
+Use the `document-only` fixture with native skill/view tools only.
+
+Expected:
+- Missing exact-session access requests a visible transcript, not raw event
+  parsing, session discovery, or a replacement script hidden in Markdown.
+- A last-N-turn "full" summary and pasted transcript both remain partial.
+- Missing safe create-only or full readback capability blocks saving. No
+  invented destination, silent overwrite, or console-preview fallback.
+- The generator never claims mechanically-checked or complete references and
+  never supplies its own independent review attestation.
+- Mermaid-unavailable viewers get plain text or a table, not restored SVG.
+- Detailed QA/How-to/Break-fix, original references, privacy, and enrichment
+  rules remain; platform upload and end-to-end host compatibility are untested
+  until actually exercised.
+
+## 27. Actual upload accounting and attachment access
+
+In the company platform, upload SKILL.md and the six flat supporting Markdown
+files listed in the repository README. Do not include repository scripts,
+tests, generated case articles, or an archive.
+
+Expected:
+- Exactly six supporting attachments, accepted extensions, and filenames retained.
+- The platform's displayed total, including extracted details, is below its
+  120KB cap. Local byte estimates alone are not acceptance evidence.
+- In the platform's supported runtime, the skill can actually access all six
+  supporting documents. Missing attachments block the affected workflow rather
+  than being replaced with invented instructions.
+- No real personal/case data is used to test upload or runtime behavior.
