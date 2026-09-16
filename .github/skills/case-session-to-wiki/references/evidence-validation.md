@@ -6,8 +6,9 @@ generate articles, evidence, review attestations, redaction maps, or transcripts
 fetch links; inspect historical sessions; execute example commands; authenticate
 reviewers; or publish anything.
 
-The engineer must approve the sanitized evidence contents and destination
-**before** creating the bundle. Approval cannot be established by this helper.
+The generation request authorizes de-identified session-local review files under
+the [delivery contract](session-output.md); do not add a routine save-approval
+prompt. This helper does not grant disclosure or publication authorization.
 Do not give it raw transcripts or credential/customer identity maps. There is
 no automatic redactor.
 

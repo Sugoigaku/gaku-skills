@@ -1,8 +1,8 @@
 This is a read-only synthetic acceptance test, not a real support case.
 Invoke case-session-to-wiki using the project skill. Do not execute diagnostics,
-write files, or publish anything. If you need scope approval, show the proposed
-article set and the one approval question in your response; this test harness
-cannot answer interactive prompts.
+write files, or publish anything. This explicit inventory-only test requests the
+topic table, but not article previews. Do not add routine scope/save approval
+questions; this test harness cannot answer interactive prompts.
 
 The selected synthetic conversation contains:
 1. A sourced explanation of retention windows for ExampleSync exports.
@@ -13,6 +13,6 @@ The selected synthetic conversation contains:
 
 We want reusable knowledge across the supplied topics, not a single giant page.
 This is only a topic-inventory exercise; full original source passages will be
-provided after the scope is agreed. Do not manufacture source text or URLs.
+provided separately. Do not manufacture source text or URLs.
 Please produce the proposed topic-by-type article table, identify gaps, and
-state the default enrichment and save-approval behavior.
+state the default enrichment and automatic session-local delivery behavior.

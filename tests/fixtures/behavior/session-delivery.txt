@@ -1,0 +1,15 @@
+This is a read-only synthetic policy test; do not actually read sessions, create
+directories, write files, run diagnostics, or publish anything.
+Invoke case-session-to-wiki with the native skill tool before answering. Do not
+substitute reading an older personal copy directly. If invocation is unavailable,
+report that limitation instead of claiming the new skill was tested.
+
+In an ordinary generation run, the engineer names source session A, while the
+invoking chat is session B. The necessary source material is available and safe
+to de-identify. There are several independent topics requiring different types.
+An earlier Wiki output folder already exists under A.
+
+Explain concisely what the current skill would do: which session owns the output,
+whether it prints article previews or asks routine scope/save questions, how it
+handles the earlier folder, and what the final response contains. Do not generate
+an article, a full plan, or a confirmation question for this policy-only test.

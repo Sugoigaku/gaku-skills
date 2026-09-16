@@ -165,6 +165,26 @@ def _identity(info: os.stat_result) -> list[int]:
     return [info.st_dev, info.st_ino]
 
 
+def resolve_session_directory(*, session_id=None, session_root=None, session_dir=None) -> Path:
+    """Resolve only an explicitly selected session or runtime-supplied directory."""
+    if session_dir is not None:
+        if session_id is not None or session_root is not None:
+            _fail("invalid_arguments")
+        directory = _exact_path(session_dir)
+        try:
+            if str(uuid.UUID(directory.name)) != directory.name:
+                _fail("invalid_arguments")
+        except ValueError:
+            _fail("invalid_arguments")
+        if not stat.S_ISDIR(_checked_stat(directory).st_mode):
+            _fail("unsafe_path")
+        return directory
+    path, _ = _source(session_id, session_root, None)
+    if not stat.S_ISREG(_checked_stat(path).st_mode):
+        _fail("unsafe_path")
+    return path.parent
+
+
 def _stamp(info: os.stat_result) -> tuple:
     # Windows lstat/fstat can disagree on ctime (creation vs metadata change).
     return (*_identity(info), info.st_size, info.st_mtime_ns)

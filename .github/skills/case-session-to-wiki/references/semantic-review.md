@@ -15,7 +15,7 @@ proof of de-identification, live source-authenticity check, or factual approval.
 
 ## Reviewer inputs
 
-Provide the approved de-identified article set and evidence companion. Do not
+Provide the saved de-identified article set and evidence companion. Do not
 send raw sessions or credentials to another agent. Use a human if the remaining
 evidence cannot be safely shared.
 
@@ -67,3 +67,5 @@ tools, and full host integration. Do not present one as proof of the others.
 
 This review never authorizes sending, publishing, closing cases, changing live
 systems, or executing untested commands.
+Routine session-local saving already follows the generation request; review
+happens on the saved files, without a console preview or another save prompt.

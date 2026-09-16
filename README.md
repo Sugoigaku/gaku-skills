@@ -30,15 +30,15 @@ There is no catch-all fourth format.
 
 ### Rich sessions become an article set
 
-The initial plan lists each topic, reader task, chosen type, proposed title,
-source coverage/gaps, and filename. You approve or adjust the set before drafting.
+The skill plans each topic, reader task, type, source gap, and filename internally.
+It does not print a preview or ask you to approve the article list or local save.
 
 - Different topics can produce separate articles of the same type.
 - One topic can produce several types when each serves a distinct task.
 - A simple topic is not expanded into QA, How-to, and Break-fix automatically.
 - Short follow-up answers stay with their topic; repeated attempts are consolidated.
 - Each article keeps its own sources, uncertainty, validation gates, and save result.
-- Blocked topics remain visible. A ready subset is saved only with your approval;
+- Blocked topics are reported briefly. The ready subset is saved automatically;
   missing siblings never become broken links.
 
 See the [article planning contract](.github/skills/case-session-to-wiki/references/article-planning.md).
@@ -62,7 +62,7 @@ omissions must be marked. Non-English originals remain in their original languag
 If a required original or exact locator is missing, the skill shows the gap and
 requests it. Private observations use approved, de-identified records in a
 portable `evidence.json` companion, not anonymous archive-line references.
-The engineer approves the companion's contents and destination before it is saved.
+The generation request authorizes its de-identified local save in the session folder.
 
 ### Default enrichment, explicit provenance
 
@@ -99,12 +99,12 @@ canonical source rather than silently dropping identity-bearing parameters.
 Explicit request near case closure
     -> Read only the exact selected session/transcript through the bounded reader
     -> Inventory topics and propose topic-by-type articles
-    -> Confirm article scope and source coverage
+    -> Resolve the selected session and determine source coverage
     -> Inspect originals and label documentation-based enrichment
     -> Extract reusable findings and decisions
     -> De-identify the articles and portable evidence companion
     -> Compose with the selected template and inline citations
-    -> Approve local review files, validate mechanically, and report each result
+    -> Save in a fresh session-local folder, validate, and return file links
     -> Obtain separate semantic review before any publication-ready claim
 ```
 
@@ -116,6 +116,7 @@ Explicit request near case closure
 | [Extraction rules](.github/skills/case-session-to-wiki/references/extraction-rules.md) | Knowledge selection, evidence classification, and de-identification |
 | [Article planning](.github/skills/case-session-to-wiki/references/article-planning.md) | Topic inventory, type selection, scope approval, and multi-article delivery |
 | [Session input](.github/skills/case-session-to-wiki/references/session-input.md) | Exact-ID/transcript reader CLI, schema, pagination, and coverage |
+| [Session output](.github/skills/case-session-to-wiki/references/session-output.md) | Automatic session-local folders, no console previews, and collision-safe delivery |
 | [Enrichment](.github/skills/case-session-to-wiki/references/enrichment.md) | Default documentation enrichment and execution/provenance labels |
 | [Template selector](.github/skills/case-session-to-wiki/templates/wiki-template.md) | Format selection and shared requirements |
 | [QA template](.github/skills/case-session-to-wiki/templates/qa-template.md) | Topic-focused questions and answers |
@@ -135,7 +136,7 @@ Open this repository in a new Copilot session and explicitly request the skill:
 > Use case-session-to-wiki to extract reusable troubleshooting knowledge from
 > this conversation. Propose separate articles by topic and QA, How-to, or
 > Break-fix type. Include original supporting excerpts and exact sources.
-> Show me the article plan before drafting and saving.
+> Save the files under that session and return only the file links.
 
 Or choose a format explicitly:
 
@@ -162,8 +163,8 @@ to check discovery. Discovery is not proof that a skill has been invoked.
 ### Supported session input
 
 > Use case-session-to-wiki on the exact local session ID I provide. Propose an
-> article set and label any documentation-based additions. Do not execute the
-> procedures or save the evidence until I approve it.
+> article set internally and label documentation-based additions. Save the
+> de-identified files under that session; do not execute the procedures.
 
 The bundled [session reader](.github/skills/case-session-to-wiki/tools/session_reader.py)
 accepts an exact local ID or explicit UTF-8 transcript path. It pages supported
@@ -185,10 +186,17 @@ not complete case history. Current-context-only extraction remains partial.
 - Default enrichment may inspect targeted official originals through authorized
   tools. It never sends case details to search services or runs a new investigation.
 - Customer/case identifiers and credentials must be removed before persistence.
-- The skill proposes `wiki-drafts\<wiki-type>-<technical-topic>.md` in an approved
-  workspace. It previews the articles and sanitized companion and obtains
-  approval for each local destination. Local review drafts may be mechanically
-  checked while separate semantic review is still pending.
+- Default output is
+  `<selected-session>\wiki-output-<UTC timestamp>-<unique suffix>\`.
+  For a named session, this is the source session, not the invoking chat.
+  For current-context/transcript-only input, the host supplies the invoking
+  session directory. The skill never guesses from the working directory.
+- The request authorizes a new folder and de-identified files without another
+  confirmation. Plans, article bodies, and evidence previews stay off the console.
+  The final response contains only file links and material validation issues.
+- Repeated runs create new folders. Existing drafts are never overwritten or
+  automatically moved. Explicit no-write requests still prevent saving.
+- Local drafts may be mechanically checked while semantic review remains pending.
 - `wiki-drafts` and `private-inputs` are ignored **in this repository only**.
   Git ignore is not a privacy guarantee or permission to store real transcripts.
 - No automatic publishing, Git commits of generated wikis, uploads, case-system
@@ -213,9 +221,9 @@ For repeatable native prompt tests, run the [smoke runner](scripts/behavior_smok
 with `--fixture topic-plan`, `false-quote`, or `enrichment` and a new approved
 `--output` path. It uses only skill/view tools, checks actual native invocation,
 and fingerprints the bundle; semantic grading remains explicitly separate.
-The [v0.4.0 evaluation record](tests/behavior-evaluation-0.4.0.json) records actual
-synthetic outcomes and caveats. It is an author assessment, not independent
-release approval or proof that all behavioral scenarios were executed.
+The [v0.4.0 evaluation record](tests/behavior-evaluation-0.4.0.json) is historical:
+its preview/save-approval expectations do not describe v0.5.0 delivery.
+It remains an author assessment, not independent release approval.
 
 Existing v0.3 trial articles are not silently migrated to the new evidence schema
 or retroactively marked independently reviewed.
@@ -224,11 +232,11 @@ or retroactively marked independently reviewed.
 
 Cross-account/cloud session retrieval, attachment extraction, broad literature
 searches, live case evidence retrieval, automated redaction, merging into existing
-wikis, publication, and closure automation are not part of v0.4.0.
+wikis, publication, and closure automation are not part of v0.5.0.
 
 ### Packaging references
 
 - [About agent skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)
 - [Adding skills to Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills)
 
-Version: 0.4.0. Last reviewed: 2026-09-16.
+Version: 0.5.0. Last reviewed: 2026-09-16.

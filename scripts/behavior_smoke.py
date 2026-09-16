@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "tests" / "fixtures" / "behavior"
-NAMES = ("topic-plan", "false-quote", "enrichment")
+NAMES = ("topic-plan", "false-quote", "enrichment", "session-delivery")
 
 
 def bundle_digest(root):

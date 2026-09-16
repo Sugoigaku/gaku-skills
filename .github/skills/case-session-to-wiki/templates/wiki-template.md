@@ -21,7 +21,7 @@ not necessarily one template for the entire session.
    The current requested reader task wins over incidental conversation content.
 4. For a rich session, apply the
    [article planning contract](../references/article-planning.md). Inventory the
-   topics and propose a topic-by-type set before asking for scope approval.
+   topics and select a topic-by-type set internally without routine scope approval.
    Multiple topics can use the same type; one topic can use multiple types if
    each addresses a distinct reader task. Do not produce a three-format cross
    product or pad a single-issue session into three articles.

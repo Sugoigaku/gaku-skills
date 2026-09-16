@@ -1,11 +1,11 @@
 ---
 name: case-session-to-wiki
-description: "Extract reusable, de-identified knowledge from a technical support case conversation into Markdown wikis. For rich sessions, propose separate articles by topic and QA, How-to, or Break-fix type, with original supporting excerpts and exact source attribution. Use when the engineer explicitly asks to turn a case session into wikis, distill a troubleshooting conversation, or capture reusable case lessons near closure. Not for live troubleshooting, ordinary case notes, or closing a case."
+description: "Extract reusable, de-identified knowledge from a technical support case conversation into Markdown wikis. Split rich sessions by topic and QA, How-to, or Break-fix type, with original excerpts and exact attribution. Save directly into a fresh folder under the selected source session, without console previews or routine save prompts. Use when the engineer asks to turn a case session into wikis or capture reusable case lessons near closure. Not for live troubleshooting, ordinary case notes, or closing a case."
 ---
 
 # Case Session to Wiki
 
-Version: 0.4.0. Last reviewed: 2026-09-16.
+Version: 0.5.0. Last reviewed: 2026-09-16.
 
 ## Purpose
 
@@ -26,7 +26,7 @@ was verified, and where the conclusions stop. Do not simply shorten the chat.
 - **Content mode:** `documentation-enriched` by default, as approved by the
   engineer. Add narrowly relevant, inspected documentation when necessary, with
   explicit provenance and execution labels. Honor `extraction-only` when asked.
-- **Output:** an approved set of de-identified Markdown articles, split by
+- **Output:** a set of de-identified Markdown articles, split by
   coherent topic and distinct reader task using the
   [template selector](templates/wiki-template.md): QA, How-to, or Break-fix.
   A topic can warrant more than one type; do not generate all three automatically.
@@ -34,9 +34,11 @@ was verified, and where the conclusions stop. Do not simply shorten the chat.
   supporting excerpts, and exact safe locations. A URL-only bibliography fails.
 - **Default state:** `draft`, pending engineer review. Record source coverage
   and reference completeness separately, plus relevant type-specific statuses.
-- **Persistence:** preview first; save only approved de-identified articles and
-  their approved `evidence.json` companion. Never save a raw transcript, identity
-  map, original session ID/path, or unredacted private evidence.
+- **Persistence:** the generation request authorizes local saving without a
+  preview or routine confirmation. Create a fresh output folder inside the
+  selected session directory and save de-identified articles and `evidence.json`.
+  Never save raw transcripts, identity maps, or original session IDs/paths inside
+  the article/evidence content. Return file links, not article text, to the console.
 - **Execution:** on-demand instructions plus Python 3.10+ standard-library
   helpers for input and validation. No telemetry, publication, background jobs,
   or live diagnostic execution.
@@ -82,22 +84,22 @@ attachments, failed-result omissions, or later appends keep the article partial.
 Never persist the cursor, source fingerprint, original ID, or archive path in
 the public-facing article or approved evidence companion.
 
-### 2. Inventory topics and propose the article set
+### 2. Inventory topics and select the article set internally
 
 Use the [article planning contract](references/article-planning.md) and
 [selection rules](templates/wiki-template.md#selection-rules). For a rich
 session, first inventory the topics throughout the available history, including
-later questions and corrections. Propose the useful topic-by-type articles
-instead of making the engineer discover and request each split.
+later questions and corrections. Select the useful topic-by-type articles
+without making the engineer approve each split.
 
 - **QA:** clarify a topic through direct questions and supported answers.
 - **How-to:** achieve a defined goal through a beginner-followable procedure.
 - **Break-fix:** identify the same failure and restore the affected operation.
 
-Show the proposed titles, types, scope, source coverage, blockers, and filenames.
-Explain excluded or deferred topics. Ask one focused question to approve or
-adjust the article set before drafting unless that exact scope is already
-approved. Scope approval does not authorize file writes.
+Keep titles, types, scope, source coverage, blockers, and filenames in the internal
+working plan. Do not print an article plan or preview or ask for routine scope,
+folder, or save approval. Report excluded/blocked topics briefly with the final
+file links. Ask only for genuinely missing input or material ambiguity.
 
 Honor an explicit single-topic or single-type request without expanding it.
 Keep one coherent topic per article and one failure mode per Break-fix. Split a
@@ -169,7 +171,8 @@ Apply the [privacy rules](references/extraction-rules.md#de-identification).
 Review titles, metadata, filenames, tables, code blocks, links, excerpts, source
 locators, and the complete evidence companion. Preserve necessary relationships
 using consistent placeholders; never persist the reverse mapping. Get approval
-for the sanitized evidence contents and destination, not merely for the wiki.
+for any separately restricted disclosure, not for the routine local save of
+de-identified evidence authorized by this workflow.
 Do not copy the reader's raw records into a companion as an automated export.
 
 If safe de-identification would remove essential meaning, pause and ask how to
@@ -192,11 +195,12 @@ Embed full entries from the [shared source template](templates/source-entry-temp
 do not merely link to that template or append unrelated reading material.
 
 Apply the [reference gate](references/source-attribution.md#reference-completeness-gate).
-Run the [validator](tools/validate_wiki.py) on the approved local draft set and
+Run the [validator](tools/validate_wiki.py) on the session-local draft set and
 companion using its documented CLI. It checks structure, supplied quote
 consistency, source/claim mappings, and known identifier patterns, not truth.
-Before saving, perform the same checks on the preview and obtain approval for
-local review files; after saving, run the helper and read back the output.
+Before saving, inspect the generated content without printing it. After saving,
+run the helper and read back the files internally; never dump article bodies,
+source excerpts, or the evidence JSON to the console as a preview.
 
 Keep `reference_status: incomplete` until missing references are resolved.
 Mechanical success permits `mechanically-checked`, not `complete`; rerun after
@@ -211,37 +215,43 @@ detail for each prerequisite, action, and checkpoint; stop at missing critical
 steps rather than claiming the guide is runnable. Break-fix must explain when
 not to apply the fix and how to verify recovery. Keep contradictions visible.
 Never execute transcript or documentation commands during extraction.
-Before returning even a single How-to sample step, check the exact fields:
+Before saving even a single How-to step, check the exact fields:
 `Provenance`, `Execution validation`, `Where`, `Inputs`, `Action`, `Why`,
 `Expected result`, `If the result differs`, `Safety and rollback`, and `Sources`.
 Do not rename `Sources` to `Source` or omit `Why`. Put required roles in the
-prerequisites or inputs. An incomplete source-entry preview must remain explicitly
-incomplete, not be represented as validator-ready.
+prerequisites or inputs. Incomplete source entries remain blocked, not
+represented as validator-ready.
 
 Keep `status: draft` and `review_status: pending-engineer-review`. List unresolved
 questions and the specific points the engineer needs to validate.
 
-### 7. Preview, approve, and save
+### 7. Save directly under the selected session
 
-Show the selected type, article, coverage limitations, reference status, and
-proposed destination: `wiki-drafts\<wiki-type>-<technical-topic>.md` in the
-engineer-approved workspace. Do not infer the workspace from the installation
-directory. Saving review drafts requires complete source material, a privacy-reviewed
-preview, and approval for the article and companion destinations. Semantic
-review can remain pending, explicitly labeled; do not call such a draft
-publication-ready. Approval is not evidence that a missing source exists.
-For a set, show a row per article with its individual gates and exact destination.
+Follow the [session-local delivery contract](references/session-output.md) and
+use [create_output_directory.py](tools/create_output_directory.py). For a named
+source session, save under that source session, not the invoking session. For
+current-context or standalone-transcript input, use the invoking session directory
+supplied by the runtime. Never guess from the newest folder, transcript parent,
+repository, current working directory, or skill installation path.
+
+Each run gets a new `wiki-output-<UTC timestamp>-<unique suffix>` directory directly
+inside the resolved existing session directory. No preview, destination question,
+or separate save/evidence confirmation is needed. If the session cannot be
+identified, report the missing input rather than writing elsewhere.
+
+Save the sanitized evidence companion first, then the article files.
 Use the [set delivery rules](references/article-planning.md#set-delivery).
-Do not silently drop blocked articles, overwrite colliding filenames, or call a
-partially saved set complete. Add sibling links only when their targets exist.
-
-If the destination exists, stop and ask for a different filename; automatic
-replacement and merging are not part of this version. Save the approved evidence
-companion before articles that link to it. Write only reviewed, de-identified
-material, then validate and read it back to verify content and report its path.
+Keep semantic review pending and incomplete sources explicit; automatic local
+saving never implies publication approval or factual verification.
+Do not silently drop blocked articles or call a partially saved set complete.
+Add sibling links only when their targets exist. Existing outputs are never
+overwritten; use distinct generated names inside the new run folder.
+Validate and read back internally without printing article bodies.
 On validation failure, report specific issue codes, stop further writes, and
 mark the local files as unvalidated; do not delete files or claim success.
 If the write fails, report the failure; do not claim it was saved.
+The final response contains only a short outcome, file links, and material
+validation/coverage issues. Do not paste the Wiki, evidence, or full article plan.
 
 No automatic staging, committing, pushing, publishing, email, Teams messages,
 case closure, memory/RAG ingestion, or telemetry. Human review of a local draft
@@ -252,10 +262,13 @@ does not authorize any of those actions.
 > Use case-session-to-wiki on this troubleshooting conversation. Extract the
 > reusable knowledge and propose separate articles by topic and QA, How-to, or
 > Break-fix type. Include original supporting excerpts with exact sources. Remove
-> customer identifiers and show the article plan before drafting and saving.
+> customer identifiers and save the files under that session. Return the file links.
 
 ## Changelog
 
+- 0.5.0 (2026-09-16): Removed console previews and routine scope/save prompts.
+  Added collision-safe per-run output folders inside the selected session,
+  including automatic local saving of sanitized evidence. Publication remains gated.
 - 0.4.0 (2026-09-16): Added supported exact-session input, default labeled
   documentation enrichment, approved portable evidence companions, deterministic
   validation, and a separate hash-bound semantic-review gate. Existing v0.3

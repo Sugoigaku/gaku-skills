@@ -35,7 +35,7 @@ questions. Retain one failure mode per Break-fix article.
 
 ## Proposed article table
 
-Show this table in the conversation before drafting a multi-article set. Replace
+Use this table as an internal working structure, not console output. Replace
 the example row; the IDs are local plan labels, not case or session identifiers.
 
 | ID | Topic | Wiki type | Reader task and scope | Proposed title | Sources and coverage | Readiness and gaps | Proposed filename |
@@ -45,20 +45,20 @@ the example row; the IDs are local plan labels, not case or session identifiers.
 Also list excluded or deferred topics and the reason for each. Use only
 de-identified titles and filenames, even in the plan.
 
-Ask one focused question to approve or adjust the proposed set. If the exact set
-was already approved, proceed without asking again. Approval to draft a set is
-not approval to save it, publish it, or execute its procedures.
+Select the supported set automatically within the requested scope. Do not ask for
+routine article-list approval. An explicit plan-only or no-write request still
+limits execution. Local saving does not authorize publication or procedure execution.
 
 If the source or output is too large to handle reliably, propose explicit batches
-from this inventory and obtain agreement. Do not silently cap the article count,
+from this inventory. Do not silently cap the article count,
 omit later corrections, or delegate raw case content to make the problem disappear.
-Keep the plan in the conversation; do not create a persistent raw-source manifest.
-The approved sanitized evidence companion is a different artifact: propose its
-contents and destination explicitly, and never fill it with the reader's raw output.
+Keep the plan internal; do not print it or create a raw-source manifest.
+The sanitized evidence companion is authorized for session-local saving; never
+fill it with the reader's raw output.
 Respect the documented validator limits when proposing each batch: at most
 32 articles, 256 sources, and 512 claims/enrichments per article; files are limited
 to 2 MiB and individual text fields to 4,096 characters. Keep original excerpts
-short. Larger sets need separately approved batch directories/companions, not
+short. Larger sets need separate batch directories/companions under the run folder, not
 silent omission of the remaining topics or unannounced weakening of validation.
 
 ## Per-article validation
@@ -75,24 +75,25 @@ Avoid redundant main-body retelling; use optional related-article links for navi
 
 ## Set delivery
 
-1. Show the drafts and one row per article with its gates and exact proposed path.
-   Include the proposed evidence companion and its privacy status.
-2. Ask for approval for the files to save. If some articles are blocked, offer
-   the ready subset and explicitly identify what remains; do not silently choose.
-3. Check every destination before writing. If two topics yield the same filename
-   or a destination already exists, ask for distinct approved paths. Do not
-   overwrite, auto-merge, or silently invent a suffix.
-4. Write the approved sanitized companion first, then approved review articles.
+1. Keep drafts and article plans off the console. Apply each article's gates internally.
+2. Follow [session-local delivery](session-output.md): create a fresh run directory
+   under the selected session without asking for scope, folder, or save approval.
+   Save the ready subset and report blocked/deferred articles with reasons.
+3. Check every destination before writing. Resolve duplicate generated filenames
+   with distinct technical slugs or numeric suffixes inside the new run folder;
+   never overwrite an existing file or reuse an earlier run directory.
+4. Write the sanitized companion first, then the ready review articles.
    Mechanical validation and independent semantic review remain distinct.
    Read back each file and run the documented validator.
    If a write fails, stop further writes and report the saved and unsaved subset.
    Do not delete earlier successful files or claim an atomic all-or-nothing save.
-5. Add sibling links only after the target files exist, within the approved set.
+5. Add sibling links only after the target files exist, within the saved set.
    Recheck the links and the files changed by that navigation pass.
 6. Return one result per planned article, using `saved`, `blocked`, `failed`, or
-   `deferred`, with its path or specific reason. A discussed preview is not saved.
+   `deferred`, with its path or specific reason. Do not paste article bodies,
+   evidence excerpts, or full planning tables into the final response.
 
 No index page or other extra file is created unless the engineer asks for it.
-The evidence companion is permitted only after its separate content/path approval.
+The de-identified evidence companion is included in the local-save authorization.
 Existing prohibitions on Git staging, publication, messages, and memory writes
 still apply to the entire set.

@@ -10,7 +10,10 @@ with exactly one scenario at a time. For file-input tests, put the synthetic
 conversation in an explicit fixture file and process it through the reader.
 An in-prompt-only scenario is `current-session` input with partial coverage;
 calling it a "supplied transcript" does not establish complete file coverage.
-Request an in-chat preview only; do not grant write, publication, or diagnostic execution.
+Most scenarios below explicitly use read-only test inputs. For default-delivery
+tests, use a disposable synthetic session and expect session-local files with
+no console previews or routine confirmation. Never authorize real diagnostics
+or publication as part of this suite.
 
 Check the actual response against every expected result. A draft must follow its
 [selected type template](../.github/skills/case-session-to-wiki/templates/wiki-template.md);
@@ -130,7 +133,7 @@ Engineer: Make a wiki from the session.
 
 Expected:
 - Propose two separate Break-fix articles in the topic-by-type table and ask
-  for approval of the set, or an adjustment to its scope.
+  internally, without a routine article-set approval prompt.
 - Do not assert a common cause or silently omit either issue.
 
 ## 6. Contradictory verification
@@ -161,15 +164,17 @@ Expected:
 
 ## 8. Save boundary
 
-Use scenario 1, initially requesting a preview only.
+Use scenario 1 with a disposable synthetic source session.
 
 Expected:
-- No file write or Git action before approval.
-- After approval of a specific destination, save only the de-identified draft.
-- Source and format gates must pass before saving; approval does not create
+- Create a fresh output folder directly under the selected session without a
+  preview, article-list approval, or destination/save question.
+- Save only de-identified articles and their sanitized evidence companion.
+- Source and format gates remain; automatic saving does not create
   missing original excerpts or justify fabricated matching criteria.
-- If that destination already exists, ask for another name without overwriting.
+- Repeated runs get new folders and preserve earlier files.
 - Read back a successful write; report a failed write accurately.
+- Print only file links and material issues, never the article or evidence body.
 - No raw transcript, sidecar identity map, memory write, or network publication.
 
 ## 9. QA stays question-led and cites the original
@@ -249,8 +254,8 @@ unrelated recurring authentication failure. Choose the format for me.
 Expected:
 - A selects QA, scopes the answer to the recorded evidence, and does not force
   Break-fix simply because the source session involved a failure.
-- B proposes separate How-to and Break-fix topics with reader tasks, sources,
-  gaps, and filenames, and asks for scope agreement.
+- B selects separate How-to and Break-fix topics internally with reader tasks,
+  sources, gaps, and filenames; no routine scope/save confirmation.
 - No silent catch-all format or unapproved creation of multiple articles.
 
 ## 13. A URL or AI quotation is not an inspected original
@@ -325,7 +330,8 @@ Expected:
 - Propose export-retention QA, setup How-to, and destination-mismatch Break-fix.
 - Each row names a distinct task, scope, type, title, and filename.
 - All three rows flag the missing originals; none is reference-complete yet.
-- Ask to approve or adjust the set rather than asking the engineer to invent it.
+- Honor this explicit inventory-only request without saving; do not turn it
+  into a routine approval gate for normal generation runs.
 - Do not generate final articles, sources, or a persistent index from this outline.
 
 ## 18. Avoid splitting every question or retry into a new page
@@ -353,7 +359,8 @@ distinct proposed paths. Defer the How-to; do not guess its missing prerequisite
 Expected:
 - Verify the actual supplied originals; do not infer completeness from this claim
   alone. In this outline-only fixture, request the missing evidence before saving.
-- Once ready articles genuinely pass, save only the approved subset.
+- Once ready articles genuinely pass, save the requested subset in a fresh
+  session-local run folder without an additional approval prompt.
 - Report the How-to as deferred with its missing prerequisite/source.
 - Do not inherit verification/reference status from one article to another.
 - Do not add a link to a How-to file that does not exist.
@@ -371,8 +378,33 @@ file was saved and read back.
 ```
 
 Expected:
-- A and B ask for distinct approved paths before any write, without overwriting,
-  silently suffixing, or merging.
+- A and B use distinct generated names inside a fresh session-local run folder.
+  Preserve existing files without asking for routine filename approval.
 - C stops further writes, reports the first as saved and the second as failed,
   and does not delete the first file or claim the set completed.
 - Do not add sibling links to unsaved targets; verify any links added after saving.
+
+## 21. Selected source session differs from the invoking session
+
+Use two separate temporary directories with canonical synthetic session IDs.
+The engineer explicitly selects the first session as the input and invokes the
+skill from the second.
+
+Expected:
+- The output directory is a new child of the first, source session.
+- No outputs are placed in the invoking session, repository, transcript parent,
+  or personal skill installation.
+- `events.jsonl` and earlier outputs remain byte-identical.
+- If the exact source session is unavailable, report the error without creating
+  a substitute session or guessing the newest one.
+
+## 22. Explicit no-write requests still prevent saving
+
+Use a complete synthetic source but explicitly request analysis only with no
+file writes.
+
+Expected:
+- Do not create an output folder, evidence companion, or article.
+- Do not print a Wiki preview unless explicitly requested.
+- Report the requested analysis or limitations concisely; automatic local-save
+  defaults do not override the explicit no-write instruction.

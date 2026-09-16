@@ -102,9 +102,10 @@ excerpt does not satisfy the contract.
 
 ## Approved evidence companion
 
-The engineer permits a de-identified evidence companion beside the articles.
-Approval for its actual contents and exact path is still required per delivery.
-Use the [validator's schema](evidence-validation.md) for `evidence.json`.
+The generation request authorizes a de-identified evidence companion beside the
+articles in the selected session's new run folder. No separate local-save prompt
+is required. Follow [session-local delivery](session-output.md), perform privacy
+checks internally, and use the [validator's schema](evidence-validation.md).
 
 - Public documentation records contain their canonical safe URL, exact locator,
   version, inspection state, and a short permitted supporting passage.
@@ -126,11 +127,11 @@ Use the [validator's schema](evidence-validation.md) for `evidence.json`.
   not make its text unavailable. Semantic review remains a separate pending gate.
 - Do not generate companion text from the article and call that independent
   evidence. First inspect the original, select the minimal passage, sanitize it,
-  and obtain human approval.
+  and perform the privacy checks before session-local saving.
 
-If the engineer declines storing sanitized evidence, remove claims that depend
-on it or keep them as unsaved discussion. Do not replace it with unresolvable
-private archive citations.
+If the engineer explicitly prohibits storing sanitized evidence, honor that
+restriction and report the dependent articles as blocked. Do not replace it
+with unresolvable private archive citations or print private evidence to the console.
 
 ## Reference completeness gate
 
@@ -152,8 +153,8 @@ Reference completeness is not proof of full session coverage, source infallibili
 successful execution, or engineer approval.
 
 On missing source material, keep `reference_status: incomplete`, list the exact
-gaps, and ask for originals/locations or a narrower scope. Destination approval
-does not create missing evidence.
+gaps, and ask for originals/locations only when necessary. Automatic local-save
+authorization does not create missing evidence.
 
 Run the [mechanical validator](../tools/validate_wiki.py) on approved local review
 files and their companion. A pass can support `reference_status:

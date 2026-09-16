@@ -121,7 +121,7 @@ the original addresses. If placeholders change the meaning, ask before saving.
 Review all output surfaces, including evidence excerpts, Markdown link targets,
 URL query strings, front matter, filenames, code comments, and image references.
 Do not attach raw logs, screenshots, transcripts, or a reversible identity map.
-An explicitly approved, de-identified evidence companion is allowed; it must
+The generation request authorizes a de-identified session-local evidence companion; it must
 contain only selected safe passages and reproducible locators within those
 passages, never the private source archive or a mapping back to identities.
 
@@ -146,8 +146,12 @@ Ask one focused question at a time when:
 - A required original excerpt or portable, precise source location is missing.
 - A How-to lacks a necessary prerequisite, step, or expected result.
 - The correct wiki type or same-issue criteria are ambiguous.
-- The local destination is unapproved or already exists.
-- The sanitized evidence companion has not been approved.
+- The selected session cannot be identified or its path is unsafe/unavailable.
+- Content cannot be safely de-identified for local saving.
+
+Do not ask routine preview, article-list, filename, or save-approval questions.
+Use the [session-local output rules](session-output.md) for fresh folders and
+non-overwriting names. Partial coverage alone does not block a supported draft.
 
 Missing nonessential details can remain explicit gaps in a draft. Missing proof
 is not an invitation to infer a stronger conclusion.

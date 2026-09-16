@@ -145,6 +145,17 @@ class SkillFrameworkTests(unittest.TestCase):
         self.assertIn("Check every destination before writing.", delivery)
         self.assertIn("Add sibling links only after the target files exist", delivery)
 
+    def test_delivery_is_session_local_without_preview_or_routine_confirmation(self):
+        text = SKILL.read_text(encoding="utf-8")
+        contract = (SKILL_DIR / "references" / "session-output.md").read_text(encoding="utf-8")
+        for target in ("references/session-output.md", "tools/create_output_directory.py"):
+            self.assertIn(f"]({target})", text)
+            self.assertTrue((SKILL_DIR / target).is_file())
+        self.assertIn("No preview, destination question,", text)
+        self.assertIn("source session, not the invoking session", text)
+        self.assertIn("Explicit read-only, no-write, or plan-only requests still prevent saving.", contract)
+        self.assertNotIn("### 7. Preview, approve, and save", text)
+
     def test_every_type_uses_the_shared_source_entry(self):
         for wiki_type, template in TEMPLATES.items():
             with self.subTest(wiki_type=wiki_type):
@@ -271,7 +282,7 @@ class SkillFrameworkTests(unittest.TestCase):
         for document in (ROOT / "README.md", SKILL):
             with self.subTest(document=document):
                 self.assertIn(
-                    "Version: 0.4.0. Last reviewed: 2026-09-16.",
+                    "Version: 0.5.0. Last reviewed: 2026-09-16.",
                     document.read_text(encoding="utf-8"),
                 )
 
