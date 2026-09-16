@@ -1,9 +1,10 @@
 ---
 title: "<Topic>"
 wiki_type: qa
+article_format: concise
 status: draft
 review_status: pending-engineer-review
-product: "<Product and relevant version, or Not recorded>"
+product: "<Product/version if relevant>"
 source_kind: "<current-session, provided-transcript, or local-session>"
 source_coverage: partial
 content_mode: documentation-enriched
@@ -11,48 +12,24 @@ reference_status: incomplete
 tags: []
 ---
 
-# <Topic>: Questions and answers
-
-## Topic and scope
-
-Briefly identify the topic, relevant versions, and boundaries. Avoid a case
-timeline or unnecessary diagnostic sections.
+# <Topic>
 
 ## Questions and answers
 
-Repeat the following block for each distinct, useful question. Consolidate
-duplicates and preserve the final supported answer, including later corrections.
+### Q1. <Question from the session>
 
-### Q1. <A clear question>
+<Direct answer in plain language, followed by its inline citation. Repeat for
+distinct questions. No per-answer Conditions and exceptions or Sources blocks.
+Keep essential version limits in the answer; say "provisional" if necessary
+rather than presenting an uncertain answer as fact.>
 
-**Answer:** <Direct answer first; explain only as much as necessary.>
+## References
 
-**Conditions and exceptions:** <Relevant scope, version limits, or qualifications.>
+Include compact [source entries](source-entry-template.md) with original excerpts
+and precise locations. Link the evidence companion once; keep review metadata there.
 
-**Sources:** <Inline links to the source entries supporting this answer and its conditions.>
+## Double-check
 
-Do not fabricate an answer when the source only contains a question or AI
-speculation. Put unanswered questions in the next section.
-
-## Open questions and limitations
-
-Identify unsupported answers, source-coverage gaps, and unresolved contradictions.
-State when an answer is only a reported observation rather than general guidance.
-
-## References and original excerpts
-
-State source coverage and any verification limitations. Embed one full
-[source entry](source-entry-template.md) per cited passage, with the original
-excerpt and exact location. Expand entries here; do not leave a template link
-or substitute a URL-only reading list.
-Link each entry to its matching approved evidence-companion record. A mechanical
-pass is not semantic approval; retain pending engineer review.
-
-## Review checklist
-
-- [ ] Questions are distinct and answers are direct, supported, and scoped.
-- [ ] Every substantive answer and condition has an inline source citation.
-- [ ] Each citation has an original excerpt and exact, safe source location.
-- [ ] Reference completeness is checked independently of source coverage.
-- [ ] No customer identifiers, private case links, or credentials remain.
-- [ ] The article remains a draft pending engineer review.
+<Only actual unresolved items, grouped here and linked to the relevant question:
+"Q2: Confirm whether this applies to version X." Omit this entire section if
+there is nothing to check. It must be the last section. No review checklist.>

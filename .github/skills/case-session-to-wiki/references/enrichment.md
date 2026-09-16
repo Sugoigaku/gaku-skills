@@ -26,26 +26,22 @@ Inspect original passages rather than treating snippets or model memory as proof
 Broader research, missing access, ambiguous product versions, and changes to the
 approved article scope remain human decision points.
 
-## Required labels
+## Provenance without clutter
 
-Every How-to and Break-fix action step includes:
-
-```text
-**Provenance:** observed-in-session | documentation-enriched | adapted-from-documentation
-**Execution validation:** not-run | syntax-only | lab-tested
-```
-
-Choose one value per field. For a mixed step, split it or use the more
-conservative adapted/not-run classification. The claim map separately records
-whether an assertion is observed, reported, documented, or inferred.
+For concise articles, keep provenance in the companion's claim map
+(`observed`, `reported`, `documented`, or `inferred`) and material additions in
+its `enrichments` records. Do not print Provenance/Execution validation blocks
+under every step. Execution status is still `not-run`, `syntax-only`, or
+`lab-tested` in each enrichment record, and must not be invented.
 
 For every documentation-enriched/adapted procedural section, include a companion
 `enrichments` entry with its exact heading, source IDs, a description of what was
 added/changed, and the execution-validation state. QA additions still require
 claim mappings and citations; they must not acquire invented experiment results.
-Even a single sample step retains the chosen template's fields. Required roles
-and prerequisites in the quoted source must appear in the article or step;
-do not drop them when expanding the action into novice-friendly instructions.
+Required roles and meaningful impact belong once at the beginning. Steps contain
+the necessary actions, inputs, and citations in plain language, not repeated
+forms. Keep an important branch or stop condition where the reader needs it.
+Legacy articles without article_format retain their original label requirements.
 
 ## No inherited success
 

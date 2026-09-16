@@ -2,6 +2,9 @@
 
 This contract is mandatory for QA, How-to, and Break-fix. References identify
 what supports the article; they are not decorative further-reading links.
+Default concise articles show only a linked title, precise locator, and short
+original excerpt. The companion retains the full source, claim, and review
+records. Do not duplicate those records as a long metadata form in the Wiki.
 
 ## Building the source catalog
 
@@ -96,9 +99,11 @@ demonstrates the link and entry shape.
 - Break-fix: cite matching and non-matching criteria, cause, repair steps, and
   validation results. Do not cite a symptom-only passage as proof of the cause.
 
-Every citation must resolve to exactly one embedded source entry. Include only
+Every citation must resolve to exactly one compact embedded source entry. Include only
 sources actually used. A title or citation ID without a supporting original
 excerpt does not satisfy the contract.
+Link the companion once in References. Keep any Double-check items after
+References, at the end of the article; cite their supporting sources if needed.
 
 ## Approved evidence companion
 

@@ -192,9 +192,12 @@ Engineer: Make this a QA wiki.
 Expected:
 - `wiki_type: qa`, two direct answers, and the version condition.
 - No forced cause, repair, or case-timeline sections.
-- Each answer links to the embedded source entry with title, publisher,
-  exact supplied section/paragraph, revision, and the actual short quotation.
+- Each answer links to a compact source entry with title, exact supplied
+  section/paragraph, and the actual short quotation; full metadata is in the companion.
 - Label the supplied-source origin and verification honestly; no invented URL.
+- In the concise Wiki, retain only the linked title, exact location, and short
+  excerpt; publisher/revision/inspection details live in the companion.
+- Do not repeat Conditions and exceptions or Sources fields under each answer.
 
 ## 10. How-to explains each action and checkpoint
 
@@ -215,8 +218,9 @@ Engineer: We have not performed these steps in this case. Write a How-to.
 
 Expected:
 - `wiki_type: how-to`; explicit goal, lab/role prerequisites, and definition.
-- Ordered novice-level steps with UI location, inputs, actions, expected results,
-  the documented failure branch, and end-to-end verification.
+- Ordered, action-focused steps with necessary UI locations and inputs in normal
+  prose, essential role/impact up front, and a brief final verification.
+- No repeated Where/Why/Impact/Rollback/Provenance forms; no routine no-impact filler.
 - `procedure_status: documented-not-tested`; no invented successful case run.
 - Source entries quote the precise preparation and procedure passages, with
   step-level citations. Do not invent navigation, retry behavior, or rollback.
@@ -408,3 +412,30 @@ Expected:
 - Do not print a Wiki preview unless explicitly requested.
 - Report the requested analysis or limitations concisely; automatic local-save
   defaults do not override the explicit no-write instruction.
+
+## 23. Concise QA and final double-check list
+
+Use supplied evidence for three questions. Two have supported answers; the
+third has a provisional answer whose version applicability needs confirmation.
+
+Expected:
+- Three direct question-and-answer blocks with inline citations.
+- No repeated Conditions and exceptions, Sources, or review-checklist fields.
+- The provisional answer is not made falsely definitive.
+- Actual follow-up checks are grouped under Double-check at the very end,
+  after compact References. If all answers are established, omit Double-check.
+
+## 24. Action-focused procedures without losing important impact
+
+Use a sourced procedure that includes two read-only checks followed by a
+disruptive change requiring a maintenance window.
+
+Expected:
+- State the maintenance requirement and disruption clearly before the steps.
+- Keep the checks and change as understandable actions with inline citations.
+- Do not repeat harmless impact/rollback statements on the read-only checks.
+- Retain the essential stop condition near the disruptive action if needed.
+- Put detailed provenance/execution status in the companion, not per-step forms.
+- Keep the original excerpts and precise source locations in compact References.
+- The legacy detailed profile remains valid for old saved articles but is not
+  the default for new generation.

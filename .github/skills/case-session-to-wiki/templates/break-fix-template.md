@@ -1,9 +1,10 @@
 ---
 title: "<Failure and distinguishing condition>"
 wiki_type: break-fix
+article_format: concise
 status: draft
 review_status: pending-engineer-review
-product: "<Product and relevant version, or Not recorded>"
+product: "<Product/version if relevant>"
 source_kind: "<current-session, provided-transcript, or local-session>"
 source_coverage: partial
 content_mode: documentation-enriched
@@ -15,92 +16,40 @@ tags: []
 
 # <Failure and distinguishing condition>
 
-## Problem and applicability
+## Problem
 
-Describe the observable failure, exact non-identifying error, impact, affected
-versions, and triggering conditions. State when this guide does not apply.
-Cite the evidence instead of assuming that a common error proves the same cause.
+<Describe the symptom clearly. Include a supported cause only if useful; do not
+turn an evidence gap into a confirmed cause or an outage.>
 
-## Confirm this is the same issue
+## Before you start
 
-Give the reader specific checks before applying the fix. Include prerequisites
-and how to interpret both matching and non-matching results.
+<Important impact and essential prerequisites only, stated once.
+Omit this section if there is nothing material to warn about.>
 
-| Check and how to perform it | Matches when | Does not match when | Next action | Sources |
-| --- | --- | --- | --- | --- |
-| <Source-supported check> | <Distinctive evidence> | <Lookalike or exclusion> | <Proceed, branch, or stop> | <Inline citations> |
+## Identify the issue
 
-Retain useful rejected hypotheses and failed attempts here when they help
-discriminate this failure. An unexplained mismatch means investigate further,
-not apply the repair anyway. Do not invent negative criteria to complete a table.
+<A few decisive checks showing whether this is the same problem. Include
+lookalike exclusions only when useful; no mandatory multi-column table.>
 
-## Cause and confidence
+## Steps
 
-State confirmed, suspected, or unknown cause, with its supporting original
-evidence and limitations. Keep later contradictions visible. A symptom match or
-successful restart alone does not establish a root cause.
+### Step 1 - <Action>
 
-## Resolution or workaround
+<Clear actions, required commands/UI locations, and inline citations.
+Call a workaround a workaround. Do not repeat Impact/Why/Rollback/Provenance
+forms. Put detailed verification metadata in the evidence companion.>
 
-Identify whether this is a fix, workaround, or mitigation. Use ordered steps
-supported by the source, with explicit conditions for applying them.
+## Check the result
 
-### Step 1 - <Repair action>
+<How to verify recovery, briefly. Distinguish recorded results from checks
+the reader still needs to perform.>
 
-**Provenance:** <observed-in-session, documentation-enriched, or adapted-from-documentation>
+## References
 
-**Execution validation:** <not-run, syntax-only, or lab-tested>
+Include compact [source entries](source-entry-template.md), original excerpts,
+precise locations, and one link to the evidence companion.
 
-**Prerequisites and impact:** <Required access, applicability, and read/write risks.>
+## Double-check
 
-**Action:** <Recorded or documented action, with clearly identified placeholders.>
-
-**Expected result:** <Sourced checkpoint after this action.>
-
-**If it fails:** <Supported branch or explicit stop condition.>
-
-**Rollback:** <Sourced recovery action or an explicit limitation needing review.>
-
-**Sources:** <Inline links supporting the action, its conditions, and expected result.>
-
-Do not describe proposed actions as completed or a temporary mitigation as a
-permanent fix. Do not run these instructions during knowledge extraction.
-Record material additions/adaptations in the approved companion with this
-section heading, source IDs, and separate execution-validation status.
-
-## Verification
-
-| Check | Recorded success criterion | Actual result and scope | Sources |
-| --- | --- | --- | --- |
-| <Post-fix check> | <Expected result, or Not recorded> | <Observed, reported, or unverified> | <Inline citations> |
-
-Identify recurrence and the tested scope/duration. Do not invent thresholds or
-claim permanent recovery from a single successful attempt.
-
-## Escalation and prevention
-
-Explain when to stop and what additional evidence is needed if matching or
-verification fails. Include sourced preventive lessons and relevant follow-up
-answers, without inventing support ownership or escalation destinations.
-
-## Open questions and limitations
-
-List source-coverage gaps, unknown cause, contradictory results, missing safety
-information, and the specific points requiring engineer confirmation.
-
-## References and original excerpts
-
-State source coverage and verification limitations. Embed one full
-[source entry](source-entry-template.md) per cited passage, with original text
-and an exact safe locator. Replace the template link with actual source entries.
-Each source entry links to its record in the approved evidence companion.
-
-## Review checklist
-
-- [ ] Symptoms and applicability are recognizable without reading the case chat.
-- [ ] Matching checks, lookalike exclusions, and stop conditions precede repair.
-- [ ] Cause, fix/workaround, and verification status match the evidence.
-- [ ] Repair steps have sourced conditions, checkpoints, and risk qualifications.
-- [ ] Every material claim links to an original excerpt with an exact location.
-- [ ] No customer identifiers, private case links, or credentials remain.
-- [ ] The article remains a draft pending engineer review.
+<Only unresolved points, with the relevant step or conclusion. Omit if none.
+Do not hide an important safety restriction here instead of stating it up front.>

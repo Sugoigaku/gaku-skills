@@ -32,16 +32,21 @@ not necessarily one template for the entire session.
 
 ## Shared contract
 
+- Generate `article_format: concise`: clear answers/actions, not validation forms.
+- QA has no repeated Conditions and exceptions blocks. Actual uncertainties go
+  into an optional final Double-check section.
+- Procedural impact and essential prerequisites appear once up front. Steps
+  contain actions and inline citations, not repeated Where/Why/Rollback labels.
 - Set `wiki_type` to exactly `qa`, `how-to`, or `break-fix`.
 - Keep source coverage separate from reference completeness and outcome confidence.
 - Default to `content_mode: documentation-enriched`, labeling added procedures;
   honor extraction-only requests. Apply the [enrichment rules](../references/enrichment.md).
-- All three templates include **References and original excerpts** and use the
+- All three templates include **References** with short original excerpts and use the
   same [source entry template](source-entry-template.md).
 - Cite sources beside the answers, steps, checks, and conclusions they support.
   A bibliography without inline attribution or original excerpts is incomplete.
 - Apply the [attribution rules](../references/source-attribution.md) before saving.
-  Expand source entries and link their approved evidence-companion records.
+  Use compact source entries and link the full evidence companion once.
   Do not leave template links or use private archive positions as portable sources.
 - Keep QA concise, How-to novice-followable, and Break-fix diagnostic and actionable.
   Do not add irrelevant sections solely to make the types look alike.

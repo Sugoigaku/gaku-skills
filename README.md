@@ -19,9 +19,22 @@ services are needed by those helpers themselves.
 
 | Format | Use when the reader needs to... | Required content |
 | --- | --- | --- |
-| QA | Understand a topic or get specific answers | Clear questions, direct answers, conditions/exceptions, and sources for each answer |
-| How-to | Achieve a goal or perform a task | Goal, prerequisites, beginner-followable steps, expected results, failure branches, and final validation |
-| Break-fix | Recognize and resolve a failure | Symptoms, same-issue checks and exclusions, cause/uncertainty, fix or workaround, and recovery verification |
+| QA | Understand a topic or get specific answers | One question, one direct answer, with inline references |
+| How-to | Achieve a goal or perform a task | Goal, essential prerequisites/impact up front, clear actions, and a brief result check |
+| Break-fix | Recognize and resolve a failure | Problem, important impact, decisive matching checks, clear actions, and a brief recovery check |
+
+### Readability first
+
+New articles use `article_format: concise`. There are no per-answer Conditions
+and exceptions blocks or repeated per-step Where/Why/Impact/Rollback forms.
+State important impact once before the steps; omit routine "no impact" padding.
+Group actual uncertainties in a final **Double-check** section and omit it when
+there is nothing to check. Keep essential qualifications in the answer/action
+so brevity does not turn a provisional conclusion into a false certainty.
+
+References remain: linked title, exact location, and a short original excerpt.
+Detailed source provenance, claim mappings, execution status, and review metadata
+stay in the evidence companion instead of being repeated throughout the Wiki.
 
 An explicit scope/format request takes priority. For a rich session, the skill
 first proposes an **article set organized by topic and type**, rather than
@@ -71,9 +84,9 @@ engineer. The skill may inspect relevant official documentation to fill a named
 gap, using generic technical terms rather than private case data. Request
 `extraction-only` to disallow new technical procedures.
 
-Each procedural step identifies observed, documentation-enriched, or adapted
-provenance and whether execution was not run, syntax-only, or lab-tested.
-New commands do not inherit a historical experiment's success.
+The companion records each claim's basis and each enriched step's source,
+change, and execution status. These are not repeated under every action.
+New commands still cannot inherit a historical experiment's success.
 
 ### Mechanical checks are not semantic approval
 
@@ -227,16 +240,19 @@ It remains an author assessment, not independent release approval.
 
 Existing v0.3 trial articles are not silently migrated to the new evidence schema
 or retroactively marked independently reviewed.
+The validator still accepts legacy detailed articles when article_format is
+absent. New default templates use the concise profile; existing saved articles
+are not rewritten automatically.
 
 ### Deliberately deferred
 
 Cross-account/cloud session retrieval, attachment extraction, broad literature
 searches, live case evidence retrieval, automated redaction, merging into existing
-wikis, publication, and closure automation are not part of v0.5.0.
+wikis, publication, and closure automation are not part of v0.6.0.
 
 ### Packaging references
 
 - [About agent skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)
 - [Adding skills to Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills)
 
-Version: 0.5.0. Last reviewed: 2026-09-16.
+Version: 0.6.0. Last reviewed: 2026-09-16.

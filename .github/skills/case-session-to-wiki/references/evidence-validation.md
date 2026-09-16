@@ -12,6 +12,53 @@ prompt. This helper does not grant disclosure or publication authorization.
 Do not give it raw transcripts or credential/customer identity maps. There is
 no automatic redactor.
 
+## Concise article profile
+
+New articles use `article_format: concise`. Omission selects the legacy detailed
+profile documented later in this file; existing articles remain valid without
+conversion. No other article_format value is accepted.
+
+Concise second-level headings, in order:
+
+- QA: Questions and answers, References.
+- How-to: Goal, Before you start, Steps, Check the result, References.
+- Break-fix: Problem, Before you start, Identify the issue, Steps,
+  Check the result, References.
+
+Before you start can be omitted when there is no important impact/prerequisite.
+An optional, nonempty Double-check section is allowed only at the end. No review
+checklist or repetitive Conditions and exceptions sections are required.
+
+Answers use sequential `### Q1. ...` headings and direct prose. Actions use
+sequential `### Step 1 - ...` headings and direct prose. Both require inline
+citations and companion claim mappings, not per-block fields. The validator
+rejects repeated legacy boilerplate such as Where/Why/Impact/Provenance fields
+in concise blocks. An optional Answer or Action label is harmless but unnecessary.
+
+In References, include one link to the declared evidence companion. Each
+`### S1` entry has these exact fields:
+
+```markdown
+**Source:** [Exact source title](canonical-source-url-or-evidence.json)
+
+**Location:** Exact locator from the companion
+
+**Original excerpt:**
+
+> The exact short supporting passage.
+```
+
+For a redacted passage, add `**Excerpt handling:** redacted` immediately before
+Original excerpt. A public source link matches its origin; a sanitized source
+link targets the companion. Title, locator, and quote matching remain enforced.
+All other source metadata stays in the unchanged companion schema.
+
+Concise steps supported by documented/inferred claims require enrichment records
+with the existing section/source/change/validation fields. Printed provenance
+labels are not required. Extraction-only steps still require observed/reported
+support. Citations in the final Double-check section are checked too.
+Privacy checks and independent, hash-bound semantic review are unchanged.
+
 ## CLI and exit contract
 
 From the skill directory, using already-approved absolute input paths:

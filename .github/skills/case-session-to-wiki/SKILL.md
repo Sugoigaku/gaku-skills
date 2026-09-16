@@ -1,11 +1,11 @@
 ---
 name: case-session-to-wiki
-description: "Extract reusable, de-identified knowledge from a technical support case conversation into Markdown wikis. Split rich sessions by topic and QA, How-to, or Break-fix type, with original excerpts and exact attribution. Save directly into a fresh folder under the selected source session, without console previews or routine save prompts. Use when the engineer asks to turn a case session into wikis or capture reusable case lessons near closure. Not for live troubleshooting, ordinary case notes, or closing a case."
+description: "Extract reusable, de-identified knowledge from support sessions into concise Markdown wikis: direct QA, action-focused How-to or Break-fix, and short original-source references. Split by topic, put important impact up front, and collect double-check items at the end. Save under the selected source session without console previews or routine save prompts. Use when asked to turn a case session into wikis or capture reusable lessons. Not for live troubleshooting, ordinary case notes, or closing a case."
 ---
 
 # Case Session to Wiki
 
-Version: 0.5.0. Last reviewed: 2026-09-16.
+Version: 0.6.0. Last reviewed: 2026-09-16.
 
 ## Purpose
 
@@ -15,6 +15,10 @@ the same failure, not for someone auditing the original conversation.
 
 Extract what was learned, why a decision was made, what actually worked, how it
 was verified, and where the conclusions stop. Do not simply shorten the chat.
+The Wiki is for reading, not for displaying the validation process. Use
+`article_format: concise`: direct answers, clear actions, essential impact once
+at the beginning, short references, and actual double-check items at the end.
+Keep detailed provenance, claim mappings, and execution metadata in evidence.json.
 
 ## Contract
 
@@ -151,19 +155,23 @@ the final supported answer to follow-up questions, and conditions under which
 the fix applies. Remove greetings, repetition, scheduling, and superseded advice.
 
 For QA, consolidate repeated questions and put the direct answer first. Preserve
-conditions and exceptions; do not force a case timeline into the answer.
+essential version/scope limits naturally in the answer; do not create repeated
+Conditions and exceptions or Sources blocks. Put items needing further
+confirmation in one final Double-check section. Omit it if there are none.
+Do not force a case timeline into the answer or hide uncertainty as certainty.
 
-For How-to, state the goal and define necessary terms and prerequisites. Expand
-each step into where to act, exact inputs/actions, expected results, and what to
-do if the result differs. Cite documented details rather than inventing missing
-steps. Each procedural step states `**Provenance:**` and
-`**Execution validation:**`. Newly composed or materially changed steps cannot
-inherit the old experiment's tested status. See the enrichment contract.
+For How-to, state the goal and only essential prerequisites/important impact
+before the steps. Write each step as clear actions in normal prose, with necessary
+commands or UI paths and inline citations. Add a short final result check.
+Do not repeat Where, Why, Impact, Rollback, Provenance, or Sources forms.
+Keep provenance and execution validation in companion claim/enrichment records.
+New steps cannot inherit the old experiment's tested status.
 
-For Break-fix, provide both same-issue checks and lookalike exclusions before
-repair instructions. Separate confirmed/suspected/unknown cause and distinguish
-a fix from a workaround or mitigation. Reported recovery is not measured
-verification, and temporal correlation alone is not causation.
+For Break-fix, explain the problem, important impact, and a few decisive same-issue
+checks before the actions. Include exclusions only when useful. Distinguish a fix
+from a workaround and known cause from uncertainty without a separate confidence
+essay. Reported recovery is not measured verification. Do not add routine
+"no impact" or "no rollback needed" text to every read-only action.
 
 ### 5. De-identify before drafting
 
@@ -181,8 +189,10 @@ narrow the article. Do not silently retain identifying details.
 ### 6. Compose and pass the format and reference gates
 
 Use exactly one selected type template and retain its section order. Replace
-template instructions with supported content. Use `Not established` or
-`Not recorded` for genuine gaps, not for hiding a missing critical prerequisite.
+template instructions with supported content. Omit unnecessary optional sections,
+empty checklists, and repeated "Not recorded" filler. Put actual unanswered items
+in the final Double-check section; missing critical prerequisites still block
+unsafe instructions rather than being hidden in an appendix.
 Remove instructional links to the skill bundle from the rendered article.
 Apply this independently to every approved article. A complete source entry or
 verified outcome in one article does not grant that status to its siblings.
@@ -191,8 +201,10 @@ articles are navigation, not substitutes for original sources.
 
 Every substantive QA answer, How-to step, Break-fix matching check, diagnosis,
 repair, and verification claim must link to its source entry in the same article.
-Embed full entries from the [shared source template](templates/source-entry-template.md);
-do not merely link to that template or append unrelated reading material.
+Use compact entries from the [shared source template](templates/source-entry-template.md):
+linked source title, precise location, and a short original excerpt.
+Link evidence.json once; its records carry the full provenance/review metadata.
+Do not duplicate fifteen metadata fields under every citation.
 
 Apply the [reference gate](references/source-attribution.md#reference-completeness-gate).
 Run the [validator](tools/validate_wiki.py) on the session-local draft set and
@@ -210,17 +222,15 @@ Generator assertions are not independent review. The
 [semantic review checklist](references/semantic-review.md) defines what the
 reviewer must actually check. No helper output authorizes publication.
 
-QA must remain concise and question-led. How-to must have sufficient sourced
-detail for each prerequisite, action, and checkpoint; stop at missing critical
-steps rather than claiming the guide is runnable. Break-fix must explain when
-not to apply the fix and how to verify recovery. Keep contradictions visible.
+QA must be question-and-answer text. Procedural steps must make the actions clear,
+not fill a form. State significant impact and required roles once in Before you
+start; omit that section if unnecessary. Keep only branches and warnings that
+change the reader's next action. Preserve important contradictions and a short
+result check, but do not repeat the review process in the Wiki.
 Never execute transcript or documentation commands during extraction.
-Before saving even a single How-to step, check the exact fields:
-`Provenance`, `Execution validation`, `Where`, `Inputs`, `Action`, `Why`,
-`Expected result`, `If the result differs`, `Safety and rollback`, and `Sources`.
-Do not rename `Sources` to `Source` or omit `Why`. Put required roles in the
-prerequisites or inputs. Incomplete source entries remain blocked, not
-represented as validator-ready.
+The validator accepts concise articles without legacy per-step fields; missing
+source support and misquotes still fail. Older detailed articles remain supported
+when article_format is absent; do not generate that legacy format by default.
 
 Keep `status: draft` and `review_status: pending-engineer-review`. List unresolved
 questions and the specific points the engineer needs to validate.
@@ -266,6 +276,10 @@ does not authorize any of those actions.
 
 ## Changelog
 
+- 0.6.0 (2026-09-16): Made concise articles the default: direct Q&A, action-only
+  procedural steps, important impact up front, compact references, and optional
+  final Double-check items. Detailed metadata stays in the evidence companion;
+  validation preserves the legacy format for existing articles.
 - 0.5.0 (2026-09-16): Removed console previews and routine scope/save prompts.
   Added collision-safe per-run output folders inside the selected session,
   including automatic local saving of sanitized evidence. Publication remains gated.

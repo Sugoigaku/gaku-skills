@@ -52,6 +52,11 @@ HEADINGS = {
         "Open questions and limitations", "References and original excerpts", "Review checklist",
     ],
 }
+CONCISE_HEADINGS = {
+    "qa": ["Questions and answers", "References"],
+    "how-to": ["Goal", "Before you start", "Steps", "Check the result", "References"],
+    "break-fix": ["Problem", "Before you start", "Identify the issue", "Steps", "Check the result", "References"],
+}
 SOURCE_FIELDS = {
     "id", "kind", "title", "publisher", "origin", "locator", "version",
     "inspection_status", "text", "excerpt_handling",
@@ -481,7 +486,9 @@ def _frontmatter(text: str, loc: str, issues: list[Issue]) -> tuple[dict, str]:
             _enum(metadata[key], values, loc + ":metadata:" + key, issues)
     kind = metadata.get("wiki_type")
     outcomes = OUTCOMES.get(kind, {}) if type(kind) is str else {}
-    allowed = set(METADATA_VALUES) | {"title", "product", "tags"} | set(outcomes)
+    allowed = set(METADATA_VALUES) | {"title", "product", "tags", "article_format"} | set(outcomes)
+    if "article_format" in metadata:
+        _enum(metadata["article_format"], {"concise"}, loc + ":metadata:article_format", issues)
     if set(metadata) - allowed:
         issues.append(Issue("frontmatter-field-not-allowed", loc + ":metadata"))
     for key, values in outcomes.items():
@@ -587,10 +594,31 @@ def _check_links(article: Article, approved: Path, declared: set[str], issues: l
             issues.append(Issue("local-link-target-unavailable", location))
 
 
+def _reference_section(article: Article) -> Section | None:
+    title = "References" if article.metadata.get("article_format") == "concise" else "References and original excerpts"
+    return next((s for s in article.sections if s.level == 2 and s.title == title), None)
+
+
+def _claim_content(article: Article, *, visible: bool = False) -> str:
+    text = article.visible if visible else article.body
+    refs = _reference_section(article)
+    if refs is None:
+        return text
+    if article.metadata.get("article_format") == "concise":
+        return text[:refs.start] + " " * (refs.end - refs.start) + text[refs.end:]
+    return text[:refs.start]
+
+
 def _check_sources(article: Article, sources: dict[str, dict], evidence_name: str, issues: list[Issue]) -> set[str]:
-    refs = next((s for s in article.sections if s.level == 2 and s.title == "References and original excerpts"), None)
+    refs = _reference_section(article)
     if not refs:
         return set()
+    concise = article.metadata.get("article_format") == "concise"
+    if concise and not any(
+        link[2] == evidence_name
+        for link in LINK.finditer(article.visible[refs.content_start:refs.end])
+    ):
+        issues.append(Issue("source-entry-evidence-link-mismatch", article.location + ":references"))
     entries = [s for s in article.sections if s.level == 3 and refs.start < s.start < refs.end]
     ids: set[str] = set()
     mapping = {
@@ -606,12 +634,33 @@ def _check_sources(article: Article, sources: dict[str, dict], evidence_name: st
             continue
         ids.add(sid)
         fields = _fields(article.body[entry.content_start:entry.end])
+        source = sources[sid]
+        if concise:
+            required = ["Source", "Location"]
+            if source["excerpt_handling"] == "redacted":
+                required.append("Excerpt handling")
+            required.append("Original excerpt")
+            if list(fields) != required or any(len(v) != 1 or not v[0].strip() for v in fields.values()):
+                issues.append(Issue("source-entry-fields-invalid", loc))
+                continue
+            destination = source["origin"] if source["kind"] == "public-document" else evidence_name
+            if _one_field(fields, "Source") != f'[{source["title"]}]({destination})':
+                issues.append(Issue("source-entry-evidence-mismatch", loc + ":origin-or-title"))
+            if _one_field(fields, "Location") != source["locator"]:
+                issues.append(Issue("source-entry-evidence-mismatch", loc + ":locator"))
+            if source["excerpt_handling"] == "redacted" and _one_field(fields, "Excerpt handling") != "redacted":
+                issues.append(Issue("source-entry-evidence-mismatch", loc + ":excerpt_handling"))
+            excerpt = _quote(_one_field(fields, "Original excerpt"))
+            if excerpt is None:
+                issues.append(Issue("source-excerpt-format-invalid", loc))
+            elif excerpt != normalize_excerpt(source["text"]):
+                issues.append(Issue("source-excerpt-mismatch", loc))
+            continue
         if set(fields) != set(SOURCE_MARKDOWN_FIELDS) or any(len(v) != 1 or not v[0].strip() for v in fields.values()):
             issues.append(Issue("source-entry-fields-invalid", loc))
             continue
         if list(fields) != SOURCE_MARKDOWN_FIELDS:
             issues.append(Issue("source-entry-field-order", loc))
-        source = sources[sid]
         for label, key in mapping.items():
             value = _one_field(fields, label)
             if label == "Origin":
@@ -637,7 +686,7 @@ def _check_sources(article: Article, sources: dict[str, dict], evidence_name: st
             valid_date = False
         if not valid_date and not (inspected == "Not independently inspected" and source["inspection_status"] == "supplied-excerpt-only"):
             issues.append(Issue("source-inspection-date-invalid", loc))
-    body_citations = list(CITATION.finditer(article.visible[:refs.start]))
+    body_citations = list(CITATION.finditer(_claim_content(article, visible=True)))
     cited = {m[1] for m in body_citations}
     for citation in CITATION.finditer(article.visible):
         if citation[1].lower() != citation[2] or citation[1] not in ids:
@@ -657,10 +706,11 @@ def _direct_content(article: Article, section: Section) -> str:
 
 def _check_claims_and_enrichments(article: Article, record: dict, sources: dict[str, dict], issues: list[Issue]) -> set[str]:
     loc = article.location
-    refs = next((s for s in article.sections if s.level == 2 and s.title == "References and original excerpts"), None)
-    end = refs.start if refs else len(article.body)
-    body = article.body[:end]
-    visible = article.visible[:end]
+    concise = article.metadata.get("article_format") == "concise"
+    refs = _reference_section(article)
+    body = _claim_content(article)
+    visible = _claim_content(article, visible=True)
+    end = len(body)
     citations = list(CITATION.finditer(visible))
     selected_ids: set[str] = set()
     claim_positions: list[tuple[int, int, set[str]]] = []
@@ -692,6 +742,8 @@ def _check_claims_and_enrichments(article: Article, record: dict, sources: dict[
         issues.append(Issue("claim-citation-coverage-mismatch", loc + ":claims"))
     kind = article.metadata["wiki_type"]
     container_name = {"qa": "Questions and answers", "how-to": "Step-by-step procedure", "break-fix": "Resolution or workaround"}[kind]
+    if concise and kind != "qa":
+        container_name = "Steps"
     container = next((s for s in article.sections if s.level == 2 and s.title == container_name), None)
     blocks = [s for s in article.sections if s.level == 3 and container and container.start < s.start < container.end]
     if any(s.start < end and s not in blocks and re.match(r"Step [0-9]+", s.title) for s in article.sections):
@@ -710,14 +762,21 @@ def _check_claims_and_enrichments(article: Article, record: dict, sources: dict[
             issues.append(Issue("answer-or-step-heading-invalid", bloc))
         text = article.visible[block.content_start:block.end]
         fields = _fields(article.body[block.content_start:block.end])
-        if any(not _one_field(fields, key) for key in required_fields):
+        if not concise and any(not _one_field(fields, key) for key in required_fields):
             issues.append(Issue("answer-or-step-fields-missing", bloc))
+        if concise and set(fields) & {
+            "Conditions and exceptions", "Provenance", "Execution validation",
+            "Where", "Inputs", "Why", "Expected result", "If it fails",
+            "If the result differs", "Safety and rollback", "Rollback",
+            "Prerequisites and impact", "Sources",
+        }:
+            issues.append(Issue("concise-block-boilerplate", bloc))
         block_ids = {m[1] for m in CITATION.finditer(text)}
         mapped = set().union(*(ids for start, finish, ids in claim_positions if block.content_start <= start < finish <= block.end))
         if not block_ids or not mapped or not block_ids <= mapped:
             issues.append(Issue("answer-or-step-claim-citation-missing", bloc))
     enrichments = {item["section"]: item for item in record["enrichments"]}
-    sections = [s for s in article.sections if s.level >= 2 and s.start < end]
+    sections = [s for s in article.sections if s.level >= 2 and (not refs or s.start < refs.start)]
     titles = [s.title for s in sections]
     for index, item in enumerate(record["enrichments"]):
         if titles.count(item["section"]) != 1:
@@ -732,6 +791,21 @@ def _check_claims_and_enrichments(article: Article, record: dict, sources: dict[
         is_step = kind != "qa" and section in blocks
         is_enriched = section.title in enrichments
         sloc = f"{loc}:section[{index}]"
+        if concise:
+            section_claims = [
+                claim for claim in record["claims"]
+                if normalize_excerpt(claim["text"]) in article.body[section.content_start:section.end]
+            ]
+            if is_step and any(c["basis"] in {"documented", "inferred"} for c in section_claims) and not is_enriched:
+                issues.append(Issue("enrichment-label-manifest-mismatch", sloc))
+            if is_enriched:
+                section_ids = {m[1] for m in CITATION.finditer(_direct_content(article, section))}
+                if not set(enrichments[section.title]["source_ids"]) <= section_ids:
+                    issues.append(Issue("enrichment-validation-or-citations-mismatch", sloc))
+            if extraction and is_step:
+                if not any(c["basis"] in {"observed", "reported"} for c in section_claims):
+                    issues.append(Issue("extraction-only-step-needs-observed-or-reported-claim", sloc))
+            continue
         if is_step or provenance is not None or validation is not None or is_enriched:
             if provenance not in PROVENANCES or validation not in EXECUTION_VALIDATIONS:
                 issues.append(Issue("provenance-or-execution-label-missing-or-invalid", sloc))
@@ -960,7 +1034,18 @@ def validate_bundle(
             continue
         article = Article(path.name, raw, metadata, body, visible, _sections(visible), loc)
         articles.append(article)
-        if [s.title for s in article.sections if s.level == 2] != HEADINGS[metadata["wiki_type"]]:
+        actual_headings = [s.title for s in article.sections if s.level == 2]
+        expected_headings = HEADINGS[metadata["wiki_type"]]
+        if metadata.get("article_format") == "concise":
+            expected_headings = CONCISE_HEADINGS[metadata["wiki_type"]]
+            if "Before you start" not in actual_headings:
+                expected_headings = [h for h in expected_headings if h != "Before you start"]
+            if actual_headings and actual_headings[-1] == "Double-check":
+                actual_headings = actual_headings[:-1]
+            double_check = next((s for s in article.sections if s.level == 2 and s.title == "Double-check"), None)
+            if double_check and not article.visible[double_check.content_start:double_check.end].strip():
+                issues.append(Issue("double-check-empty", loc + ":body"))
+        if actual_headings != expected_headings:
             issues.append(Issue("article-headings-mismatch", loc + ":body"))
         if len([s for s in article.sections if s.level == 1]) != 1:
             issues.append(Issue("article-title-heading-invalid", loc + ":body"))
