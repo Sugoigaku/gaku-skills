@@ -41,6 +41,9 @@ claim mappings and citations; they must not acquire invented experiment results.
 Required roles and meaningful impact belong once at the beginning. Steps contain
 the necessary actions, inputs, and citations in plain language, not repeated
 forms. Keep an important branch or stop condition where the reader needs it.
+Simple structure still requires detailed instructions. Use the
+[detailed-action contract](procedural-detail.md) for exact UI choices and full
+commands with input explanations and notes; never omit required steps for brevity.
 Legacy articles without article_format retain their original label requirements.
 
 ## No inherited success

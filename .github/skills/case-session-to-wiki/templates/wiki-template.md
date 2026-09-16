@@ -37,6 +37,8 @@ not necessarily one template for the entire session.
   into an optional final Double-check section.
 - Procedural impact and essential prerequisites appear once up front. Steps
   contain actions and inline citations, not repeated Where/Why/Rollback labels.
+- Simple structure does not mean short steps: use exact UI substeps and complete
+  commands with explanatory notes under the [detailed-action contract](../references/procedural-detail.md).
 - Set `wiki_type` to exactly `qa`, `how-to`, or `break-fix`.
 - Keep source coverage separate from reference completeness and outcome confidence.
 - Default to `content_mode: documentation-enriched`, labeling added procedures;

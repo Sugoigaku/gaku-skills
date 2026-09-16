@@ -28,6 +28,12 @@ services are needed by those helpers themselves.
 New articles use `article_format: concise`. There are no per-answer Conditions
 and exceptions blocks or repeated per-step Where/Why/Impact/Rollback forms.
 State important impact once before the steps; omit routine "no impact" padding.
+**How-to and Break-fix steps must still be detailed.** Describe exactly where to
+click, which options/values to choose, and how to apply the change. Include full
+PowerShell or other documented commands where practical, with variable setup,
+input explanations, short comments/notes, and interpretable results. There is
+no word-count target for necessary instructions. See the
+[detailed-action contract](.github/skills/case-session-to-wiki/references/procedural-detail.md).
 Group actual uncertainties in a final **Double-check** section and omit it when
 there is nothing to check. Keep essential qualifications in the answer/action
 so brevity does not turn a provisional conclusion into a false certainty.
@@ -270,4 +276,4 @@ wikis, publication, and closure automation are not part of v0.7.0.
 - [About agent skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)
 - [Adding skills to Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills)
 
-Version: 0.7.0. Last reviewed: 2026-09-16.
+Version: 0.7.1. Last reviewed: 2026-09-16.

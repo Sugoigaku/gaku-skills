@@ -166,7 +166,7 @@ class ConciseWikiTests(unittest.TestCase):
         self.edit("article_format: concise", "article_format: unchecked")
         self.check("schema-enum-invalid")
 
-    def test_concise_samples_are_materially_shorter(self):
+    def test_boilerplate_is_removed_from_minimal_samples(self):
         for kind in validator.HEADINGS:
             with self.subTest(kind=kind):
                 compact = concise_article(kind, source())
@@ -174,6 +174,39 @@ class ConciseWikiTests(unittest.TestCase):
                 self.assertLess(len(compact.splitlines()), len(legacy.splitlines()) * 0.7)
                 self.assertNotIn("**Conditions and exceptions:**", compact)
                 self.assertNotIn("**Provenance:**", compact)
+
+    def test_detailed_ui_substeps_are_allowed_without_legacy_forms(self):
+        self.make_bundle(("how-to",))
+        actions = (
+            "\n\n1. On the synthetic administration console, open **Settings**.\n"
+            "2. Select **Sample feature**, then select **Enabled**.\n"
+            "3. Select **Apply** and wait for the confirmation message.\n"
+            "4. Reopen **Sample feature** and check that the selection remains enabled.\n\n"
+            "**Notes:** Use the target test environment, not another environment "
+            "with a similar display name."
+        )
+        self.edit(CLAIM + " [S1](#s1)", CLAIM + " [S1](#s1)" + actions)
+        self.assertEqual(self.check()["semantic_review"], "pending")
+        text = self.paths[0].read_text(encoding="utf-8")
+        self.assertIn("Select **Apply**", text)
+        self.assertNotIn("**Where:**", text)
+
+    def test_complete_powershell_with_comments_and_notes_is_allowed(self):
+        self.make_bundle(("break-fix",))
+        code = (
+            "\n\nOpen PowerShell on the target test Windows machine.\n\n"
+            "```powershell\n"
+            "# Replace this with the service Name, not its DisplayName.\n"
+            "$ServiceName = '<SERVICE_NAME>'\n"
+            "Get-Service -Name $ServiceName -ErrorAction Stop\n"
+            "```\n\n"
+            "**Notes:** Replace the placeholder with the intended service name. "
+            "Inspect the returned Name and Status columns. If the command fails, "
+            "retain the error rather than assuming the service is stopped.\n"
+        )
+        self.edit(CLAIM + " [S1](#s1)", CLAIM + " [S1](#s1)" + code)
+        self.assertEqual(self.check()["semantic_review"], "pending")
+        self.assertIn(code, self.paths[0].read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

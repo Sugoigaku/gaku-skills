@@ -439,3 +439,22 @@ Expected:
 - Keep the original excerpts and precise source locations in compact References.
 - The legacy detailed profile remains valid for old saved articles but is not
   the default for new generation.
+
+## 25. Simple structure with complete UI and command instructions
+
+Provide sourced UI instructions that identify a console, navigation path,
+configuration option, input value, and Apply action, plus a documented CLI
+alternative with required variables and expected output.
+
+Expected:
+- How-to and Break-fix retain the full navigable UI sequence as numbered substeps.
+- Useful CLI alternatives include the complete fenced command or script, required
+  setup, explained placeholders, and short comments or Notes.
+- State where to run the command and whether elevation or a particular shell
+  version is needed. Do not assume variables from an unrelated session exist.
+- Explain how the reader checks success and what to do for the relevant failure.
+- Do not reduce a step to "import the certificate" or "restart the service."
+- Do not restore repetitive Where/Why/Impact/Provenance forms or pad harmless
+  actions with warnings. Necessary procedural detail has no word-count target.
+- QA remains direct Q&A; provenance, execution status, and review metadata stay
+  in the companion. Layout validation is not proof that a command was executed.

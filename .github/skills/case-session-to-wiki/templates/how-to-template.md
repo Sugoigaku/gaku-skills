@@ -31,14 +31,23 @@ disruption. State these once here. Omit this section if unnecessary.>
 
 ### Step 1 - <Action>
 
-<Say exactly what to do, including necessary UI paths, inputs, or commands.
-Use normal prose and inline citations, not a repeated form of Where/Why/Impact/
-Rollback/Provenance fields. Include a branch only when it changes the next action.
-Keep execution/provenance details in the evidence companion.>
+<Explain the action in detail using numbered substeps:
+on which machine/page to begin, how to open the interface, which navigation path
+and exact option to select, what values to enter, and how to apply/save.
+When a documented PowerShell/CLI route is useful, include the complete command
+block, required variables, and short comments or Notes explaining the inputs,
+execution context, and result. No ellipses or assumed hidden setup.
+State how to recognize success and the meaningful next step on failure.
+Use inline citations and plain prose, not repeated Where/Why/Impact forms.>
+
+Follow the [detailed-action contract](../references/procedural-detail.md).
+Keep execution/provenance metadata in the companion; do not shorten necessary
+instructions merely to make a step one sentence.
 
 ## Check the result
 
-<A short observable success check. Do not invent a successful execution.>
+<Give the command or exact UI actions needed to check the result, and explain
+the expected value/message. Distinguish observed results from unexecuted checks.>
 
 ## References
 

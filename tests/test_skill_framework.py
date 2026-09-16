@@ -186,6 +186,19 @@ class SkillFrameworkTests(unittest.TestCase):
         self.assertIn("## Before you start", text)
         self.assertEqual(re.findall(r"(?m)^\*\*([^*]+):\*\*", text), [])
 
+    def test_procedural_templates_require_detail_not_one_line_summaries(self):
+        for kind in ("how-to", "break-fix"):
+            text = TEMPLATES[kind].read_text(encoding="utf-8")
+            with self.subTest(kind=kind):
+                self.assertIn("](../references/procedural-detail.md)", text)
+                self.assertIn("numbered substeps", text)
+                self.assertIn("command", text)
+                self.assertIn("Notes", text)
+        guidance = (SKILL_DIR / "references" / "procedural-detail.md").read_text(encoding="utf-8")
+        self.assertIn("No word-count", SKILL.read_text(encoding="utf-8"))
+        self.assertIn("complete code block", guidance)
+        self.assertIn("how to apply the change", guidance)
+
     def test_break_fix_retains_identification_and_important_impact_up_front(self):
         text = TEMPLATES["break-fix"].read_text(encoding="utf-8")
         self.assertLess(text.index("## Before you start"), text.index("## Steps"))
@@ -203,6 +216,7 @@ class SkillFrameworkTests(unittest.TestCase):
             "references/evidence-validation.md",
             "references/semantic-review.md",
             "references/diagrams.md",
+            "references/procedural-detail.md",
             "tools/session_reader.py",
             "tools/validate_wiki.py",
             "templates/wiki-template.md",
@@ -243,7 +257,7 @@ class SkillFrameworkTests(unittest.TestCase):
         for document in (ROOT / "README.md", SKILL):
             with self.subTest(document=document):
                 self.assertIn(
-                    "Version: 0.7.0. Last reviewed: 2026-09-16.",
+                    "Version: 0.7.1. Last reviewed: 2026-09-16.",
                     document.read_text(encoding="utf-8"),
                 )
 

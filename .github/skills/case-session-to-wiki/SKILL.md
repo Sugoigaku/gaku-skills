@@ -1,11 +1,11 @@
 ---
 name: case-session-to-wiki
-description: "Extract reusable, de-identified knowledge from support sessions into concise Markdown wikis: direct QA, action-focused How-to or Break-fix, and short original-source references. Split by topic, put important impact up front, and collect double-check items at the end. Save under the selected source session without console previews or routine save prompts. Use when asked to turn a case session into wikis or capture reusable lessons. Not for live troubleshooting, ordinary case notes, or closing a case."
+description: "Extract reusable, de-identified knowledge from support sessions into clearly structured Markdown wikis: direct QA, detailed UI and command steps for How-to or Break-fix, and short original-source references. Split by topic, put important impact up front, and collect double-check items at the end. Save under the selected source session without console previews or routine save prompts. Use when asked to turn a case session into wikis or capture reusable lessons. Not for live troubleshooting, ordinary case notes, or closing a case."
 ---
 
 # Case Session to Wiki
 
-Version: 0.7.0. Last reviewed: 2026-09-16.
+Version: 0.7.1. Last reviewed: 2026-09-16.
 
 ## Purpose
 
@@ -19,6 +19,9 @@ The Wiki is for reading, not for displaying the validation process. Use
 `article_format: concise`: direct answers, clear actions, essential impact once
 at the beginning, short references, and actual double-check items at the end.
 Keep detailed provenance, claim mappings, and execution metadata in evidence.json.
+For How-to and Break-fix, concise structure does not mean short instructions:
+write detailed UI substeps, complete commands, and useful notes. No word-count
+target may remove information needed to perform or verify an action.
 Optionally draw a small concept diagram when it genuinely improves understanding:
 Mermaid by default, static SVG as a fallback. Most simple articles need none.
 
@@ -55,6 +58,7 @@ source material. Also follow the [enrichment rules](references/enrichment.md) an
 [evidence validation contract](references/evidence-validation.md). Neither
 format selection nor a passing script substitutes for semantic review.
 For diagrams, follow the [diagram contract](references/diagrams.md).
+For procedural articles, follow the [detailed-action contract](references/procedural-detail.md).
 
 ## Workflow
 
@@ -164,14 +168,20 @@ confirmation in one final Double-check section. Omit it if there are none.
 Do not force a case timeline into the answer or hide uncertainty as certainty.
 
 For How-to, state the goal and only essential prerequisites/important impact
-before the steps. Write each step as clear actions in normal prose, with necessary
-commands or UI paths and inline citations. Add a short final result check.
+before the steps. Explain each action in enough detail to perform it: exact
+console/page, navigation, option, values, and apply/save choices. Use numbered
+substeps where helpful. When a documented command is practical, include its
+complete fenced code block, execution context, input explanations, and short
+comments or notes. State the observable result and relevant failure handling.
 Do not repeat Where, Why, Impact, Rollback, Provenance, or Sources forms.
 Keep provenance and execution validation in companion claim/enrichment records.
 New steps cannot inherit the old experiment's tested status.
 
 For Break-fix, explain the problem, important impact, and a few decisive same-issue
-checks before the actions. Include exclusions only when useful. Distinguish a fix
+checks before the actions. Explain how to perform those checks, not just what
+to check. Give repair and recovery-verification steps the same UI/command detail
+as How-to; "import the certificate" or "restart the service" alone is insufficient.
+Include exclusions only when useful. Distinguish a fix
 from a workaround and known cause from uncertainty without a separate confidence
 essay. Reported recovery is not measured verification. Do not add routine
 "no impact" or "no rollback needed" text to every read-only action.
@@ -226,7 +236,9 @@ Generator assertions are not independent review. The
 reviewer must actually check. No helper output authorizes publication.
 
 QA must be question-and-answer text. Procedural steps must make the actions clear,
-not fill a form. State significant impact and required roles once in Before you
+not fill a form or become one-line summaries. Before saving, check that a reader
+can find each UI option, run the complete commands using explained inputs, and
+recognize the result without guessing. State significant impact and required roles once in Before you
 start; omit that section if unnecessary. Keep only branches and warnings that
 change the reader's next action. Preserve important contradictions and a short
 result check, but do not repeat the review process in the Wiki.
@@ -295,6 +307,9 @@ does not authorize any of those actions.
 
 ## Changelog
 
+- 0.7.1 (2026-09-16): Clarified that simple structure must retain detailed
+  procedural content: exact UI substeps, complete commands with input notes,
+  and executable checks. QA and compact references remain unchanged.
 - 0.7.0 (2026-09-16): Added optional source-backed concept diagrams: Mermaid
   by default and static SVG fallback, with cited captions, local asset validation,
   and SVG hashes included in separate review attestations.

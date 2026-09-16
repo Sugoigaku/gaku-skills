@@ -28,8 +28,9 @@ Omit this section if there is nothing material to warn about.>
 
 ## Identify the issue
 
-<A few decisive checks showing whether this is the same problem. Include
-lookalike exclusions only when useful; no mandatory multi-column table.>
+<A few decisive checks showing whether this is the same problem. Explain how
+to open the relevant log/page or run the full diagnostic command, what to look
+for, and what matching/non-matching results mean. No mandatory multi-column table.>
 
 A small sourced decision diagram may help here; follow the
 [diagram rules](../references/diagrams.md). Do not repeat every step as a diagram.
@@ -38,14 +39,21 @@ A small sourced decision diagram may help here; follow the
 
 ### Step 1 - <Action>
 
-<Clear actions, required commands/UI locations, and inline citations.
-Call a workaround a workaround. Do not repeat Impact/Why/Rollback/Provenance
-forms. Put detailed verification metadata in the evidence companion.>
+<Give detailed, executable instructions, with numbered substeps if needed:
+the target host/page, exact UI navigation and options, entered values, and
+apply/save actions. For a practical documented PowerShell/CLI route, include
+the full command block and explanatory comments or Notes. Explain placeholders,
+required setup, expected output, and relevant failure handling.
+Call a workaround a workaround; use inline citations, not repeated
+Impact/Why/Rollback/Provenance forms. Keep review metadata in the companion.>
+
+Follow the [detailed-action contract](../references/procedural-detail.md).
+Do not stop at "import the certificate" or "restart the service" without saying how.
 
 ## Check the result
 
-<How to verify recovery, briefly. Distinguish recorded results from checks
-the reader still needs to perform.>
+<Give the full check command or exact UI actions and explain what confirms
+recovery. Distinguish recorded results from checks the reader must still perform.>
 
 ## References
 
