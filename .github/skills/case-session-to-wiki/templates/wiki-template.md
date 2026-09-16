@@ -1,84 +1,39 @@
----
-title: "<Technical symptom and distinguishing condition>"
-status: draft
-review_status: pending-engineer-review
-product: "<Product and relevant version, or Not recorded>"
-source_kind: "<current-session or provided-transcript>"
-source_coverage: partial
-root_cause_status: unknown
-resolution_status: unverified
-tags: []
----
+# Wiki Template Selector
 
-# <Technical title without customer or case identifiers>
+This index replaces the v0.1 generic article template. Do not render this file
+as a wiki or fall back to a catch-all structure. Select one template below.
 
-## Problem and applicability
+## Selection rules
 
-Describe the observable problem, relevant environment constraints, prerequisites,
-and when this article does not apply. Include only supported scope.
+1. Honor the engineer's explicit type. If it would omit essential safety or
+   diagnostic content, explain the mismatch and ask before changing the type.
+2. Otherwise identify the dominant reader intent:
 
-## Key findings
+   | Intent | Type | Template |
+   | --- | --- | --- |
+   | Understand a topic, behavior, limitation, or answer | `qa` | [QA](qa-template.md) |
+   | Achieve a goal, configure something, or perform a task | `how-to` | [How-to](how-to-template.md) |
+   | Recognize and restore a failed operation | `break-fix` | [Break-fix](break-fix-template.md) |
 
-| Reusable finding | Evidence | Qualification |
-| --- | --- | --- |
-| <Finding> | E1 | <Supported scope or uncertainty> |
+3. A repair does not become How-to merely because it has numbered steps.
+   A configuration goal does not become Break-fix merely because questions arose.
+   The current requested reader task wins over incidental conversation content.
+4. If the intent is genuinely mixed or ambiguous, ask a focused scope question.
+   Propose separate, related articles when useful; do not create extra files
+   without agreement. A brief relevant Q&A can live inside a procedural article,
+   but must not hide a second independent topic or replace its required sections.
 
-## Troubleshooting decision path
+## Shared contract
 
-Keep meaningful diagnostic forks and useful failed attempts, not every chat turn.
-
-| Question or hypothesis | Check or action | Observed result | Interpretation and next decision | Evidence |
-| --- | --- | --- | --- | --- |
-| <Question> | <Recorded check> | <Observed or reported result> | <What this supports or rules out> | E1 |
-
-## Cause and confidence
-
-State whether the cause is confirmed, suspected, or unknown, with evidence.
-Explain relevant contradictions and why recovery does or does not establish cause.
-
-## Resolution or workaround
-
-Identify the action as a fix, workaround, or mitigation. Describe only recorded
-steps and supported conditions. For commands, identify placeholders, execution
-status, read/write impact, and recorded safety/rollback information. Label gaps.
-Do not promote a proposal to a proven procedure.
-
-## Verification
-
-| Validation check | Recorded success criterion | Actual result and scope | Evidence |
-| --- | --- | --- | --- |
-| <Check> | <Criterion, or Not recorded> | <Observed, reported, or unverified> | E2 |
-
-## Reusable lessons and follow-up answers
-
-Capture transferable decisions, pitfalls, and supported answers to later
-technical questions. Keep their applicability and limitations explicit.
-
-## Open questions and limitations
-
-List missing source history, untested assumptions, conflicting results, unknown
-cause, missing safety details, and anything the engineer must still confirm.
-Do not imply that closing the case answers every technical question.
-
-## Evidence and references
-
-Source coverage: <What was actually read and what is unavailable>.
-Local E-labels refer to this extraction, not original message identifiers.
-
-| Evidence | Source kind and safe locator | Minimal de-identified excerpt or observation |
-| --- | --- | --- |
-| E1 | <Tool output, report, or document; safe locator> | <Supporting content> |
-| E2 | <Source kind; safe locator> | <Supporting content> |
-
-List supplied, non-identifying documentation links if useful. Distinguish
-session-cited links from documentation actually read and validated.
-
-## Review checklist
-
-- [ ] Every material claim has support, or is explicitly marked uncertain.
-- [ ] Proposed and rejected actions are not presented as completed fixes.
-- [ ] Cause, resolution, and verification statuses match the evidence.
-- [ ] Coverage gaps and relevant later corrections are visible.
-- [ ] Customer/case identifiers, private links, and credentials are absent.
-- [ ] Commands have appropriate context, safety qualifications, and placeholders.
-- [ ] The article remains a draft pending engineer review.
+- Set `wiki_type` to exactly `qa`, `how-to`, or `break-fix`.
+- Keep source coverage separate from reference completeness and outcome confidence.
+- All three templates include **References and original excerpts** and use the
+  same [source entry template](source-entry-template.md).
+- Cite sources beside the answers, steps, checks, and conclusions they support.
+  A bibliography without inline attribution or original excerpts is incomplete.
+- Apply the [attribution rules](../references/source-attribution.md) before saving.
+  Expand source entries inside the generated article; do not leave template links.
+- Keep QA concise, How-to novice-followable, and Break-fix diagnostic and actionable.
+  Do not add irrelevant sections solely to make the types look alike.
+- Missing evidence stays explicit. Reference or critical procedural gaps block
+  saving until resolved or the unsupported scope is removed.

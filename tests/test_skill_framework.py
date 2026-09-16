@@ -8,19 +8,35 @@ from urllib.parse import unquote, urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 SKILL_DIR = ROOT / ".github" / "skills" / "case-session-to-wiki"
 SKILL = SKILL_DIR / "SKILL.md"
-TEMPLATE = SKILL_DIR / "templates" / "wiki-template.md"
-HEADINGS = (
-    "Problem and applicability",
-    "Key findings",
-    "Troubleshooting decision path",
-    "Cause and confidence",
-    "Resolution or workaround",
-    "Verification",
-    "Reusable lessons and follow-up answers",
+SELECTOR = SKILL_DIR / "templates" / "wiki-template.md"
+SOURCE_ENTRY = SKILL_DIR / "templates" / "source-entry-template.md"
+TEMPLATES = {
+    wiki_type: SKILL_DIR / "templates" / f"{wiki_type}-template.md"
+    for wiki_type in ("qa", "how-to", "break-fix")
+}
+COMMON_ENDINGS = (
     "Open questions and limitations",
-    "Evidence and references",
+    "References and original excerpts",
     "Review checklist",
 )
+HEADINGS = {
+    "qa": ("Topic and scope", "Questions and answers") + COMMON_ENDINGS,
+    "how-to": (
+        "Goal and success criteria",
+        "Prerequisites and concepts",
+        "Step-by-step procedure",
+        "End-to-end verification",
+        "Troubleshooting and rollback",
+    ) + COMMON_ENDINGS,
+    "break-fix": (
+        "Problem and applicability",
+        "Confirm this is the same issue",
+        "Cause and confidence",
+        "Resolution or workaround",
+        "Verification",
+        "Escalation and prevention",
+    ) + COMMON_ENDINGS,
+}
 
 
 class SkillFrameworkTests(unittest.TestCase):
@@ -35,28 +51,126 @@ class SkillFrameworkTests(unittest.TestCase):
         self.assertLessEqual(len(description.group(1)), 1024)
         self.assertRegex(SKILL_DIR.name, r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
-    def test_template_has_all_sections_in_order(self):
-        text = TEMPLATE.read_text(encoding="utf-8")
-        headings = re.findall(r"(?m)^## (.+)$", text)
-        self.assertEqual(headings, list(HEADINGS))
+    def test_each_type_has_its_own_sections_in_order(self):
+        for wiki_type, template in TEMPLATES.items():
+            with self.subTest(wiki_type=wiki_type):
+                text = template.read_text(encoding="utf-8")
+                headings = re.findall(r"(?m)^## (.+)$", text)
+                self.assertEqual(headings, list(HEADINGS[wiki_type]))
 
-    def test_template_defaults_do_not_claim_verified_results(self):
-        text = TEMPLATE.read_text(encoding="utf-8")
+    def test_templates_default_to_drafts_with_incomplete_references(self):
+        for wiki_type, template in TEMPLATES.items():
+            text = template.read_text(encoding="utf-8")
+            for field in (
+                f"wiki_type: {wiki_type}",
+                "status: draft",
+                "review_status: pending-engineer-review",
+                "source_coverage: partial",
+                "reference_status: incomplete",
+            ):
+                with self.subTest(wiki_type=wiki_type, field=field):
+                    self.assertRegex(text, rf"(?m)^{re.escape(field)}$")
+
+    def test_outcome_metadata_is_specific_to_the_wiki_type(self):
+        for wiki_type, template in TEMPLATES.items():
+            text = template.read_text(encoding="utf-8")
+            expected = {
+                "root_cause_status": "unknown" if wiki_type == "break-fix" else None,
+                "resolution_status": "unverified" if wiki_type == "break-fix" else None,
+                "procedure_status": "unverified" if wiki_type == "how-to" else None,
+            }
+            for field, value in expected.items():
+                with self.subTest(wiki_type=wiki_type, field=field):
+                    if value is None:
+                        self.assertNotRegex(text, rf"(?m)^{field}:")
+                    else:
+                        self.assertRegex(text, rf"(?m)^{field}: {value}$")
+
+    def test_selector_links_all_types_and_is_not_an_article_template(self):
+        text = SELECTOR.read_text(encoding="utf-8")
+        self.assertFalse(text.startswith("---"))
+        for template in TEMPLATES.values():
+            with self.subTest(template=template.name):
+                self.assertIn(f"]({template.name})", text)
+
+    def test_every_type_uses_the_shared_source_entry(self):
+        for wiki_type, template in TEMPLATES.items():
+            with self.subTest(wiki_type=wiki_type):
+                text = template.read_text(encoding="utf-8")
+                self.assertIn("](source-entry-template.md)", text)
+                self.assertIn("**Sources:**", text)
+
+    def test_source_entry_requires_original_text_and_precise_attribution(self):
+        text = SOURCE_ENTRY.read_text(encoding="utf-8")
+        fields = (
+            "Source type",
+            "Title",
+            "Publisher or source role",
+            "Origin",
+            "Exact location",
+            "Version or revision",
+            "Access",
+            "Verification",
+            "Inspected on",
+            "Supports",
+            "Excerpt handling",
+            "Original excerpt",
+            "Interpretation and limits",
+        )
+        for field in fields:
+            with self.subTest(field=field):
+                self.assertIn(f"**{field}:**", text)
+        self.assertRegex(text, r"(?m)^### S1$")
+        self.assertRegex(text, r"(?m)^> <.+>$")
+
+    def test_qa_answers_have_conditions_and_inline_source_fields(self):
+        text = TEMPLATES["qa"].read_text(encoding="utf-8")
+        self.assertRegex(text, r"(?m)^### Q1\.")
+        for field in ("Answer", "Conditions and exceptions", "Sources"):
+            with self.subTest(field=field):
+                self.assertIn(f"**{field}:**", text)
+
+    def test_how_to_steps_have_actions_and_checkpoints(self):
+        text = TEMPLATES["how-to"].read_text(encoding="utf-8")
+        self.assertRegex(text, r"(?m)^### Step 1 - ")
+        fields = (
+            "Where",
+            "Inputs",
+            "Action",
+            "Why",
+            "Expected result",
+            "If the result differs",
+            "Safety and rollback",
+            "Sources",
+        )
+        for field in fields:
+            with self.subTest(field=field):
+                self.assertIn(f"**{field}:**", text)
+
+    def test_break_fix_has_match_and_non_match_paths_before_repair(self):
+        text = TEMPLATES["break-fix"].read_text(encoding="utf-8")
+        self.assertIn(
+            "| Check and how to perform it | Matches when | Does not match when | Next action | Sources |",
+            text,
+        )
         for field in (
-            "status: draft",
-            "review_status: pending-engineer-review",
-            "source_coverage: partial",
-            "root_cause_status: unknown",
-            "resolution_status: unverified",
+            "Prerequisites and impact",
+            "Action",
+            "Expected result",
+            "If it fails",
+            "Rollback",
+            "Sources",
         ):
             with self.subTest(field=field):
-                self.assertRegex(text, rf"(?m)^{re.escape(field)}$")
+                self.assertIn(f"**{field}:**", text)
 
     def test_skill_resources_are_linked_and_portable(self):
         text = SKILL.read_text(encoding="utf-8")
         for target in (
             "references/extraction-rules.md",
+            "references/source-attribution.md",
             "templates/wiki-template.md",
+            "templates/source-entry-template.md",
         ):
             with self.subTest(target=target):
                 self.assertIn(f"]({target})", text)
@@ -71,7 +185,11 @@ class SkillFrameworkTests(unittest.TestCase):
                 parsed = urlsplit(link)
                 if parsed.scheme or parsed.netloc:
                     continue
-                target = (document.parent / unquote(parsed.path)).resolve()
+                target = (
+                    (document.parent / unquote(parsed.path)).resolve()
+                    if parsed.path
+                    else document
+                )
                 with self.subTest(document=document, link=link):
                     self.assertTrue(target.is_relative_to(ROOT))
                     self.assertTrue(target.is_file(), f"Missing target: {target}")
@@ -84,6 +202,14 @@ class SkillFrameworkTests(unittest.TestCase):
                             for heading in headings
                         }
                         self.assertIn(unquote(parsed.fragment), anchors)
+
+    def test_readme_and_skill_agree_on_release_version(self):
+        for document in (ROOT / "README.md", SKILL):
+            with self.subTest(document=document):
+                self.assertIn(
+                    "Version: 0.2.0. Last reviewed: 2026-09-16.",
+                    document.read_text(encoding="utf-8"),
+                )
 
     def test_case_artifact_paths_are_ignored_but_skill_is_not(self):
         paths = (
