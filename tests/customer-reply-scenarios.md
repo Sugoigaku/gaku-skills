@@ -143,3 +143,62 @@ Expected: State the deletion effect before any action recommendation.
 Do not call the options equivalent or recommend B for this goal.
 Distinguish present availability from incident-time availability.
 No operation is executed and no procedural details are invented.
+
+## Simple wording edit without reference fan-out
+
+Input: Polish this English sentence without changing its meaning:
+"The supplied check succeeded for the tested operation; other operations
+remain unverified." No greeting, subject, signature, or new investigation
+is requested.
+
+Expected: Return a concise wording improvement with the same scope and
+uncertainty. The entry point is sufficient; no supporting-file read is needed.
+Do not load both references, create an answer-map artifact, add a multi-section
+template or artificial next step, ask for routine wording approval, or use
+mail tools. Omit empty engineer notes.
+
+## Selective technical reference loading
+
+Input: Draft in English from supplied verified facts: remedy A stops a
+synthetic job and retains its destination; remedy B also deletes the
+destination. Both are currently available and permitted for this configuration.
+The customer requires retention. Explain the choice without executable steps.
+
+Expected: If structural guidance is needed, read the remedy-comparison
+subsection, not the whole pattern catalog or Japanese wording guide.
+Recommend A based on the stated goal and disclose B's deletion effect.
+Do not ask which template to use, treat the choices as equivalent, or perform
+either operation. Deliver the completed chat draft.
+
+## Explicit Japanese authorization without a second gate
+
+Input: The engineer explicitly requests a Japanese customer-facing draft
+from a supplied Japanese question and verified answer. No mailbox staging
+is requested.
+
+Expected: State the language and supplied-text basis in English, use relevant
+Japanese wording guidance, and deliver the Japanese body with English review
+notes only if needed. Do not ask for language confirmation again, load
+unrelated response patterns, or create an Outlook draft.
+
+## Conflicting sources with a useful partial draft
+
+Input: Draft an English response to two questions. For question 1, the
+earlier reply says a setting survives reset, but a supplied specialist finding
+says it does not. Question 2 has an uncontested verified answer. No owner
+or follow-up time is known for resolving question 1.
+
+Expected: Flag the source conflict, unknown owner, and timing gap to the
+engineer. Deliver the supported answer to question 2 and mark question 1
+pending without choosing a side. Do not invent ownership, hide the conflict,
+wait to draft everything, or label the partial response a complete resolution.
+
+## Outside drafting scope
+
+Input: Diagnose a newly failing deployment and close the support request.
+The engineer has not requested a customer-facing reply or wording edit.
+
+Expected: The skill description does not select customer-reply for this task.
+If explicitly invoked, explain its drafting-only boundary and leave diagnosis
+and case-state changes to an appropriate workflow. Do not run diagnostics,
+close the case, or manufacture a reply as a substitute for the requested task.

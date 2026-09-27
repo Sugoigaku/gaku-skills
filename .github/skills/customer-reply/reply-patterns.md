@@ -5,11 +5,16 @@ are not ready-to-send messages, product facts, service policies, or evidence.
 Resolve every placeholder from the selected context before presenting a
 complete draft. Apply the language confirmation rule in [SKILL.md](SKILL.md).
 
+Read only the matching scenario or technical subsection. The suggested shapes
+are optional scaffolding: adapt them to the question, combine only useful
+elements, and skip templates entirely for a simple wording edit. Evidence and
+authorization boundaries still apply when a pattern is used.
+
 ## Direct answer
 
 Use: a technical question or a request to validate an interpretation.
 
-Order:
+Suggested shape:
 1. Thank the specific contribution.
 2. Give the direct answer, with the important condition beside it.
 3. Explain the decisive distinction or mechanism.
@@ -36,9 +41,9 @@ reassurance, but not for a two-sentence clarification.
 
 ## Technical answer structures
 
-Use one of these inside the primary pattern when the reply needs substantial
-reasoning. Do not pad the email to meet a length target. The examples below
-are synthetic and are not operational instructions.
+Use a relevant structure when the reply needs substantial reasoning; a primary
+pattern is not a prerequisite. Do not pad the email to meet a length target.
+The examples below are synthetic and are not operational instructions.
 
 ### Conditional multi-question answer
 
@@ -59,6 +64,8 @@ terms. Keep a shared scope limitation short; do not repeat it under every
 question. Do not insert current product limits or historical license rules
 from memory. Do not present an unsupported configuration as an equal
 recommended alternative to a supported one.
+Answer the technical part that can be supported; do not replace it with a
+generic referral for commercial advice.
 
 ### Mechanism and responsibility boundary
 
@@ -77,7 +84,7 @@ Separate the documented mechanism from the conclusion about this occurrence.
 Do not turn a plausible mechanism into a confirmed defect or universal
 by-design behavior. A boundary explains ownership, not blame. Suggesting that
 an operator validate a recovery procedure is not proof that it is a safe,
-supported workaround.
+supported workaround. Recovery after a change alone does not prove cause.
 
 ### Scoped investigation handoff
 
@@ -135,7 +142,7 @@ availability. Never perform the operation through this drafting skill.
 
 Use: investigation is ongoing, including no new result.
 
-Order: acknowledge time or effort, state current status honestly, distinguish
+Suggested shape: acknowledge time or effort, state current status honestly, distinguish
 what is known from what is pending, identify next owner and checkpoint.
 
 Synthetic example:
@@ -157,7 +164,7 @@ checkpoint has been agreed, note this in engineer-only review notes.
 
 Use: a particular result is needed to decide the next step.
 
-Order: recognize completed work, explain the remaining uncertainty, ask for
+Suggested shape: recognize completed work, explain the remaining uncertainty, ask for
 the minimum artifact, explain how it will be used.
 
 Synthetic example:
@@ -181,7 +188,7 @@ procedure. Never request credentials or an unrestricted log dump.
 
 Use: the earlier response was ambiguous, incorrect, or incomplete.
 
-Order: answer the actual question, identify the exact correction, take brief
+Suggested shape: answer the actual question, identify the exact correction, take brief
 accountability, explain what is and is not established, give the next step.
 
 Synthetic example:
@@ -203,7 +210,7 @@ omission and name who will confirm it. Never fill that gap with speculation.
 
 Use: the customer owns the next input or has not confirmed remaining concerns.
 
-Order: briefly reference the previous answer, ask about the remaining blocker,
+Suggested shape: briefly reference the previous answer, ask about the remaining blocker,
 offer a low-burden path. Do not repeat the whole investigation.
 
 Synthetic example:
@@ -223,7 +230,7 @@ than making the template a policy.
 
 Use: closure or deferral has actually been agreed.
 
-Order: acknowledge the precise agreement, state the real technical status,
+Suggested shape: acknowledge the precise agreement, state the real technical status,
 describe the authorized administrative next step, provide a supported path
 for later contact, and thank the customer's specific effort.
 

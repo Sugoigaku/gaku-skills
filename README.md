@@ -7,7 +7,7 @@ Reusable skills for technical support work.
 Draft or refine considerate, technically precise customer support replies,
 with particular guidance for Japanese business correspondence.
 
-Version: 0.2.0. Last reviewed: 2026-09-27.
+Version: 0.3.0. Last reviewed: 2026-09-27.
 
 - Acknowledge the customer's specific effort, then lead with the answer.
 - Separate verified facts, interpretation, uncertainty, impact, and next steps.
@@ -26,7 +26,7 @@ The complete document-only bundle is three flat files:
 
 | File | Contents |
 | --- | --- |
-| [SKILL.md](.github/skills/customer-reply/SKILL.md) | Trigger description, workflow, evidence checks, and draft boundaries |
+| [SKILL.md](.github/skills/customer-reply/SKILL.md) | Focused trigger, conditional reference routing, completion criteria, and draft boundaries |
 | [voice-and-wording.md](.github/skills/customer-reply/voice-and-wording.md) | Tone, Japanese wording cues, confidence levels, and editing rules |
 | [reply-patterns.md](.github/skills/customer-reply/reply-patterns.md) | Scenario structures and synthetic English examples |
 
@@ -34,6 +34,13 @@ Use: "Use customer-reply to refine this support response without changing its
 technical meaning," or "Use customer-reply to draft a progress update from
 this thread." Technical claims still require evidence; wording guidance is not
 a product reference. No mailbox access is required for supplied-text drafting.
+
+Simple wording edits can use the entry point alone. Load only relevant voice
+or scenario sections for more involved replies; templates and editing sequences
+are not mandatory. Finish the supported draft without routine approval stops,
+while retaining language confirmation, evidence limits, and draft-only controls.
+This follows the [OpenAI skills and prompts guide](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra)
+without depending on a particular model's judgment to enforce safety.
 
 The project copy is under [.github/skills](.github/skills). For an optional
 personal installation, specify **both** paths to the existing installer:

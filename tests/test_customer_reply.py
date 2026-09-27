@@ -41,10 +41,37 @@ class CustomerReplyTests(unittest.TestCase):
         self.assertIsNotNone(description)
         self.assertIn("customer reply", description.group(1))
         self.assertIn("Draft-only", description.group(1))
-        self.assertLess(len(description.group(1)), 1024)
-        version = "Version: 0.2.0. Last reviewed: 2026-09-27."
+        self.assertLessEqual(len(description.group(1)), 240)
+        self.assertIn("not troubleshooting or case management", description.group(1))
+        version = "Version: 0.3.0. Last reviewed: 2026-09-27."
         self.assertIn(version, text)
         self.assertIn(version, (ROOT / "README.md").read_text(encoding="utf-8"))
+
+    def test_entry_point_is_compact_and_routes_by_need(self):
+        text = self.docs["SKILL.md"]
+        normalized = " ".join(text.split())
+        self.assertLessEqual(len(text.splitlines()), 140)
+        self.assertLessEqual(len(text.split()), 1100)
+        for phrase in (
+            "For a simple supplied-text edit, these instructions may be sufficient",
+            "not both references in full",
+            "Patterns are optional aids",
+            "do not stop for routine template or wording approval",
+            "Revise until these criteria are met",
+            "Default to chat delivery",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, normalized)
+        for heading in ("Workflow", "Build a temporary answer map"):
+            self.assertNotIn(heading, text)
+        links = set(markdown_links(text))
+        self.assertTrue({
+            "voice-and-wording.md#japanese-wording-cues",
+            "voice-and-wording.md#confidence-ladder",
+            "reply-patterns.md#technical-answer-structures",
+        }.issubset(links))
+        self.assertIn("## Completion criteria", text)
+        self.assertIn("## Outlook staging only when explicitly requested", text)
 
     def test_local_links_resolve(self):
         paths = [*SKILL_DIR.glob("*.md"), ROOT / "tests" / "customer-reply-scenarios.md"]
@@ -54,7 +81,17 @@ class CustomerReplyTests(unittest.TestCase):
                 if parsed.scheme or not parsed.path:
                     continue
                 with self.subTest(file=path.name, link=link):
-                    self.assertTrue((path.parent / unquote(parsed.path)).resolve().exists())
+                    target = (path.parent / unquote(parsed.path)).resolve()
+                    self.assertTrue(target.exists())
+                    if parsed.fragment:
+                        headings = re.findall(
+                            r"(?m)^#{1,6} (.+)$", target.read_text(encoding="utf-8")
+                        )
+                        anchors = {
+                            re.sub(r"[^\w\s-]", "", heading.lower()).replace(" ", "-")
+                            for heading in headings
+                        }
+                        self.assertIn(unquote(parsed.fragment), anchors)
         main_links = set(markdown_links(self.docs["SKILL.md"]))
         self.assertTrue((FILES - {"SKILL.md"}).issubset(main_links))
 
@@ -90,6 +127,16 @@ class CustomerReplyTests(unittest.TestCase):
             "No unresolved placeholders",
             "Read the created draft back",
             "Never delete email",
+            "Silence is not closure consent",
+            "Never request credentials or unrestricted logs",
+            "Put irreversible consequences before steps",
+            "a shared outcome does not make remedies equivalent",
+            "preservation/deletion effects, and historical availability",
+            "signature, and recipients",
+            "do not improvise a sending endpoint",
+            "Preserve the subject unless a change is requested",
+            "A failed creation or readback is failed or unverified, not done",
+            "**customer-facing body** separately from **engineer-only review notes**",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, normalized)
@@ -106,11 +153,43 @@ class CustomerReplyTests(unittest.TestCase):
         ):
             with self.subTest(heading=heading):
                 self.assertIn("## " + heading, patterns)
-        for heading in ("Japanese wording cues", "Confidence ladder", "Editing passes"):
+        for heading in ("Japanese wording cues", "Confidence ladder", "Editing cues"):
             self.assertIn("## " + heading, voice)
         self.assertIn("synthetic English", patterns)
-        self.assertEqual(len(re.findall(r"(?m)^## ", scenarios)), 13)
+        self.assertEqual(len(re.findall(r"(?m)^## ", scenarios)), 18)
         self.assertIn("does not mean", scenarios)
+
+    def test_references_are_optional_not_a_second_required_recipe(self):
+        patterns = " ".join(self.docs["reply-patterns.md"].split())
+        voice = " ".join(self.docs["voice-and-wording.md"].split())
+        self.assertIn("Read only the matching scenario or technical subsection", patterns)
+        self.assertIn("skip templates entirely for a simple wording edit", patterns)
+        self.assertIn("a primary pattern is not a prerequisite", patterns)
+        self.assertIn("not a required reading list or a sequence of editing passes", voice)
+        self.assertIn("Recovery after a change alone does not prove cause", patterns)
+        self.assertNotRegex(self.docs["reply-patterns.md"], r"(?m)^Order:")
+
+    def test_routing_and_completion_scenarios_are_documented(self):
+        text = (ROOT / "tests" / "customer-reply-scenarios.md").read_text(
+            encoding="utf-8"
+        )
+        scenarios = {
+            match.group(1): match.group(2)
+            for match in re.finditer(
+                r"(?ms)^## ([^\n]+)\n(.*?)(?=^## |\Z)", text
+            )
+        }
+        for heading in (
+            "Simple wording edit without reference fan-out",
+            "Selective technical reference loading",
+            "Explicit Japanese authorization without a second gate",
+            "Conflicting sources with a useful partial draft",
+            "Outside drafting scope",
+        ):
+            with self.subTest(heading=heading):
+                self.assertIn("Input:", scenarios[heading])
+                self.assertIn("Expected:", scenarios[heading])
+                self.assertIn("Do not", scenarios[heading])
 
     def test_substantive_structures_are_wired_into_workflow(self):
         text = " ".join(self.docs["SKILL.md"].split())
