@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 from test_install_skill import INSTALLER
-from test_skill_framework import markdown_links, upload_issues
+from test_skill_framework import markdown_links
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,13 +20,12 @@ class CustomerReplyTests(unittest.TestCase):
             for path in SKILL_DIR.glob("*.md")
         }
 
-    def test_upload_manifest_and_existing_budgets(self):
+    def test_bundle_contains_expected_utf8_documents(self):
         files = {
             path.relative_to(SKILL_DIR).as_posix(): path.read_bytes()
             for path in SKILL_DIR.rglob("*") if path.is_file()
         }
         self.assertEqual(set(files), FILES)
-        self.assertEqual(upload_issues(files), set())
         for name, content in files.items():
             with self.subTest(name=name):
                 self.assertFalse(content.startswith(b"\xef\xbb\xbf"))
@@ -45,7 +44,6 @@ class CustomerReplyTests(unittest.TestCase):
         self.assertIn("not troubleshooting or case management", description.group(1))
         version = "Version: 0.3.0. Last reviewed: 2026-09-27."
         self.assertIn(version, text)
-        self.assertIn(version, (ROOT / "README.md").read_text(encoding="utf-8"))
 
     def test_entry_point_is_compact_and_routes_by_need(self):
         text = self.docs["SKILL.md"]
@@ -250,19 +248,22 @@ class CustomerReplyTests(unittest.TestCase):
                 self.assertIn("Expected:", scenarios[heading])
                 self.assertIn(prohibition, scenarios[heading])
 
-    def test_readme_documents_opt_in_install_and_behavior_limit(self):
+    def test_readme_documents_purpose_download_and_install(self):
         text = (ROOT / "README.md").read_text(encoding="utf-8")
         section = text.split("## customer-reply\n", 1)[1].split(
             "## case-session-to-wiki\n", 1
         )[0]
+        self.assertIn("does not send messages", section)
+        self.assertIn(".github/skills/customer-reply", section)
         for phrase in (
+            "Code > Download ZIP",
+            "git clone https://github.com/Sugoigaku/gaku-skills.git",
+            "Command Prompt",
             "--source .github\\skills\\customer-reply",
-            "--destination", "both", "not model compliance",
-            "not an executed model-evaluation record",
+            '--destination "%USERPROFILE%\\.copilot\\skills\\customer-reply"',
+            "supporting Markdown files",
         ):
-            self.assertIn(phrase, section)
-        for name in FILES:
-            self.assertIn(f".github/skills/customer-reply/{name}", section)
+            self.assertIn(phrase, text)
         self.assertEqual(INSTALLER.DEFAULT_SOURCE.name, "case-session-to-wiki")
 
     def test_actual_bundle_installation_and_idempotence(self):

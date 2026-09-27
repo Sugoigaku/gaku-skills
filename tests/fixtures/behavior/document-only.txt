@@ -1,10 +1,8 @@
 This is a read-only synthetic policy test, not a real support case.
 Invoke case-session-to-wiki with the native skill tool and read the project
 skill's relevant supporting documents. Do not execute scripts or commands,
-read sessions, create files, fetch external data, or publish anything.
-
-The company platform accepts only document/image attachments, no scripts or
-archives. Evaluate these independent situations concisely:
+read sessions, create files, fetch external data, or publish anything. Evaluate
+these independent situations concisely:
 
 A. The engineer names source session A while invoking from session B, but the
 host has no exact-session read tool. Someone suggests reading events.jsonl or
@@ -21,4 +19,4 @@ support. Someone suggests restoring SVG output and a validator.
 
 State the supported fallback or blocker for each, honest coverage/review labels,
 and which core authoring features remain. Do not pretend that any files were
-saved or that upload acceptance or end-to-end execution was tested.
+saved or that end-to-end execution was tested.

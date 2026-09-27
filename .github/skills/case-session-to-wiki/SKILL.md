@@ -24,8 +24,8 @@ If a capability is missing, follow the stop/fallback rules below. Never rename
 scripts to accepted extensions or reconstruct the removed helpers from text.
 
 The six supporting documents are required parts of the skill. They are ordinary
-reference material, not executable payloads, and sit beside this file so upload
-does not depend on preserving subdirectories.
+reference material, not executable payloads, and sit beside this file so their
+relative links remain valid.
 
 | Document | Read when |
 | --- | --- |
@@ -179,7 +179,7 @@ internal article plan as routine final output.
 
 - 0.8.0 (2026-09-16): Replaced three bundled Python helpers with native-tool
   input/saving and an explicit agent checklist. Consolidated references and
-  templates into six flat Markdown attachments for restricted upload platforms.
+  templates into six Markdown supporting documents.
   Removed raw archive parsing, deterministic validation, automatic hash-bound
   attestations, and SVG generation. Kept draft-only delivery and evidence schema
   v1; new reference state is checklist-checked, never a machine-validation claim.

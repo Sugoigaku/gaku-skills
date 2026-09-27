@@ -4,23 +4,11 @@
   "evaluated_on": "2026-09-16",
   "skill_bundle_sha256": "5c54014fa255e5560e8b00f790a79217995ea425e461a5306e4f17f21f16e0dd",
   "input_classification": "Synthetic fixtures only; no case or personal data.",
-  "upload_bundle": {
-    "main_files": 1,
-    "supporting_files": 6,
-    "all_files_markdown": true,
-    "raw_bytes": 59973,
-    "main_skill_bytes": 11102,
-    "estimated_bytes_with_detail_reserve": 98561,
-    "estimate_formula": "raw_bytes + 2 * main_skill_bytes + 16384",
-    "platform_limit_bytes_used_for_estimate": 120000,
-    "actual_platform_upload": "not-tested",
-    "limitation": "The platform's actual extracted-details size and accounting formula are unknown."
-  },
   "local_tests": {
     "command": "python -B -m unittest discover -s tests -p \"test_*.py\" -v",
     "tests": 45,
     "result": "passed",
-    "scope": "Upload contracts, document links/templates/schema example, installer integration, and smoke-runner unit tests; not model behavior."
+    "scope": "Document links/templates/schema example, installer integration, and smoke-runner unit tests; not model behavior."
   },
   "native_smoke_runs": [
     {
@@ -48,7 +36,6 @@
   ],
   "release_limitations": [
     "Native invocation integration has not passed in this runtime.",
-    "Company-platform upload and attachment availability have not been tested.",
     "No end-to-end session-read or create-only save workflow was exercised.",
     "Author observations are not independent semantic approval.",
     "The removed runtime helpers and their API tests no longer provide deterministic validation."

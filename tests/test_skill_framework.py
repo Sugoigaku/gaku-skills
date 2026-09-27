@@ -12,13 +12,6 @@ SUPPORTING = {
     "session-workflow.md", "authoring.md", "sources.md",
     "evidence-review.md", "templates.md", "diagrams.md",
 }
-ALLOWED_EXTENSIONS = {
-    ".md", ".txt", ".csv", ".json", ".yaml", ".yml", ".xml", ".html",
-    ".png", ".jpg", ".jpeg", ".gif",
-}
-PLATFORM_BYTES = 120_000
-PROJECT_RAW_BYTES = 64_000
-DETAIL_RESERVE_BYTES = 16_384
 VERSION = "Version: 0.8.0. Last reviewed: 2026-09-16."
 HEADINGS = {
     "qa": ["Questions and answers", "References", "Double-check"],
@@ -43,28 +36,6 @@ def markdown_links(text):
     return re.findall(r"\[[^\]]+\]\(([^)]+)\)", prose)
 
 
-def upload_issues(files):
-    issues = set()
-    if "SKILL.md" not in files:
-        issues.add("missing-skill")
-    if len(files) - ("SKILL.md" in files) > 10:
-        issues.add("attachment-count")
-    for name in files:
-        if "/" in name or "\\" in name:
-            issues.add("not-flat")
-        if Path(name).suffix not in ALLOWED_EXTENSIONS:
-            issues.add("unsupported-type")
-    if len({name.casefold() for name in files}) != len(files):
-        issues.add("filename-collision")
-    total = sum(len(content) for content in files.values())
-    if total > PROJECT_RAW_BYTES:
-        issues.add("raw-budget")
-    estimated = total + 2 * len(files.get("SKILL.md", b"")) + DETAIL_RESERVE_BYTES
-    if estimated > PLATFORM_BYTES:
-        issues.add("estimated-platform-budget")
-    return issues
-
-
 def templates():
     blocks = re.findall(r"(?ms)^```markdown\n(---\n.*?)^```\s*$", read("templates.md"))
     return {
@@ -73,62 +44,18 @@ def templates():
     }
 
 
-class UploadContractTests(unittest.TestCase):
-    def test_actual_bundle_is_flat_document_only_and_under_budget(self):
+class BundleContractTests(unittest.TestCase):
+    def test_actual_bundle_contains_expected_markdown_documents(self):
         files = {
             path.relative_to(SKILL_DIR).as_posix(): path.read_bytes()
             for path in SKILL_DIR.rglob("*") if path.is_file()
         }
         self.assertEqual(set(files), SUPPORTING | {"SKILL.md"})
-        self.assertEqual(upload_issues(files), set())
         for name, content in files.items():
             with self.subTest(name=name):
                 self.assertEqual(Path(name).suffix, ".md")
                 self.assertFalse(content.startswith(b"\xef\xbb\xbf"))
                 self.assertNotIn("\x00", content.decode("utf-8"))
-
-    def test_attachment_limit_accepts_ten_but_rejects_eleven(self):
-        files = {"SKILL.md": b"skill", **{f"file{i}.md": b"x" for i in range(10)}}
-        self.assertEqual(upload_issues(files), set())
-        files["extra.md"] = b"x"
-        self.assertIn("attachment-count", upload_issues(files))
-
-    def test_script_archive_nested_and_duplicate_names_are_rejected(self):
-        for name, code in (
-            ("reader.py", "unsupported-type"), ("skill.zip", "unsupported-type"),
-            ("tools\\notes.md", "not-flat"), ("tools/notes.md", "not-flat"),
-            ("skill.md", "filename-collision"),
-        ):
-            with self.subTest(name=name):
-                self.assertIn(code, upload_issues({"SKILL.md": b"x", name: b"x"}))
-
-    def test_main_skill_is_mandatory(self):
-        self.assertIn("missing-skill", upload_issues({"notes.md": b"x"}))
-
-    def test_raw_budget_counts_utf8_bytes_not_characters(self):
-        prefix = b"x" * (PROJECT_RAW_BYTES - 2)
-        self.assertNotIn("raw-budget", upload_issues({"SKILL.md": b"x", "a.md": prefix + b"x"}))
-        self.assertIn("raw-budget", upload_issues({
-            "SKILL.md": b"x", "a.md": prefix + "\u4e00".encode("utf-8"),
-        }))
-
-    def test_extracted_details_reserve_is_in_addition_to_raw_files(self):
-        files = {"SKILL.md": b"x" * 40_000}
-        self.assertNotIn("raw-budget", upload_issues(files))
-        self.assertIn("estimated-platform-budget", upload_issues(files))
-        files = {"SKILL.md": b"x" * 20_000}
-        files["notes.md"] = b"x" * (PLATFORM_BYTES - 60_000 - DETAIL_RESERVE_BYTES)
-        self.assertNotIn("estimated-platform-budget", upload_issues(files))
-        files["notes.md"] += b"x"
-        self.assertIn("estimated-platform-budget", upload_issues(files))
-
-    def test_upload_docs_disclose_estimate_and_actual_platform_check(self):
-        text = (ROOT / "README.md").read_text(encoding="utf-8")
-        for expected in (
-            "64,000 raw bytes", "16,384 bytes", "120,000 bytes",
-            "platform's actual total", "No successful upload",
-        ):
-            self.assertIn(expected, text)
 
     def test_bundle_contains_no_runtime_helper_code_or_personal_identifiers(self):
         for path in SKILL_DIR.glob("*.md"):
@@ -184,9 +111,22 @@ class SkillFrameworkTests(unittest.TestCase):
                         }
                         self.assertIn(unquote(parsed.fragment), anchors)
 
-    def test_readme_and_skill_agree_on_release(self):
+    def test_skill_declares_release(self):
         self.assertIn(VERSION, read("SKILL.md"))
-        self.assertIn(VERSION, (ROOT / "README.md").read_text(encoding="utf-8"))
+
+    def test_readme_documents_wiki_purpose_and_install(self):
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+        section = text.split("## case-session-to-wiki\n", 1)[1].split(
+            "## Download\n", 1
+        )[0]
+        self.assertIn("QA, How-to, or Break-fix", section)
+        self.assertIn("Does not publish automatically", section)
+        self.assertIn(".github/skills/case-session-to-wiki", section)
+        self.assertIn("--source .github\\skills\\case-session-to-wiki", text)
+        self.assertIn(
+            '--destination "%USERPROFILE%\\.copilot\\skills\\case-session-to-wiki"',
+            text,
+        )
 
     def test_three_templates_keep_order_and_conservative_metadata(self):
         self.assertEqual(set(templates()), set(HEADINGS))

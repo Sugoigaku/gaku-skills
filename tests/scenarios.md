@@ -21,8 +21,8 @@ a clarification/stop response must not pretend to have generated or saved one.
 Record the scenario, observed result, and pass/fail in the evaluation session,
 not as real case content in this repository.
 
-These remain model-behavior acceptance scenarios. The Python suite tests upload
-constraints, document contracts, installation, and the smoke runner. It does not
+These remain model-behavior acceptance scenarios. The Python suite tests
+document contracts, installation, and the smoke runner. It does not
 establish that a model follows the workflow or replace the removed runtime
 reader/validator with an equivalent deterministic guarantee.
 
@@ -476,20 +476,5 @@ Expected:
   never supplies its own independent review attestation.
 - Mermaid-unavailable viewers get plain text or a table, not restored SVG.
 - Detailed QA/How-to/Break-fix, original references, privacy, and enrichment
-  rules remain; platform upload and end-to-end host compatibility are untested
-  until actually exercised.
-
-## 27. Actual upload accounting and attachment access
-
-In the company platform, upload SKILL.md and the six flat supporting Markdown
-files listed in the repository README. Do not include repository scripts,
-tests, generated case articles, or an archive.
-
-Expected:
-- Exactly six supporting attachments, accepted extensions, and filenames retained.
-- The platform's displayed total, including extracted details, is below its
-  120KB cap. Local byte estimates alone are not acceptance evidence.
-- In the platform's supported runtime, the skill can actually access all six
-  supporting documents. Missing attachments block the affected workflow rather
-  than being replaced with invented instructions.
-- No real personal/case data is used to test upload or runtime behavior.
+  rules remain; end-to-end host compatibility is untested until actually
+  exercised.
