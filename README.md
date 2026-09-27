@@ -2,6 +2,55 @@
 
 Reusable skills for technical support work.
 
+## customer-reply
+
+Draft or refine considerate, technically precise customer support replies,
+with particular guidance for Japanese business correspondence.
+
+Version: 0.1.0. Last reviewed: 2026-09-27.
+
+- Acknowledge the customer's specific effort, then lead with the answer.
+- Separate verified facts, interpretation, uncertainty, impact, and next steps.
+- Explain requests, recognize completed checks, and correct unclear wording.
+- Cover technical answers, progress updates, information requests, corrections,
+  follow-ups, and closure or agreed-pause drafts.
+- Keep customer-facing language separate from English engineer review notes.
+  Confirm the customer language before drafting when needed.
+- Draft only: no automatic sending, deletion, diagnostic actions, or case closure.
+
+The complete document-only bundle is three flat files:
+
+| File | Contents |
+| --- | --- |
+| [SKILL.md](.github/skills/customer-reply/SKILL.md) | Trigger description, workflow, evidence checks, and draft boundaries |
+| [voice-and-wording.md](.github/skills/customer-reply/voice-and-wording.md) | Tone, Japanese wording cues, confidence levels, and editing rules |
+| [reply-patterns.md](.github/skills/customer-reply/reply-patterns.md) | Scenario structures and synthetic English examples |
+
+Use: "Use customer-reply to refine this support response without changing its
+technical meaning," or "Use customer-reply to draft a progress update from
+this thread." Technical claims still require evidence; wording guidance is not
+a product reference. No mailbox access is required for supplied-text drafting.
+
+The project copy is under [.github/skills](.github/skills). For an optional
+personal installation, specify **both** paths to the existing installer:
+
+```text
+python -B scripts\install_skill.py --source .github\skills\customer-reply --destination "%USERPROFILE%\.copilot\skills\customer-reply"
+```
+
+The example above uses Command Prompt variable syntax. In PowerShell, replace
+the destination argument with `"$env:USERPROFILE\.copilot\skills\customer-reply"`.
+The installer's default still selects `case-session-to-wiki`; it has not changed.
+Start a fresh host session to check discovery. No personal installation or
+platform upload is implied by adding the project files.
+
+For platform upload, select the main skill and its two supporting files only.
+The same repository packaging budgets described below apply. Local tests
+verify document contracts, links, privacy patterns, and temporary installation,
+not model compliance or platform acceptance. Use the
+[customer-reply scenarios](tests/customer-reply-scenarios.md) for behavioral
+acceptance. They are not an executed model-evaluation record.
+
 ## case-session-to-wiki
 
 Turn selected troubleshooting conversations into de-identified technical Wiki
