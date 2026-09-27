@@ -85,6 +85,51 @@ provided [verified prerequisite]," not an unconditional promise.
 - **Administrative closure versus technical recovery:** Say whether work is
   complete, deferred, or still unverified. Do not let courtesy erase that status.
 
+## Substantive explanation rules
+
+Courtesy frames the explanation; it is not the explanation. In a technical
+reply, most of the body should answer a question, explain a mechanism, qualify
+a conclusion, compare choices, or justify the next action.
+
+- **Confirm narrowly, then branch.** Acknowledge the correct part of the
+  customer's understanding. Explain how the answer differs under each relevant
+  condition, then identify which branch their supplied facts support. If a
+  decisive condition is missing, leave the branch conditional rather than
+  silently choosing it.
+- **Explain the causal bridge.** Connect the documented mechanism to the
+  observed symptom: what changed, what depended on the old state, and why that
+  could produce the observation. Use "could" until case-specific evidence
+  establishes the link. Recovery after a change alone does not prove cause.
+- **Give each source a job.** Put an authoritative reference beside the exact
+  behavior it supports. Introduce a specialist's case-specific finding as such,
+  rather than implying that the public reference proves it. Quoted source
+  wording is not the reply author's own reasoning.
+- **Translate a boundary into a route forward.** Distinguish technical operation,
+  support eligibility, license entitlement, and purchasing advice when relevant.
+  State what this support team can answer, what requires another owner, and
+  what the customer needs to obtain from that owner. Do not replace an
+  answerable technical question with a generic referral.
+- **Make negative evidence useful.** Describe what was checked and what was not
+  found there, then explain why the next investigation moves to another layer.
+  Ask only for the identifiers or artifacts needed for that handoff, through an
+  approved channel. An exclusion is not proof of the next hypothesis.
+- **Keep time explicit.** In a retrospective, distinguish information available
+  during the decision from findings confirmed afterwards. Explain a justified
+  precaution without rewriting history or excusing a confirmed avoidable delay.
+  Acknowledge a verified shortcoming and an authorized improvement action,
+  without promising that the problem can never recur.
+- **Compare consequences, not button names.** State what each remedy stops,
+  retains, removes, or requires rebuilding. Put a deletion or irreversible
+  effect before the instruction to act. A newer procedure is not automatically
+  an option that existed during an earlier incident.
+
+Useful substantive transitions in Japanese include the short quoted cues
+"今回確認できた内容としては、" (introduce newly confirmed findings),
+"つまり" (explain the practical implication), and "一方で、" (introduce a
+different condition or remaining limitation). The phrase "結果論としては"
+signals hindsight, not an excuse or a substitute for accountability.
+Use these only when they reflect the real logical relationship.
+
 ## Editing passes
 
 1. Put the direct answer before history. Keep one short acknowledgment first.
@@ -99,6 +144,9 @@ provided [verified prerequisite]," not an unconditional promise.
 7. Keep one primary next step. A no-action conclusion needs no artificial ask.
 8. Remove personal identity, copied signatures, and case-specific assumptions
    from reusable wording.
+9. Check that each technical paragraph adds substance. Remove decorative
+   repetition, source dumps, and routine policy footers that do not help this
+   customer decide or act.
 
 ## Guardrails over stylistic habits
 

@@ -7,11 +7,15 @@ Reusable skills for technical support work.
 Draft or refine considerate, technically precise customer support replies,
 with particular guidance for Japanese business correspondence.
 
-Version: 0.1.0. Last reviewed: 2026-09-27.
+Version: 0.2.0. Last reviewed: 2026-09-27.
 
 - Acknowledge the customer's specific effort, then lead with the answer.
 - Separate verified facts, interpretation, uncertainty, impact, and next steps.
 - Explain requests, recognize completed checks, and correct unclear wording.
+- Deliver verified partial answers in the customer's question order.
+- Explain mechanisms and support boundaries, scope negative findings, and
+  distinguish later findings from information available at the time.
+- Compare remedy prerequisites and side effects before recommending action.
 - Cover technical answers, progress updates, information requests, corrections,
   follow-ups, and closure or agreed-pause drafts.
 - Keep customer-facing language separate from English engineer review notes.

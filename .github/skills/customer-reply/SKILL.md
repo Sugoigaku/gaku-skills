@@ -5,7 +5,7 @@ description: "Draft or refine customer support replies with considerate business
 
 # Customer Reply
 
-Version: 0.1.0. Last reviewed: 2026-09-27.
+Version: 0.2.0. Last reviewed: 2026-09-27.
 
 ## Purpose
 
@@ -81,6 +81,16 @@ For each customer question, identify:
    actual object, an alert versus service impact, or a hypothesis versus cause.
 4. What the customer already tried and what remains necessary.
 5. The next owner, action, and only an agreed or authorized follow-up time.
+6. Conditions that change the answer: affected component, version, lifecycle
+   state, existing versus new configuration, and any destructive precondition.
+7. For each proposed remedy, what it changes, preserves, or deletes, and
+   whether it was available at the time being discussed.
+
+For multi-part requests, mark each question **answered**, **partially answered**,
+or **pending**. Deliver verified answers now rather than withholding the whole
+reply because one question remains open. Preserve the customer's numbering;
+state which part is pending and who owns it. A valid partial answer is not a
+complete resolution.
 
 Keep this map in the current working context, not a durable case record.
 If sources conflict, surface the conflict to the engineer and draft only the
@@ -100,6 +110,12 @@ but do not concatenate complete templates.
 - Correction: exact distinction, corrected answer, brief accountability.
 - Follow-up: remaining concern, considerate primary ask.
 - Closure: actual agreement, accurate status, continuity path.
+
+For substantial technical replies, also select the applicable reasoning
+structure in [technical answer structures](reply-patterns.md#technical-answer-structures):
+conditional Q&A, mechanism explanation, scoped investigation handoff,
+retrospective explanation, or remedy comparison. These refine the primary
+pattern; they do not add a second greeting or closing.
 
 ### 4. Compose in the customer-facing order
 
@@ -133,6 +149,15 @@ Before presenting a draft, verify:
 - Every requested action has a purpose and can be performed with the customer's
   access. Disruptive steps include verified impact and approval prerequisites.
 - No invented dates, actions, policies, reopen windows, or resolution status.
+- Public documentation supports the exact adjacent claim, not a stronger
+  case-specific conclusion. Distinguish documentation, specialist findings,
+  and inference; a URL alone is not proof of all three.
+- Negative findings name the tested layer and scope. "No cause found in these
+  checks" does not mean the entire service is healthy or another party is at fault.
+- Alternatives retain their prerequisites and side effects. Never describe
+  two actions as equivalent merely because both stop the same operation.
+- Historical uncertainty and later findings are clearly separated. Do not
+  hide a confirmed delay, mistake, or customer impact behind polite language.
 - No unnecessary internal aliases, escalation IDs, internal discussion, raw
   logs, credentials, or unrelated customer details in the new message body.
   Include a customer-visible reference only when needed and authorized.
@@ -166,5 +191,8 @@ verified latest draft afresh before reviewing or sending it.
 
 ## Changelog
 
+- 0.2.0 (2026-09-27): Add partial-answer tracking, conditional Q&A, scoped
+  investigation handoffs, retrospective explanations, remedy comparisons,
+  and synthetic acceptance checks for substantive technical replies.
 - 0.1.0 (2026-09-27): Initial document-only reply workflow, voice guide,
   scenario patterns, and evidence/draft safety boundaries.

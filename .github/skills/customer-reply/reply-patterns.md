@@ -34,6 +34,103 @@ each once. Never begin an available answer with a request to reconfirm context.
 Use separate cause/interpretation, impact, and action headings for complex
 reassurance, but not for a two-sentence clarification.
 
+## Technical answer structures
+
+Use one of these inside the primary pattern when the reply needs substantial
+reasoning. Do not pad the email to meet a length target. The examples below
+are synthetic and are not operational instructions.
+
+### Conditional multi-question answer
+
+Start with a short status sentence when part of the answer is pending. Then
+preserve the customer's numbering. For each question, provide:
+**direct answer -> applicable condition -> explanation/source -> implication**.
+
+> We can answer questions [answered items] now. [Remaining item] is still
+> being checked by [confirmed owner].
+>
+> [Original question number]. [Direct answer]. Under [condition A],
+> [supported outcome]; under [condition B], [different supported outcome].
+> [Relevant evidence.] Your supplied information establishes [known condition],
+> while [missing condition] remains unconfirmed.
+
+Separate infrastructure capability from entitlement, support, or commercial
+terms. Keep a shared scope limitation short; do not repeat it under every
+question. Do not insert current product limits or historical license rules
+from memory. Do not present an unsupported configuration as an equal
+recommended alternative to a supported one.
+
+### Mechanism and responsibility boundary
+
+Briefly restate the symptom only if needed to remove ambiguity. Explain
+**preserved state -> changed dependency -> mismatch -> observed effect**.
+Separate the documented mechanism from the conclusion about this occurrence.
+
+> [Source] establishes that [state] is retained by [operation]. If [dependency]
+> changes, the retained state may no longer match, which could explain
+> [symptom]. [Case-specific evidence or the check still needed.]
+>
+> [Team] owns [scope]; [other owner] manages [different scope]. [Verified
+> recovery guidance, or a clear statement that a validated procedure is
+> not yet available.]
+
+Do not turn a plausible mechanism into a confirmed defect or universal
+by-design behavior. A boundary explains ownership, not blame. Suggesting that
+an operator validate a recovery procedure is not proof that it is a safe,
+supported workaround.
+
+### Scoped investigation handoff
+
+Use **checked scope -> result -> remaining uncertainty -> next owner ->
+minimum required input**.
+
+> We checked [specific layer/path] using [evidence]. Those checks did not find
+> [particular failure] within [scope]. They do not yet establish why
+> [customer symptom] persists.
+>
+> The next step is [authorized investigation with responsible team]. To
+> identify the affected component, could you provide [minimum identifiers
+> or artifact] through [approved channel]?
+
+Report observed exclusions, not a global clean bill of health. Distinguish
+"we will request investigation" from "investigation has started".
+
+### Retrospective explanation
+
+Use **what is confirmed now -> what was known then -> why the decision was
+made -> confirmed shortcoming -> authorized improvement or remaining question**.
+
+> We have now confirmed [finding] under [specific prerequisite]. At the time
+> of the decision, [documented uncertainty] had not been resolved, so
+> [recorded precaution] was taken.
+>
+> [Verified delay or error, if any, with appropriate accountability.]
+> [Actual or authorized improvement action.] [Precisely unresolved point.]
+
+Do not use hindsight to claim an unvalidated action was obviously safe, nor
+use uncertainty as a blanket defense of poor handling. "No prior failures
+found" is not proof of zero risk. New findings must not silently become a
+guarantee for all similar cases.
+
+### Remedy comparison
+
+Use a compact table or paired bullets:
+
+| Choice | Preconditions | Stops or changes | Retains or deletes | Support/availability |
+| --- | --- | --- | --- | --- |
+| [Option A] | [Verified condition] | [Effect] | [Side effects] | [Verified status] |
+| [Option B] | [Verified condition] | [Effect] | [Side effects] | [Verified status] |
+
+> Both options [shared outcome], but [option B] additionally [material side
+> effect]. They are not equivalent. [Recommendation tied to the customer's
+> stated goal and verified prerequisites.]
+
+Put irreversible consequences before any executable steps. If retaining the
+affected data is a requirement, reject or withhold a destructive recommendation
+unless that requirement changes with explicit authorization. If a capability
+became available later, distinguish the current option from historical
+availability. Never perform the operation through this drafting skill.
+
 ## Investigation update
 
 Use: investigation is ongoing, including no new result.

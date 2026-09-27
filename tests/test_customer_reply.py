@@ -42,7 +42,7 @@ class CustomerReplyTests(unittest.TestCase):
         self.assertIn("customer reply", description.group(1))
         self.assertIn("Draft-only", description.group(1))
         self.assertLess(len(description.group(1)), 1024)
-        version = "Version: 0.1.0. Last reviewed: 2026-09-27."
+        version = "Version: 0.2.0. Last reviewed: 2026-09-27."
         self.assertIn(version, text)
         self.assertIn(version, (ROOT / "README.md").read_text(encoding="utf-8"))
 
@@ -109,8 +109,67 @@ class CustomerReplyTests(unittest.TestCase):
         for heading in ("Japanese wording cues", "Confidence ladder", "Editing passes"):
             self.assertIn("## " + heading, voice)
         self.assertIn("synthetic English", patterns)
-        self.assertEqual(len(re.findall(r"(?m)^## ", scenarios)), 8)
+        self.assertEqual(len(re.findall(r"(?m)^## ", scenarios)), 13)
         self.assertIn("does not mean", scenarios)
+
+    def test_substantive_structures_are_wired_into_workflow(self):
+        text = " ".join(self.docs["SKILL.md"].split())
+        patterns = self.docs["reply-patterns.md"]
+        self.assertIn(
+            "reply-patterns.md#technical-answer-structures",
+            markdown_links(self.docs["SKILL.md"]),
+        )
+        self.assertIn(
+            "**answered**, **partially answered**, or **pending**", text
+        )
+        self.assertIn("Deliver verified answers now", text)
+        for heading in (
+            "Conditional multi-question answer",
+            "Mechanism and responsibility boundary",
+            "Scoped investigation handoff",
+            "Retrospective explanation",
+            "Remedy comparison",
+        ):
+            with self.subTest(heading=heading):
+                self.assertIn("### " + heading, patterns)
+
+    def test_technical_structures_keep_evidence_and_risk_limits(self):
+        text = " ".join(self.docs["reply-patterns.md"].split())
+        for phrase in (
+            "Separate infrastructure capability from entitlement",
+            "preserved state -> changed dependency -> mismatch -> observed effect",
+            "Report observed exclusions, not a global clean bill of health",
+            "No prior failures found",
+            "not proof of zero risk",
+            "Put irreversible consequences before any executable steps",
+            "They are not equivalent",
+            "distinguish the current option from historical availability",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
+
+    def test_substantive_scenarios_have_explicit_negative_expectations(self):
+        text = (ROOT / "tests" / "customer-reply-scenarios.md").read_text(
+            encoding="utf-8"
+        )
+        scenarios = {
+            match.group(1): match.group(2)
+            for match in re.finditer(
+                r"(?ms)^## ([^\n]+)\n(.*?)(?=^## |\Z)", text
+            )
+        }
+        expected = {
+            "Conditional partial answers": "Do not equate",
+            "Mechanism without case-specific proof": "Do not invent",
+            "Negative evidence before a handoff": "Do not announce",
+            "Retrospective with a confirmed shortcoming": "Do not claim",
+            "Same outcome, different destructive effects": "Do not call",
+        }
+        for heading, prohibition in expected.items():
+            with self.subTest(heading=heading):
+                self.assertIn("Input:", scenarios[heading])
+                self.assertIn("Expected:", scenarios[heading])
+                self.assertIn(prohibition, scenarios[heading])
 
     def test_readme_documents_opt_in_install_and_behavior_limit(self):
         text = (ROOT / "README.md").read_text(encoding="utf-8")
