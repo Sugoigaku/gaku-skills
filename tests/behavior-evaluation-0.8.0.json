@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "skill_version": "0.8.0",
+  "evaluated_on": "2026-09-16",
+  "skill_bundle_sha256": "5c54014fa255e5560e8b00f790a79217995ea425e461a5306e4f17f21f16e0dd",
+  "input_classification": "Synthetic fixtures only; no case or personal data.",
+  "local_tests": {
+    "command": "python -B -m unittest discover -s tests -p \"test_*.py\" -v",
+    "tests": 45,
+    "result": "passed",
+    "scope": "Document links/templates/schema example, installer integration, and smoke-runner unit tests; not model behavior."
+  },
+  "native_smoke_runs": [
+    {
+      "fixture": "document-only",
+      "cli_return_code": 0,
+      "native_skill_invoked": false,
+      "transport_status": "failed",
+      "failed_tool_calls": 0,
+      "bundle_unchanged_during_run": true,
+      "semantic_result": "not-independently-reviewed",
+      "author_observation": "The response read the project documents and described conservative coverage, unsupported-tool blockers, checklist-only status, and text/table diagram fallback.",
+      "limitation": "The runtime reported that the native skill-invocation tool was not exposed. Reading documents is not verified native invocation."
+    },
+    {
+      "fixture": "enrichment",
+      "cli_return_code": 0,
+      "native_skill_invoked": false,
+      "transport_status": "failed",
+      "failed_tool_calls": 1,
+      "bundle_unchanged_during_run": true,
+      "semantic_result": "not-independently-reviewed",
+      "author_observation": "The response retained the required role, ordered UI actions, original supplied excerpt, and documented-not-tested/not-run distinctions.",
+      "limitation": "No native skill invocation was recorded; an initial path lookup failed before the project documents were found."
+    }
+  ],
+  "release_limitations": [
+    "Native invocation integration has not passed in this runtime.",
+    "No end-to-end session-read or create-only save workflow was exercised.",
+    "Author observations are not independent semantic approval.",
+    "The removed runtime helpers and their API tests no longer provide deterministic validation."
+  ]
+}

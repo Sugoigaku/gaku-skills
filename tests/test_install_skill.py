@@ -36,6 +36,15 @@ class InstallSkillTests(unittest.TestCase):
         self.assertEqual(INSTALLER.manifest(self.destination), before)
         self.assertEqual(INSTALLER.manifest(self.source), before)
 
+    def test_actual_document_only_bundle_installs_with_all_references(self):
+        destination = self.root / "actual-bundle"
+        result = INSTALLER.install(INSTALLER.DEFAULT_SOURCE, destination)
+        self.assertEqual(result, {"status": "installed", "files_verified": 7})
+        self.assertEqual(
+            INSTALLER.manifest(destination), INSTALLER.manifest(INSTALLER.DEFAULT_SOURCE)
+        )
+        self.assertTrue(all(path.suffix == ".md" for path in destination.rglob("*") if path.is_file()))
+
     def test_identical_install_is_idempotent(self):
         INSTALLER.install(self.source, self.destination)
         before = (self.destination / "SKILL.md").stat().st_mtime_ns
