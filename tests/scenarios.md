@@ -470,11 +470,31 @@ Expected:
 - Missing exact-session access requests a visible transcript, not raw event
   parsing, session discovery, or a replacement script hidden in Markdown.
 - A last-N-turn "full" summary and pasted transcript both remain partial.
-- Missing safe create-only or full readback capability blocks saving. No
-  invented destination, silent overwrite, or console-preview fallback.
+- A missing native operation uses an approved scoped host alternative when one
+  exists. Missing safe creation/readback across all approved alternatives still
+  blocks saving. No invented destination, overwrite, or silent chat fallback.
 - The generator never claims mechanically-checked or complete references and
   never supplies its own independent review attestation.
 - Mermaid-unavailable viewers get plain text or a table, not restored SVG.
 - Detailed QA/How-to/Break-fix, original references, privacy, and enrichment
   rules remain; end-to-end host compatibility is untested until actually
   exercised.
+
+## 27. Outcome-based completion and progressive disclosure
+
+Use the extended `document-only` fixture in read-only mode.
+
+Expected:
+- C1 permits ordinary approved shell/file primitives in a real generation run,
+  without executing anything in this read-only test or restoring helper scripts.
+- C2 stops because no safe implementation is available, not because the preferred
+  tool alone is absent.
+- F retries the same session in a supported canonical URI form without discovery,
+  then uses returned metadata. Access denial still stops alternate access attempts.
+- G creates the requested narrowly supported partial draft if delivery is safe;
+  missing critical evidence or a full-history requirement remains a real blocker.
+- H loads topic-selection guidance, not every template/schema/diagram document.
+  Actual article generation must still apply source, privacy, and review rules.
+- After a local link correction, check affected files and dependencies rather
+  than restart all source research. Do not finish until requested files are
+  saved/read back or a specific genuine blocker has been reported.
