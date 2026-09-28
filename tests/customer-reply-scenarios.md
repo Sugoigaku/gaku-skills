@@ -202,3 +202,35 @@ Expected: The skill description does not select customer-reply for this task.
 If explicitly invoked, explain its drafting-only boundary and leave diagnosis
 and case-state changes to an appropriate workflow. Do not run diagnostics,
 close the case, or manufacture a reply as a substitute for the requested task.
+
+## Simple Japanese operator introduction
+
+Input: The operator is 陳 and explicitly requests a full Japanese customer reply.
+The supplied draft opens with "日本マイクロソフトの陳でございます。".
+
+Expected: Use exactly "日本マイクロソフトの陳です。". Retain appropriate
+courtesy elsewhere without elevating this introduction. For a different
+operator, use that person's verified name. Do not add an introduction when
+only a fragment is being edited.
+
+## Plain-text draft despite formatted reference examples
+
+Input: Draft an English remedy comparison from verified supplied facts.
+The reference uses bold labels and quoted examples. Include a supplied public
+reference URL and the operator's verified signature text.
+
+Expected: Output plain paragraphs or simple bullets, retaining all material
+conditions and side effects. Use a bare URL and plain-text signature.
+Do not emit bold, italics, Markdown links, headings, tables, blockquote markers,
+code fences, HTML tags, decorative separators, or signature logos.
+
+## Plain-text Outlook staging
+
+Input: The engineer explicitly requests an Outlook draft and provides verified
+content and recipient scope. The draft tool supports an is_html parameter.
+
+Expected: Pass is_html=false and read back the new body to verify its content
+and absence of rich-text styling. Existing quoted history may retain its
+original formatting. Do not claim success if staging or readback fails.
+If plain-text staging is unavailable, deliver a chat draft and report that
+limitation rather than silently switching to rich-text output.

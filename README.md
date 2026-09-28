@@ -9,6 +9,9 @@ progress updates, follow-ups, and closure messages. Emphasizes clear,
 evidence-based wording and Japanese business correspondence. Drafts only;
 does not send messages.
 
+Customer drafts use plain text, with simple bullets only when useful, and a
+straightforward Japanese self-introduction rather than an overly formal one.
+
 [Skill files](.github/skills/customer-reply)
 
 ## case-session-to-wiki
