@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "skill_version": "0.9.0",
+  "evaluated_on": "2026-09-28",
+  "skill_bundle_sha256": "f5938f52835bf3f8d9104b36af6f9e70fc2d42afc17754e545d337267aa1ee43",
+  "input_classification": "Synthetic fixtures only; no case or personal data.",
+  "local_tests": {
+    "command": "python -B -m unittest discover -s tests -p \"test_*.py\" -q",
+    "tests": 62,
+    "result": "passed",
+    "scope": "Repository tests, including wiki router size, conditional references, templates, source safeguards, fallback contracts, installation and smoke harness. Document assertions are not runtime enforcement."
+  },
+  "native_smoke_runs": [
+    {
+      "fixture": "document-only",
+      "tested_bundle_sha256": "3f593bf6be50adddf970209a609bdc572cfaa92f4a0cb7226e0db66fdd93ed38",
+      "transport_status": "passed",
+      "native_skill_invoked": true,
+      "failed_tool_calls": 0,
+      "bundle_unchanged_during_run": true,
+      "semantic_result": "author-reviewed-not-independent",
+      "author_observation": "The response distinguished approved scoped shell fallback from no available safe creation/readback, preserved exact-session identity and partial coverage, allowed narrow supported drafts, avoided unnecessary schema loading for inventory-only work, and retained privacy/review boundaries."
+    },
+    {
+      "fixture": "enrichment",
+      "tested_bundle_sha256": "3f593bf6be50adddf970209a609bdc572cfaa92f4a0cb7226e0db66fdd93ed38",
+      "transport_status": "passed",
+      "native_skill_invoked": true,
+      "failed_tool_calls": 0,
+      "bundle_unchanged_during_run": true,
+      "semantic_result": "partial-author-assessment",
+      "author_observation": "The response retained the supplied role, UI actions, failure branch, exact original excerpt, and documented-not-tested/not-run distinctions. It expanded a requested sample step into a full article, so requested output scope was not fully satisfied."
+    },
+    {
+      "fixture": "enrichment",
+      "iteration": "final-after-user-approved-scope-clarification",
+      "tested_bundle_sha256": "f5938f52835bf3f8d9104b36af6f9e70fc2d42afc17754e545d337267aa1ee43",
+      "transport_status": "passed",
+      "native_skill_invoked": true,
+      "failed_tool_calls": 0,
+      "bundle_unchanged_during_run": true,
+      "semantic_result": "author-reviewed-not-independent",
+      "author_observation": "The response returned only the requested step, required role, necessary qualification, source excerpt and companion explanation, without full-article front matter or extra template sections. It preserved the unexecuted status and did not inherit earlier success."
+    }
+  ],
+  "scan": {
+    "exit_code": 1,
+    "blocking_findings": 0,
+    "advisory_findings": [
+      "Description does not start with the catalog-specific Trigger words prefix.",
+      "Extended catalog front-matter keys are absent."
+    ],
+    "disposition": "Preserved existing repository metadata convention; no catalog submission was requested."
+  },
+  "limitations": [
+    "No controlled model-to-model or old-versus-new output-quality benchmark.",
+    "Synthetic read-only tests do not verify end-to-end session extraction and file delivery.",
+    "The initial enrichment scope failure was corrected in one subsequent synthetic run; this is not a statistical reliability guarantee.",
+    "No independent reviewer certification or company-platform acceptance claim.",
+    "Scoped host file commands remain subject to actual runtime capabilities and approval policy."
+  ]
+}

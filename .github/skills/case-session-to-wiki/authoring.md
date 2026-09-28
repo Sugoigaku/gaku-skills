@@ -1,5 +1,9 @@
 # Knowledge Extraction and Article Authoring
 
+Use topic selection for mixed material, outcome definitions when making a status
+claim, and detailed-action guidance for How-to/Break-fix. A simple QA does not
+need a procedural checklist or a formal planning table.
+
 ## Topic and type selection
 
 Inventory the technical topics throughout the available source, including later
@@ -28,7 +32,8 @@ and ask one focused question before changing it.
 - Missing sources or critical steps block that candidate, not automatically
   every supported sibling. No sibling lends another its verification status.
 
-Keep this working plan internal unless a planning-only output is requested:
+For a complex set, this optional internal table can help track coverage. For one
+clear task, select its type directly. Print a plan only when requested:
 
 | ID | Topic | Wiki type | Reader task and scope | Title | Sources and coverage | Readiness and gaps | Filename |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -152,10 +157,6 @@ Verification needs the actual query, command, or UI action, recognizable result,
 and recorded scope. Distinguish historical observations from checks still to be
 performed. Do not claim measured recovery from a participant's report.
 
-Before saving, verify that a newcomer can find each option, supply each input,
-run each complete documented command, recognize the result, and know when to
-stop, using cited evidence rather than guesses.
-
 ## Per-article and set gates
 
 Each article must be self-contained, with its own source entries, coverage,
@@ -164,8 +165,7 @@ Keep uncertainties in the affected answer/action and collect actual remaining
 questions in a final optional Double-check. Omit empty sections and repeated
 "Not recorded" padding; do not omit material limitations.
 
-Apply [sources](sources.md), [evidence review](evidence-review.md), and
-[local delivery](session-workflow.md) independently to every article.
-Return `saved`, `blocked`, `failed`, or `deferred` for the planned set, with
-actual paths or concise reasons. No shared success flag conceals a blocked
-article, partial save, or unvalidated output.
+Use [evidence review](evidence-review.md#agent-checklist) for the final content
+checks and [local delivery](session-workflow.md#verify-and-finish) for
+`saved`, `blocked`, `failed`, or `deferred` outcomes. Do not duplicate a full
+review itinerary here or make a ready sibling wait for an unrelated blocked topic.

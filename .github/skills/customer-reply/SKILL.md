@@ -1,28 +1,35 @@
 ---
 name: customer-reply
-description: "Draft or refine a customer reply from supplied support context, including Japanese business correspondence. Use for customer-response drafting or wording edits, not troubleshooting or case management. Draft-only."
+description: "Draft or refine a plain-text customer reply from supplied support context, including Japanese business correspondence. Use for customer-response drafting or wording edits, not troubleshooting or case management. Draft-only."
 ---
 
 # Customer Reply
 
-Version: 0.3.0. Last reviewed: 2026-09-27.
+Version: 0.3.1. Last reviewed: 2026-09-28.
 
 ## Outcome
 
-Produce a courteous, technically precise reply that answers the customer's
-question early, explains its scope and uncertainty, and makes the next step
-clear. Preserve technical meaning when polishing existing text; flag substantive
-corrections separately. Acknowledge specific effort without burying the answer.
+Answer early, explain scope and uncertainty, and clarify the next step.
+Preserve technical meaning; flag substantive corrections separately.
+Acknowledge specific effort without burying the answer.
 
-This document-only skill is a **voice and composition layer**, not a source of
-product facts or case authority. Retain any owning workflow's evidence,
-delivery, and closure controls.
+This document-only **voice and composition layer** retains the owning workflow's
+evidence, delivery, and closure controls; it grants no product or case authority.
+
+## Plain-text output and introduction
+
+Customer drafts must be plain text, including the signature. No bold, italics,
+HTML, Markdown headings, tables, blockquotes, code fences, or decorative styling.
+Use paragraphs; simple bullets or numbering only when useful. Use bare URLs.
+Reference-document formatting is not draft formatting; convert examples to prose.
+For operator 陳, use "日本マイクロソフトの陳です。", not
+"日本マイクロソフトの陳でございます。". Use the actual operator's name;
+do not add an introduction to a fragment-only edit.
 
 ## Load only relevant guidance
 
 For a simple supplied-text edit, these instructions may be sufficient. Read
-only the linked sections needed for the task, not both references in full.
-Patterns are optional aids, not mandatory templates or a fixed drafting sequence.
+relevant sections, not both references in full. Patterns are optional aids.
 
 | Need | Reference |
 | --- | --- |
@@ -59,7 +66,6 @@ Patterns are optional aids, not mandatory templates or a fixed drafting sequence
 
 ## Language and missing context
 
-Use the latest question, relevant prior answers, and the intended channel.
 Internal discussion and artifacts stay in English. For customer-facing text
 in another language, state the detected language and its basis and obtain
 confirmation before drafting, unless already explicit in the current request.
@@ -109,6 +115,9 @@ An Outlook draft is not evidence of meeting a case-system response SLA.
 
 Use an available structured draft tool, never an immediate-send tool. Preserve
 threading and confirm reply-all scope rather than adding or dropping recipients.
+Pass `is_html=false` for the new body; verify it has no rich-text formatting.
+Existing quoted history need not be reformatted. If plain-text staging is
+unsupported, return a chat draft and report the limitation.
 Read the created draft back to verify the new text, quoted history, required
 signature, and recipients. A failed creation or readback is failed or unverified,
 not done. If tools are unavailable, return the chat draft and report that no
@@ -121,11 +130,7 @@ Ask the engineer to reopen the verified latest draft before review or sending.
 
 ## Changelog
 
-- 0.3.0 (2026-09-27): Shorten discovery metadata, route references by need,
-  and replace the fixed drafting sequence with completion criteria. Preserve
-  evidence, language, privacy, and draft-staging boundaries.
-- 0.2.0 (2026-09-27): Add partial-answer tracking, conditional Q&A, scoped
-  investigation handoffs, retrospective explanations, remedy comparisons,
-  and synthetic acceptance checks for substantive technical replies.
-- 0.1.0 (2026-09-27): Initial document-only reply workflow, voice guide,
-  scenario patterns, and evidence/draft safety boundaries.
+- 0.3.1 (2026-09-28): Require plain-text drafts and a simple operator introduction.
+- 0.3.0 (2026-09-27): Compact discovery, selective references, and completion criteria; preserve safety boundaries.
+- 0.2.0 (2026-09-27): Partial answers, technical reasoning structures, and synthetic checks.
+- 0.1.0 (2026-09-27): Initial workflow, voice, patterns, and safety boundaries.

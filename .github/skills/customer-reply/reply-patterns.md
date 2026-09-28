@@ -10,6 +10,11 @@ are optional scaffolding: adapt them to the question, combine only useful
 elements, and skip templates entirely for a simple wording edit. Evidence and
 authorization boundaries still apply when a pattern is used.
 
+Formatting here organizes the reference, not the customer draft. Convert
+examples to plain-text paragraphs; omit quote markers, bold, Markdown headings,
+tables, and code fences. Simple bullets or numbering are allowed when useful.
+Use bare reference URLs and a plain-text signature.
+
 ## Direct answer
 
 Use: a technical question or a request to validate an interpretation.
@@ -36,7 +41,7 @@ Synthetic example:
 
 If the customer asked several questions, preserve their numbering and answer
 each once. Never begin an available answer with a request to reconfirm context.
-Use separate cause/interpretation, impact, and action headings for complex
+Use separate plain-text cause/interpretation, impact, and action labels for complex
 reassurance, but not for a two-sentence clarification.
 
 ## Technical answer structures
@@ -121,12 +126,12 @@ guarantee for all similar cases.
 
 ### Remedy comparison
 
-Use a compact table or paired bullets:
+Use paired plain-text paragraphs or simple bullets, not a table:
 
-| Choice | Preconditions | Stops or changes | Retains or deletes | Support/availability |
-| --- | --- | --- | --- | --- |
-| [Option A] | [Verified condition] | [Effect] | [Side effects] | [Verified status] |
-| [Option B] | [Verified condition] | [Effect] | [Side effects] | [Verified status] |
+- [Option A]: [Verified precondition]; [what stops or changes]; [what is
+  retained or deleted]; [verified support and availability].
+- [Option B]: [Verified precondition]; [what stops or changes]; [what is
+  retained or deleted]; [verified support and availability].
 
 > Both options [shared outcome], but [option B] additionally [material side
 > effect]. They are not equivalent. [Recommendation tied to the customer's

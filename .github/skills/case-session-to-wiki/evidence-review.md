@@ -142,8 +142,11 @@ metadata is not claimed to pass the removed validator.
 
 ## Agent checklist
 
-Apply this to each candidate before saving and to every saved file after full
-readback. Do not substitute a field-presence check for examining actual content.
+Use these as acceptance criteria, not a mandatory sequence of tool calls.
+Check source support and privacy before persistence; confirm the saved result
+through full readback. Reuse checks on unchanged content. After a correction,
+recheck affected claims/files and cross-file dependencies instead of replaying
+the entire checklist. Do not substitute field presence for actual inspection.
 Keep detailed working review out of the article body.
 
 | Check | Required inspection | Failure response |
@@ -160,14 +163,16 @@ Keep detailed working review out of the article body.
 | Enrichment and outcomes | Added actions mapped, no inherited success, reported vs observed distinguished, mode honored | Correct labels; missing evidence cannot be fixed by stronger wording |
 | Privacy | Inspect all text, JSON, filenames, URLs including decoded forms, code, captions, and labels for identities/credentials | Remove or visibly redact before persistence; stop if meaning is lost |
 | Links and diagrams | Source anchors unique, IDs resolve, local files exist in this batch, no private/remote assets or active Mermaid | Fix links, simplify/omit diagram; do not fetch undeclared files |
-| Delivery | Correct existing session parent, fresh create-only folder/files, complete readback, accurate saved/blocked/failed/deferred set | Stop further writes and report exact saved/unvalidated and unsaved subsets |
+| Delivery | Correct existing session parent, fresh create-only folder/files, complete readback, accurate saved/blocked/failed/deferred set | Repair local authoring/link issues; on write/access/integrity failure stop further writes and report exact subsets |
 
 Use simple visible inline links and same-directory local basenames; no
 traversal, device/absolute local links, hidden HTML, or undeclared file reads.
 Check sibling fragments if used, or link to the file without a fragment.
 Code blocks cannot supply visible source citations.
 
-Use native JSON parsing when offered. If it is unavailable, inspect the JSON
+Use native JSON parsing or an approved scoped host operation when available.
+Parsing verifies syntax only, not duplicate-key rejection, schema, privacy, or
+semantic support unless those were actually checked. If unavailable, inspect the JSON
 text against the schema and explicitly report that parsing was not machine
 verified. Human/agent checks can miss duplicate keys, subtle misquotes, private
 names, or omitted claims. Never report guaranteed redaction or deterministic

@@ -12,7 +12,7 @@ SUPPORTING = {
     "session-workflow.md", "authoring.md", "sources.md",
     "evidence-review.md", "templates.md", "diagrams.md",
 }
-VERSION = "Version: 0.8.0. Last reviewed: 2026-09-16."
+VERSION = "Version: 0.9.0. Last reviewed: 2026-09-28."
 HEADINGS = {
     "qa": ["Questions and answers", "References", "Double-check"],
     "how-to": [
@@ -76,7 +76,26 @@ class SkillFrameworkTests(unittest.TestCase):
         self.assertRegex(match.group(1), rf"(?m)^name: {SKILL_DIR.name}$")
         description = re.search(r'(?m)^description: "(.+)"$', match.group(1))
         self.assertIsNotNone(description)
-        self.assertLessEqual(len(description.group(1)), 1024)
+        self.assertLessEqual(len(description.group(1)), 300)
+
+    def test_root_is_a_bounded_router_with_conditional_references(self):
+        text = read("SKILL.md")
+        self.assertLessEqual(len(text.encode("utf-8")), 6000)
+        self.assertIn("do not preload every file", text)
+        self.assertIn("Planning-only work need not load save/schema instructions", text)
+        self.assertIn("selected type and Source entry only", text)
+        self.assertNotIn("| Always", text)
+        self.assertNotIn("### 1.", text)
+
+    def test_reference_loading_does_not_skip_delivery_safeguards(self):
+        self.assertIn("Before delivering actual articles", read("SKILL.md"))
+        self.assertIn("Check source support and privacy before persistence", read("evidence-review.md"))
+        self.assertIn("recheck affected content", read("session-workflow.md"))
+
+    def test_sample_scope_does_not_force_full_article_template(self):
+        self.assertIn("return only that requested", read("SKILL.md"))
+        self.assertIn("not a full article or extra template", read("SKILL.md"))
+        self.assertIn("not the\nwhole template, front matter", read("templates.md"))
 
     def test_all_supporting_documents_are_wired_from_skill(self):
         self.assertEqual(set(markdown_links(read("SKILL.md"))) & SUPPORTING, SUPPORTING)
@@ -180,10 +199,10 @@ class SkillFrameworkTests(unittest.TestCase):
             self.assertIn(f"`{outcome}`", text)
 
     def test_native_input_does_not_recreate_raw_archive_reader(self):
-        text = read("session-workflow.md")
+        text = " ".join(read("session-workflow.md").split())
         for term in (
             "Never list or search other", "raw archive", "Do not improvise structural event filtering.",
-            "Do not use alternate tools to bypass access denial or content exclusion.",
+            "On access denial, stop access attempts",
             "Do not silently switch sessions", "linked files",
         ):
             self.assertIn(term.lower(), text.lower())
@@ -194,7 +213,7 @@ class SkillFrameworkTests(unittest.TestCase):
         for term in (
             "partial` for all current-context and local-session reads",
             "complete-for-provided-transcript", "confirmed EOF",
-            "file did not change", "Pasted text is `current-session` and partial",
+            "did not change", "Pasted text is `current-session` and partial",
         ):
             self.assertIn(term, text)
 
@@ -202,10 +221,30 @@ class SkillFrameworkTests(unittest.TestCase):
         text = read("session-workflow.md")
         for term in (
             "that source session's directory", "not the invoking session",
-            "create-only", "not\nan atomic no-overwrite guarantee",
+            "create-only", "not an atomic no-overwrite guarantee",
             "stop and report that limitation", "Read each saved file back internally",
-            "stop further writes", "Do not\n   delete partial output",
+            "stop further writes", "Do not delete partial output",
             "each saved Wiki's", "full absolute file path", "List the evidence companion separately",
+        ):
+            self.assertIn(term, text)
+
+    def test_scoped_host_fallback_is_allowed_without_restoring_helpers(self):
+        text = read("session-workflow.md")
+        for term in (
+            "ordinary approved host", "exclusive files/directories",
+            "parse sanitized JSON", "Respect the host's approval policy",
+            "not authorize a general script", "replacement\nvalidator",
+            "Lack of one preferred tool alone is not a blocker",
+        ):
+            self.assertIn(term, text)
+
+    def test_completion_handles_partial_sources_and_explicit_chat_delivery(self):
+        text = read("session-workflow.md")
+        for term in (
+            "unchanged provider/ID", "explicitly requested\ncomplete-history",
+            "continue with a narrowly", "same selected identity",
+            "omit links to nonexistent companions", "`reference_status: incomplete`",
+            "never silently substitute",
         ):
             self.assertIn(term, text)
 

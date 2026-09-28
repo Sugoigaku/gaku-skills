@@ -1,6 +1,7 @@
 # Optional Concept Diagrams
 
-Default to no diagram. Use one small Mermaid diagram only when relationships,
+Load this reference only when a diagram adds value. Default to no diagram.
+Use one small Mermaid diagram only when relationships,
 sequence, or a decision become clearer than prose. Prefer roughly three to
 seven elements, not a picture of every procedural step.
 

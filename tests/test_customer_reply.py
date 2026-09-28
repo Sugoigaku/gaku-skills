@@ -42,7 +42,7 @@ class CustomerReplyTests(unittest.TestCase):
         self.assertIn("Draft-only", description.group(1))
         self.assertLessEqual(len(description.group(1)), 240)
         self.assertIn("not troubleshooting or case management", description.group(1))
-        version = "Version: 0.3.0. Last reviewed: 2026-09-27."
+        version = "Version: 0.3.1. Last reviewed: 2026-09-28."
         self.assertIn(version, text)
 
     def test_entry_point_is_compact_and_routes_by_need(self):
@@ -154,7 +154,7 @@ class CustomerReplyTests(unittest.TestCase):
         for heading in ("Japanese wording cues", "Confidence ladder", "Editing cues"):
             self.assertIn("## " + heading, voice)
         self.assertIn("synthetic English", patterns)
-        self.assertEqual(len(re.findall(r"(?m)^## ", scenarios)), 18)
+        self.assertEqual(len(re.findall(r"(?m)^## ", scenarios)), 21)
         self.assertIn("does not mean", scenarios)
 
     def test_references_are_optional_not_a_second_required_recipe(self):
@@ -166,6 +166,44 @@ class CustomerReplyTests(unittest.TestCase):
         self.assertIn("not a required reading list or a sequence of editing passes", voice)
         self.assertIn("Recovery after a change alone does not prove cause", patterns)
         self.assertNotRegex(self.docs["reply-patterns.md"], r"(?m)^Order:")
+
+    def test_plain_text_contract_is_available_without_reference_reads(self):
+        text = " ".join(self.docs["SKILL.md"].split())
+        for phrase in (
+            "Customer drafts must be plain text, including the signature",
+            "No bold, italics, HTML, Markdown headings, tables, blockquotes, code fences",
+            "simple bullets or numbering only when useful",
+            "Use bare URLs",
+            "Pass `is_html=false`",
+            "Existing quoted history need not be reformatted",
+            "unsupported, return a chat draft and report the limitation",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
+
+    def test_simple_introduction_and_plain_text_references(self):
+        for name in ("SKILL.md", "voice-and-wording.md"):
+            text = self.docs[name]
+            with self.subTest(name=name):
+                self.assertIn('"日本マイクロソフトの陳です。"', text)
+                self.assertIn('"日本マイクロソフトの陳でございます。"', text)
+                self.assertIn("fragment-only edit", text)
+        patterns = self.docs["reply-patterns.md"]
+        self.assertIn("not the customer draft", patterns)
+        self.assertIn("not a table", patterns)
+        self.assertNotIn("Use a compact table", patterns)
+        self.assertNotRegex(patterns, r"(?m)^\|")
+        self.assertIn("Do not surround the draft with a code fence", self.docs["voice-and-wording.md"])
+
+    def test_output_preference_acceptance_scenarios(self):
+        text = (ROOT / "tests" / "customer-reply-scenarios.md").read_text(encoding="utf-8")
+        for title in (
+            "Simple Japanese operator introduction",
+            "Plain-text draft despite formatted reference examples",
+            "Plain-text Outlook staging",
+        ):
+            self.assertIn("## " + title, text)
+        self.assertIn("Pass is_html=false", text)
 
     def test_routing_and_completion_scenarios_are_documented(self):
         text = (ROOT / "tests" / "customer-reply-scenarios.md").read_text(

@@ -1,19 +1,21 @@
 # Wiki Templates
 
-Select one type per article using [authoring](authoring.md#topic-and-type-selection).
+Read only the selected type and Source entry sections. Consult
+[authoring](authoring.md#topic-and-type-selection) when the reader task is unclear.
+These are full-article templates. A requested sample step or excerpt uses only
+the relevant portion with its necessary citation and qualifications, not the
+whole template, front matter, or unrelated sections.
 The fenced blocks below are authoring templates, not articles to save unchanged.
 Replace placeholders and remove instructional text. Keep the selected H2 order,
 one H1, and sequential H3 Q/Step headings. Omit Before you start only if there
 are no essential prerequisites or significant impact. Omit Double-check when
 there are no actual open items; otherwise it must be last.
 
-Use direct answers/actions, not repeated Conditions and exceptions, Where, Why,
-Impact, Rollback, Provenance, or Sources forms. Detailed procedural instructions
-are still required: numbered substeps, exact UI choices, complete documented
-commands with input explanations, and useful Notes. Include necessary impact/
-rollback once up front and local warnings only where they change the next action.
+Use direct answers/actions, not repeated validation forms. For procedures,
+apply [detailed-action guidance](authoring.md#detailed-actions-simple-structure);
+the templates organize the article, not limit its necessary detail.
 
-Default statuses are conservative. Follow [metadata and evidence rules](evidence-review.md)
+Default statuses are conservative. Follow [metadata and evidence rules](evidence-review.md#article-metadata)
 before changing them. Source kind must reflect actual input, not the request's
 wording. Every substantive claim needs a nearby source citation and a companion
 mapping. Do not copy example IDs as evidence without actual supporting records.
@@ -181,7 +183,9 @@ recorded results separate from proposed checks or reported success.>
 Under References, repeat this block per used passage. Use nearby `[S1](#s1)`
 citations in the article body. Public source links target the actual safe
 canonical URL; sanitized private sources target `evidence.json`. That file is
-in the same directory as the article.
+in the same directory as the article. For explicit chat-only delivery, use
+inline source records instead of nonexistent file links, following
+[the chat-only contract](session-workflow.md#explicit-chat-only-delivery).
 
 ```markdown
 ### S1

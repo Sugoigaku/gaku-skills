@@ -1,5 +1,9 @@
 # Sources, Enrichment, and Privacy
 
+Read the sections applicable to the sources actually used. Enrichment is
+available for a named gap, not mandatory research for every article. Before any
+output, apply de-identification to all included content.
+
 ## Inspect originals first
 
 Collect references actually supporting the selected topics: documents, primary

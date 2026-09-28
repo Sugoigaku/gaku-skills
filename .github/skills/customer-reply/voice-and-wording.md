@@ -28,6 +28,14 @@ language, emojis, and dramatic urgency.
 
 ## Japanese wording cues
 
+Keep the self-introduction simple. For operator 陳, the approved wording is
+"日本マイクロソフトの陳です。"; do not elevate it to
+"日本マイクロソフトの陳でございます。". This is an introduction preference,
+not a ban on every formal expression in the rest of the email. For another
+operator, use their verified name with the same simple register; never assume
+that every user is 陳. Omit the introduction when it was not requested in a
+fragment-only edit.
+
 The short conventional expressions below are verbatim quotations. They are
 language cues, not complete templates. Explanations and skill instructions are
 in English. Use Japanese cues only within authorized Japanese customer-facing
@@ -109,6 +117,17 @@ provided [verified prerequisite]," not an unconditional promise.
 
 For a substantive explanation rather than a wording edit, consult the relevant
 [technical answer structure](reply-patterns.md#technical-answer-structures).
+
+## Plain-text delivery
+
+The tables, bold labels, and headings in this guide organize instructions only.
+Never copy their styling into a customer draft. Use plain paragraphs, with
+simple bullets or numbered items only when they improve readability. No bold,
+italics, HTML tags, Markdown heading markers, blockquote markers, code fences,
+tables, or decorative separators. Show reference titles with bare URLs rather
+than Markdown links. Keep technical strings and commands intact as literal text.
+Use a verified signature's text content without logos or rich-text styling.
+Do not surround the draft with a code fence to make it appear plain text.
 
 ## Guardrails over stylistic habits
 
