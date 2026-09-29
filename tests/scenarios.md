@@ -26,14 +26,15 @@ document contracts, installation, and the smoke runner. It does not
 establish that a model follows the workflow or replace the removed runtime
 reader/validator with an equivalent deterministic guarantee.
 
-Five replayable synthetic prompts are in `tests\fixtures\behavior`. Run one in
+Six replayable synthetic prompts are in `tests\fixtures\behavior`. Run one in
 a fresh native CLI process with the [smoke runner](../scripts/behavior_smoke.py):
 
 ```text
 python -B scripts\behavior_smoke.py --fixture topic-plan --output <NEW_APPROVED_OUTPUT_PATH>
 ```
 
-Also run `false-quote`, `enrichment`, `session-delivery`, and `document-only`.
+Also run `false-quote`, `enrichment`, `session-delivery`, `document-only`, and
+`embedded-sources`.
 The runner permits only skill/view tools,
 records actual invocation success and visible answers, and leaves semantic
 results `not-reviewed`. Evaluate the answers against the criteria below; a CLI
@@ -41,12 +42,14 @@ exit code alone is not a pass. No live source or customer data is used.
 
 The agent checklist is not machine validation; independent semantic review
 and original-source authenticity remain separate checks. Supplied
-excerpts without a safe HTTPS origin must not be labeled public-document.
+excerpts without an inspected safe HTTPS origin must not be presented as
+independently inspected official documentation.
 
-For every article, check inline citations, original excerpts, and exact locations
+For every article, check documentation citations, original excerpts, and source context
 using the [shared contract](../.github/skills/case-session-to-wiki/sources.md).
-For saved outputs, source positions refer to approved de-identified companion
-records. Do not persist anonymous session/archive locators or invent public
+For session evidence, embed the relevant de-identified excerpt with its actual
+visible role and no link or artificial line locator. Do not persist anonymous
+session/archive locators or invent public
 documentation URLs for the synthetic source identifiers below.
 
 ## 1. Verified fix with a useful rejected hypothesis
@@ -72,7 +75,7 @@ Expected:
 - Retain the DNS check as a useful exclusion, not part of the fix.
 - Preserve the follow-up answer: these observations do not justify a DNS change.
 - Cite the port comparison and before/after results; invent no commands.
-- Include original tool-result excerpts with exact fixture-local locations;
+- Include original tool-result excerpts beside the claims, attributed to the tool;
   explicitly state that no external publication was supplied.
 - Source completeness does not grant independent semantic approval. Reference
   status is at most checklist-checked after actual checklist review and readback.
@@ -173,7 +176,8 @@ Use scenario 1 with a disposable synthetic source session.
 Expected:
 - Create a fresh output folder directly under the selected session without a
   preview, article-list approval, or destination/save question.
-- Save only de-identified articles and their sanitized evidence companion.
+- Save only de-identified Markdown articles with embedded supporting passages;
+  no evidence sidecar, claim ledger, or source index.
 - Source and format gates remain; automatic saving does not create
   missing original excerpts or justify fabricated matching criteria.
 - Repeated runs get new folders and preserve earlier files.
@@ -196,11 +200,11 @@ Engineer: Make this a QA wiki.
 Expected:
 - `wiki_type: qa`, two direct answers, and the version condition.
 - No forced cause, repair, or case-timeline sections.
-- Each answer links to a compact source entry with title, exact supplied
-  section/paragraph, and the actual short quotation; full metadata is in the companion.
+- Each answer includes the actual short quotation with the supplied title,
+  section/paragraph, version, and inspection limitation in plain text.
 - Label the supplied-source origin and verification honestly; no invented URL.
-- In the concise Wiki, retain only the linked title, exact location, and short
-  excerpt; publisher/revision/inspection details live in the companion.
+- With no inspected official URL, do not fabricate a source link. Include only
+  metadata needed to interpret the answer, not a separate evidence record.
 - Do not repeat Conditions and exceptions or Sources fields under each answer.
 
 ## 10. How-to explains each action and checkpoint
@@ -412,7 +416,7 @@ Use a complete synthetic source but explicitly request analysis only with no
 file writes.
 
 Expected:
-- Do not create an output folder, evidence companion, or article.
+- Do not create an output folder, sidecar, or article.
 - Do not print a Wiki preview unless explicitly requested.
 - Report the requested analysis or limitations concisely; automatic local-save
   defaults do not override the explicit no-write instruction.
@@ -439,7 +443,8 @@ Expected:
 - Keep the checks and change as understandable actions with inline citations.
 - Do not repeat harmless impact/rollback statements on the read-only checks.
 - Retain the essential stop condition near the disruptive action if needed.
-- Put detailed provenance/execution status in the companion, not per-step forms.
+- State meaningful execution limits once in normal prose, not per-step forms
+  or a separate companion.
 - Keep the original excerpts and precise source locations in compact References.
 - Old saved articles remain untouched; this edition does not certify them.
 
@@ -459,8 +464,8 @@ Expected:
 - Do not reduce a step to "import the certificate" or "restart the service."
 - Do not restore repetitive Where/Why/Impact/Provenance forms or pad harmless
   actions with warnings. Necessary procedural detail has no word-count target.
-- QA remains direct Q&A; provenance, execution status, and review metadata stay
-  in the companion. Checklist review is not proof that a command was executed.
+- QA remains direct Q&A with adjacent supporting passages; keep only material
+  execution/inspection limits. Checklist review is not proof that a command ran.
 
 ## 26. Script-free host limitations are explicit
 
@@ -493,8 +498,32 @@ Expected:
   then uses returned metadata. Access denial still stops alternate access attempts.
 - G creates the requested narrowly supported partial draft if delivery is safe;
   missing critical evidence or a full-history requirement remains a real blocker.
-- H loads topic-selection guidance, not every template/schema/diagram document.
+- H loads topic-selection guidance, not every template/review/diagram document.
   Actual article generation must still apply source, privacy, and review rules.
 - After a local link correction, check affected files and dependencies rather
   than restart all source research. Do not finish until requested files are
   saved/read back or a specific genuine blocker has been reported.
+
+## 28. Embedded evidence and intact Windows delivery paths
+
+Use the `embedded-sources` fixture in read-only mode. For the write-path variant,
+use a disposable synthetic session with a space in its verified parent path.
+
+Expected:
+- The preview answers the technical question directly: a reported Complete
+  status is not independent verification of the exported file's contents.
+- The original engineer statements appear as short attributed quotations
+  immediately beside the answer. No session/message/file links, source IDs,
+  artificial line numbers, or evidence sidecar.
+- A repeated assistant assertion is not treated as proof; no reconstructed quote.
+- Explain that inspected official documentation uses a descriptive title/section
+  link and a relevant supporting passage, without inventing a URL for this input.
+- The delivery-format example is explicitly synthetic and not a saved-file claim.
+  Its full Windows path is displayed in inline code, including `\.copilot\`.
+  Its separate link targets the same absolute path using forward slashes and
+  angle brackets around the space-containing target.
+- In the write-path variant, the actual generated set contains Markdown articles
+  only; read them back and compare all displayed paths/targets to actual files.
+  Session-only articles need no empty References section.
+- No technical detail, privacy rule, source-scope limit, create-only guarantee,
+  or pending-engineer-review status is lost to make the format simpler.

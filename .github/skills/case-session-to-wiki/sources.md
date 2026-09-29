@@ -11,19 +11,20 @@ observations, supplied originals, and visible tool results. Prefer original
 publisher documentation over summaries. Use only authorized access.
 
 1. Read the relevant original passage or explicitly supplied excerpt.
-2. Assign an extraction-local unique source ID such as `S1`. Reuse it only for
-   the same passage and locator; keep its meaning consistent across the batch.
-3. Record the actual title, publisher/source role, safe origin, exact locator,
-   version when exposed, inspection state, short passage, and excerpt handling.
-4. Map each answer, condition, action, check, diagnosis, outcome, and diagram
-   claim to its supporting passage. A symptom quotation is not proof of cause.
+2. For official documentation, retain its actual title, safe canonical URL,
+   relevant section, applicable version, and a short supporting passage.
+3. For session evidence, select the relevant original words and actual visible
+   role. Include them directly in the article, without links or invented locators.
+4. Check each answer, condition, action, check, diagnosis, outcome, and diagram
+   against its supporting passage. A symptom quotation is not proof of cause.
 5. Preserve version differences, corrections, and contradictory evidence.
 
 A URL, search snippet, login page, title, AI paraphrase, or repeated assistant
 claim is not an inspected original. Do not invent URLs, quotations, revisions,
 dates, sections, anchors, or line numbers. Never fetch additional customer/case
 systems as part of this skill. On access failure, report the limitation and
-request an accessible original/excerpt with a precise safe locator.
+request an accessible original/excerpt. A missing official document location
+must not be replaced by an invented one.
 
 ## Exact locations and excerpts
 
@@ -32,49 +33,55 @@ request an accessible original/excerpt with a precise safe locator.
 | Public documentation/KB | Actual canonical URL and section/subheading or verified anchor; revision when exposed |
 | Supplied document | Safe title/version plus page and section/paragraph |
 | Source code | Safe repository identity, actual revision, relative file, and exact line range |
-| Private transcript/report/tool result | Portable sanitized companion source ID and exact lines within its included passage |
+| Selected session conversation/report/tool result | Actual visible role plus the relevant excerpt embedded beside the claim; no link or artificial line locator |
 
-An anonymous archive line, session ID, "earlier in chat," or source ID without
-an included record is not portable provenance. Number sanitized record lines
-explicitly and say they are local to that included passage, not original event
-or tool-call IDs. Do not persist a reverse map to the private archive.
+For session evidence, the included attributed excerpt supplies context; an
+anonymous archive line, session ID, or "earlier in chat" does not. No line
+numbering or reverse map to the private archive is needed or permitted.
+If only a compacted summary is visible, identify it as a summary; never fabricate
+an original dialogue quote from it. Narrow the claim or request the original
+when that distinction materially changes the answer.
 
 Quote only a short permitted original passage necessary for the claim. Do not
 copy whole documents or substantial passages. Keep interpretation outside the
 quotation. Preserve the original language; an English explanation is separate,
-not a replacement quotation. Mark omissions and use `excerpt_handling: redacted`
-for visibly redacted or shortened text; never call edited text verbatim.
+not a replacement quotation. Show omissions as `[...]` and label visibly
+redacted or shortened text "Excerpt redacted"; never call edited text verbatim.
 
-Compare quotes to the actual inspected passage, then to the sanitized companion.
+Compare embedded quotes directly to the actual inspected passage.
 Apart from line endings and Markdown blockquote markers, do not normalize away
 differences in wording, spaces, punctuation, or meaning. Fuzzy agreement and
-translation are not exact quotation. Do not generate companion text from the
+translation are not exact quotation. Do not generate supporting text from the
 article and call it evidence.
 
-Use `original-inspected` only when the relevant original was actually read.
-Use `supplied-excerpt-only` when an engineer supplied a passage but the publisher's
-original was not independently inspected. Missing originals remain unavailable,
-not selected supporting records. A supplied excerpt can support a limited claim
-without implying publisher authenticity. Where no revision is exposed, record
-`Not provided by source`, never an invented version.
+Say an original was inspected only when it was actually read. Label an engineer's
+supplied document excerpt "original not independently inspected" when appropriate.
+Missing originals remain unavailable. A supplied excerpt can support a limited
+claim without implying publisher authenticity. Mention a missing version only
+when it affects applicability; never invent one or add "Not provided" padding.
 
 ## Compact inline attribution
 
-Every substantive claim has a nearby `[S1](#s1)`-style citation outside code,
-resolving to exactly one `### S1` entry in that article's References. Different
-claims in a step may need different sources. Cite actual Double-check assertions
-too. Include only used sources and keep identifiers unique.
+Every substantive claim has a nearby descriptive documentation link or attributed
+session excerpt outside code. Different claims in a step may need different
+passages. Support actual Double-check assertions too; include only used sources.
 
-Use the [compact source entry](templates.md#source-entry): linked exact title,
-precise location, short original excerpt, and a redaction label when needed.
-Public records link to their actual safe origin; private observations link to
-the same-directory companion. Link `evidence.json` once at the top of References;
-private source entries may also target it. Detailed provenance and claim/
-enrichment records stay in the companion rather than cluttering the Wiki.
+Use the two [source formats](templates.md#source-entry):
 
-The source title, origin, locator, and excerpt must agree with the companion.
-Keep the supporting source in each article; a sibling Wiki is not original
-evidence. A bibliography with only URLs or an uncited source list is incomplete.
+- Official documentation: link the exact title/section to its safe canonical
+  URL and give a short relevant passage in References. Preserve conditions,
+  values, and scope needed to support the answer; a two-word fragment is not
+  enough for a detailed numerical or procedural claim.
+- Session evidence: quote the actual relevant dialogue or visible tool result
+  beside the claim, with a plain-text role and reported/proposed/observed label.
+  No session/message links, local-file links, or same-page source anchors.
+- Supplied document without an inspected official origin: use a plain-text
+  title/section and the supplied excerpt, with its inspection limitation.
+
+No `evidence.json`, replacement sidecar, numbered source register, or persisted
+claim map. Keep the supporting passage in each article; a sibling Wiki is not
+original evidence. A bibliography with only URLs is incomplete. Do not replace
+technical answers with repetitive evidence audits or commentary on earlier AI errors.
 
 ## Documentation enrichment
 
@@ -86,23 +93,23 @@ resource identifiers, or secret-bearing URLs to a search service.
 
 When explicitly requested, `extraction-only` limits technical content to the
 selected source and its already-cited originals. Do not add new procedures or
-enrichment records. Missing details remain gaps rather than invented steps.
+technical enrichment. Missing details remain gaps rather than invented steps.
 
 Enrichment may add a supported explanation, complete a documented action,
 replace environment-specific values with placeholders, or propose a safer
 documented alternative. Broad research, uncertain versions, missing access,
 and material scope expansion require clarification.
 
-Record claim basis in the companion as `observed`, `reported`, `documented`,
-or `inferred`. A documented fact can remain documented in extraction-only mode
+Distinguish observed, reported, documented, and inferred statements in ordinary
+prose where it matters. A documented fact can remain documented in extraction-only mode
 when it comes from an already-cited original; that mode forbids new additions,
 not truthful documentation labels.
 
-For every added/adapted procedural section, record its exact heading, source
-IDs, what changed, and execution-validation state in `enrichments`. Keep that
-metadata out of repetitive visible forms. Default new steps to `not-run`.
-Use `syntax-only` or `lab-tested` only with evidence of that exact validation;
-syntax success is not end-to-end execution.
+For added/adapted procedures, cite the inspected supporting documentation and
+state once that the new sequence has not been run, unless the selected source
+actually demonstrates that exact validation. Repeat the limitation only for
+steps whose status differs. Syntax success is not end-to-end execution.
+Do not add a separate enrichment ledger or repetitive per-step status forms.
 
 New commands, changed parameters, permissions, sequencing, network/certificate
 settings, or rollback instructions cannot inherit an earlier experiment's
@@ -121,7 +128,7 @@ requires separate explicit authorization outside generation.
 Review the whole output, not just the prose:
 
 - Titles, metadata, filenames, tables, code/comments, diagram labels, quotations,
-  URL paths/queries/fragments, source locators, claim maps, and every JSON field.
+  URL paths/queries/fragments, source locations, and embedded excerpts.
 - Remove customer/person names, emails, case/incident numbers, subscription/
   tenant/resource IDs, hostnames, IP addresses, environment-specific paths,
   customer-private links, exact case timestamps, tokens, passwords, private
@@ -144,23 +151,22 @@ values for identifying content. For other queries, obtain a verified safe
 canonical source; never silently strip a required selector or invent an origin.
 Check decoded URL forms as well as the visible text.
 
-Use a `sanitized-evidence` record for private observations and supplied excerpts
-without a verified safe public origin. Its origin is `approved-evidence:<safe-id>`,
-a label for included de-identified text, not an external document or a lookup
-back to the case. The word "approved" describes the locally authorized sanitized
-record; it is not independent factual or publication approval.
+Use a de-identified inline excerpt for private observations and supplied excerpts
+without an inspected safe public origin. Its role/title is plain text, not a
+synthetic origin URI or a lookup back to the case. Local saving is not independent
+factual or publication approval.
 
-If safe de-identification destroys essential meaning or a usable locator, stop
+If safe de-identification destroys essential meaning or a required document location, stop
 and ask for a shareable source or narrower claim. Do not retain identities for
 traceability or substitute an unresolvable placeholder and call it complete.
-If the engineer prohibits companion storage, block dependent articles instead
-of printing evidence to the console or using anonymous archive citations.
+If even a short sanitized supporting excerpt cannot be included safely, narrow
+or block the affected claim. The absence of an evidence sidecar is not a blocker.
 
 ## Reference gate
 
-Before saving, check every claim's support, actual source inspection, precise
-locator, exact or explicitly redacted quotation, applicability, citation links,
-unique IDs, and all output privacy surfaces. Missing critical references block
+Before saving, check every claim's support, actual source inspection, relevant
+document location or session role, exact or explicitly redacted quotation,
+applicability, citation links, and all output privacy surfaces. Missing critical references block
 the affected article until evidence is supplied or unsupported scope removed.
 
 Keep `reference_status: incomplete` while any required support is unresolved.

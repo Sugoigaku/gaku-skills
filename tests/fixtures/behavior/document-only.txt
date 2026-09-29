@@ -27,7 +27,7 @@ G. A partial conversation contains a fully supported narrow answer. The user
 requests that answer as a QA, not a complete-history reconstruction. Is partial
 coverage alone a reason to stop?
 H. The request is only to inventory topics without writing articles. Which
-references need loading, and does the full evidence schema need to be read?
+references need loading, and do the saving/review rules need to be read?
 
 State the supported fallback or blocker for each, honest coverage/review labels,
 and which core authoring features remain. Do not pretend that any files were

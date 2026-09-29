@@ -22,13 +22,20 @@ actionable steps and source references. Does not publish automatically.
 
 [Skill files](.github/skills/case-session-to-wiki)
 
-Version 0.9.0 uses a short routing prompt and loads supporting guidance only
-when relevant. It retains the three article types, original-source references,
-de-identification, evidence companion, and draft-only review status.
+Version 0.10.0 keeps sources inside each article: official documentation gets
+descriptive links and relevant passages; session evidence gets short attributed
+quotes without links or artificial line numbers. No separate `evidence.json`,
+claim map, or evidence sidecar is generated. Answers focus on the technical task,
+not an evidence audit. The three article types, de-identification, and draft-only
+review status are retained.
+
+Delivery shows full Windows paths in inline code with separate clickable links
+derived from the same verified paths, preserving the separator before `.copilot`.
+Existing generated articles and sidecars remain untouched.
 
 The package remains seven Markdown files, with no bundled executable helpers.
 Native tools are preferred; ordinary approved host commands may perform scoped
-local file creation, metadata inspection, JSON parsing, and readback. This does
+local file creation, metadata inspection, and readback. This does
 not authorize troubleshooting execution, raw archive parsing, or reconstructed
 validators. Missing preferred tools alone do not end the task; unsafe access,
 missing essential evidence, or an unverified output destination still block it.

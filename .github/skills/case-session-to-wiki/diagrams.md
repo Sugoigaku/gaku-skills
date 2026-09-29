@@ -16,7 +16,8 @@ unverified causal theory into a confirmed architecture diagram.
 
 Put the diagram inside an existing relevant section before References.
 Immediately follow it with a short `Diagram:` caption and inline source
-citations. Map the caption and substantive relationships in the companion.
+citations or attributed session excerpts. Support substantive relationships in
+the article itself, not a separate evidence file.
 A single caption citation does not automatically support every arrow.
 Keep essential safety conditions in text, not hidden inside a diagram.
 

@@ -17,6 +17,6 @@ export procedure worked. No one executed the procedure in this excerpt.
 
 Default documentation enrichment is allowed. Produce one concise sample step
 as plain actions, not a repeated form. State the essential required role once
-up front. Describe briefly which validation details belong in the companion,
-not under each action. Do not imply the new procedure was executed, invent a
+up front. State once that the new procedure has not been run, without a companion
+or repetitive per-action status forms. Do not imply it was executed, invent a
 rollback command, or manufacture extra inputs.

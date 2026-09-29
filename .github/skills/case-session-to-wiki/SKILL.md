@@ -5,23 +5,22 @@ description: "Turn troubleshooting conversations into source-backed QA, How-to, 
 
 # Case Session to Wiki
 
-Version: 0.9.0. Last reviewed: 2026-09-28.
+Version: 0.10.0. Last reviewed: 2026-09-29.
 
 ## Outcome
 
-Produce reusable technical articles, not a transcript summary. Choose the useful
-topic-by-reader-task set: QA explains, How-to achieves a goal, Break-fix recognizes
-and restores a failure. Preserve later corrections, evidence limits, and detailed
-actions. Concise structure must not remove necessary UI choices, command inputs,
-or interpretable checks.
+Produce reusable technical articles, not transcript summaries: QA explains,
+How-to achieves a goal, Break-fix recognizes and restores a failure. Preserve
+corrections, evidence limits, exact UI actions, command inputs, and result checks.
 
-A normal generation request authorizes de-identified local drafts and their
-evidence companion under the selected source session. Continue through supported
-input retrieval, authoring, safe saving, and readback without routine plan/save
-approval. Explicit scope, read-only, plan-only, and chat-only requests take priority.
+A normal generation request authorizes de-identified local Markdown drafts with
+supporting passages inside each article, under the selected source session.
+Do not generate `evidence.json` or another evidence sidecar. Retrieve, author,
+save safely, and read back without routine approval. Explicit scope, read-only,
+plan-only, and chat-only requests take priority.
 For a sample step, excerpt, or inventory request, return only that requested
 content and necessary source/limitation notes, not a full article or extra template
-sections. Full-article completion requirements apply only to full-article requests.
+sections.
 
 ## Load what the task needs
 
@@ -34,10 +33,10 @@ Keep already-read applicable guidance in context rather than rereading it.
 | Split topics, classify outcomes, or write detailed procedural actions | [Authoring](authoring.md) |
 | Inspect sources, enrich a gap, cite an excerpt, or remove identifiers | [Sources](sources.md) |
 | Compose an article | [Templates](templates.md): selected type and Source entry only |
-| Build the companion, set metadata, or verify the final set | [Evidence and review](evidence-review.md) |
+| Set metadata, check embedded sources, or verify the final set | [Evidence and review](evidence-review.md) |
 | A concept genuinely needs a diagram | [Diagrams](diagrams.md) |
 
-Planning-only work need not load save/schema instructions. A simple QA need not
+Planning-only work need not load save/review instructions. A simple QA need not
 load procedural or diagram guidance. Before delivering actual articles, apply
 the relevant source/privacy rules and review criteria, not just the template.
 
@@ -50,9 +49,11 @@ the relevant source/privacy rules and review criteria, not just the template.
 - Default to `documentation-enriched`: targeted original documentation for a
   specific gap, with generic technical search terms. Honor `extraction-only`.
   Do not start a new case investigation or transmit private case data to search.
-- Each substantive claim needs a relevant inline citation, precise safe locator,
-  and short inspected original excerpt. Distinguish reported, observed, proposed,
-  and documented results. A new procedure cannot inherit an old success.
+- Support each substantive claim where the reader needs it. Official documents
+  use descriptive links, relevant sections, and short supporting passages.
+  Session evidence uses an adjacent attributed excerpt with no link or artificial
+  line locator. Distinguish reported, observed, proposed, and documented results.
+  A new procedure cannot inherit an old success.
 - Remove identifiers and credentials from every output surface before writing.
   Store selected sanitized evidence, never raw transcripts or reverse mappings.
 - This package is document-only. Prefer structured native tools; ordinary
@@ -68,34 +69,35 @@ the relevant source/privacy rules and review criteria, not just the template.
 
 ## Completion and stop conditions
 
-Choose the shortest safe route to the outcome, rather than following a fixed
-tool itinerary. Correct a same-session URI representation, follow supported
-pages, and try a permitted file-tool alternative before declaring a capability
-missing. Do not bypass access denial or weaken source/privacy boundaries.
+Use the shortest safe route: correct same-session URI formats, follow supported
+pages, and try permitted file-tool alternatives before declaring a capability
+missing. Never bypass access denial or source/privacy boundaries.
 
 Partial history alone does not block a narrowly supported draft. Record coverage
 as partial and preserve known gaps. Ask when missing evidence changes the answer,
 safe procedure, requested completeness, or destination. No reusable evidence
 means no fabricated article.
 
-For normal delivery, finish when the supported article set and companion are
+For normal delivery, finish when the supported articles with embedded sources are
 saved in a fresh session-local directory, their content is read back, and the
 applicable review checks pass. Repair fixable drafting/link issues within this
-run; recheck affected claims/files, not unrelated material. Report actual blockers
-and partial writes honestly rather than stopping at the first plausible draft.
+run; recheck affected claims/files. Report actual blockers and partial writes.
 
-Return a short outcome, visible full absolute output-directory and article paths
-with clickable links, the companion path separately, and material limitations.
+Return a short outcome, full absolute output-directory and article paths in
+inline code with separate clickable links, and material limitations. Preserve
+every Windows path separator, including the one before `.copilot`; derive link
+targets from the same verified paths using the Session workflow example.
 No routine article previews. Explicit chat-only output uses inline sanitized
 sources with no nonexistent file links and remains reference-incomplete.
 Never claim a saved or verified artifact without the corresponding evidence.
 
 ## Changelog
 
-- 0.9.0 (2026-09-28): Shortened routing and made reference loading conditional.
-  Defined completion by verified deliverables rather than a fixed itinerary.
-  Allowed scoped approved host file commands without restoring helper scripts;
-  retained evidence/privacy boundaries and honest review status.
+- 0.10.0 (2026-09-29): Replaced the evidence sidecar and source-ID forms with
+  embedded documentation references and direct session excerpts. Added verified
+  Windows path display/link rules to preserve the separator before `.copilot`.
+- 0.9.0 (2026-09-28): Conditional reference loading, verified-deliverable completion,
+  and scoped approved host file commands; retained evidence/privacy boundaries.
 - 0.8.0 (2026-09-16): Replaced bundled Python helpers with document-only guidance,
   six supporting Markdown files, native input/saving, and agent checklist review.
 - 0.7.1 (2026-09-16): Required detailed UI actions, commands, and result checks.

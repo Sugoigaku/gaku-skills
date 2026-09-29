@@ -17,6 +17,7 @@ SPEC.loader.exec_module(SMOKE)
 class BehaviorSmokeTests(unittest.TestCase):
     def test_all_registered_fixtures_exist_and_use_synthetic_inputs(self):
         self.assertIn("document-only", SMOKE.NAMES)
+        self.assertIn("embedded-sources", SMOKE.NAMES)
         for name in SMOKE.NAMES:
             with self.subTest(name=name):
                 text = (SMOKE.FIXTURES / f"{name}.txt").read_text(encoding="utf-8")

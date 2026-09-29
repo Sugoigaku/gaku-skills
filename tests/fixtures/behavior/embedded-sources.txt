@@ -1,0 +1,24 @@
+This is a read-only synthetic regression test, not a real support case.
+Invoke case-session-to-wiki using the project skill and read its relevant
+source/template/delivery guidance. Do not write files, read other sessions,
+execute commands, fetch external sources, or publish anything.
+
+Produce only a short QA preview answering whether a completed export was
+independently verified, using this selected visible dialogue:
+Engineer: The export panel showed Complete.
+Engineer: I did not download the file or check its contents.
+Assistant: That alone proves the exported file is valid.
+
+Keep the correct limitation, quote the relevant original engineer statements
+directly, and distinguish a report from verified file contents. Do not use the
+assistant assertion as proof. Do not link session excerpts, introduce S/C IDs
+or Lines 1 locators, or propose an evidence sidecar.
+
+Then, outside the preview:
+1. Briefly explain how an inspected official document would be cited; do not
+invent a real source or URL for this synthetic dialogue.
+2. Show a delivery-format example, explicitly not a claim of saving, for this
+supplied synthetic absolute path (preserve it exactly as visible inline code):
+D:\Work Area\.copilot\session-state\session-a\wiki-output-20260929T000000Z-demo\qa-export.md
+Add a separate clickable article link to the same path, using forward slashes
+and angle brackets in its target. No file should actually be created.

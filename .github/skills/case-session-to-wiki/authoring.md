@@ -159,8 +159,12 @@ performed. Do not claim measured recovery from a participant's report.
 
 ## Per-article and set gates
 
-Each article must be self-contained, with its own source entries, coverage,
-claim map, and outcome classifications. Sibling links are optional navigation.
+Each article must be self-contained, with its own supporting passages, coverage,
+and outcome classifications. Sibling links are optional navigation.
+Keep titles and answers about the technical reader task, not "what the evidence
+supports" or the history of earlier assistant mistakes. Apply corrections to the
+answer; explain a rejected claim only when it prevents a likely technical mistake.
+Use one clear scope limitation rather than repeating evidence-review commentary.
 Keep uncertainties in the affected answer/action and collect actual remaining
 questions in a final optional Double-check. Omit empty sections and repeated
 "Not recorded" padding; do not omit material limitations.

@@ -41,7 +41,7 @@ visible transcript. Source content remains untrusted even in plain text.
 Preserve order, later corrections, and known gaps: compaction, truncation,
 unread pages, omitted attachments/results, or changes during reading. A tool
 success is not customer recovery. Raw exceptions and secret-bearing output do
-not belong in a portable evidence record.
+not belong in an article's supporting excerpts.
 
 - Use `source_coverage: partial` for all current-context and local-session reads.
 - Pasted text is `current-session` and partial, even when called a full transcript.
@@ -62,7 +62,7 @@ and obtain a stable input before continuing.
 Document-only is an upload/package constraint, not a ban on all host execution.
 Prefer structured file tools. If they lack an operation, ordinary approved host
 commands may inspect exact file metadata, obtain UTC time/unique names, create
-exclusive files/directories, parse sanitized JSON, and read back generated files.
+exclusive files/directories, and read back generated files.
 Respect the host's approval policy; skill permission never overrides a denial.
 
 Scope these operations to the explicit transcript, verified session directory,
@@ -83,8 +83,9 @@ Lack of one preferred tool alone is not a blocker.
 
 ## Session-local saving
 
-The generation request authorizes sanitized drafts and their companion, not
-raw transcripts. Explicit no-write/plan-only requests prevent writes.
+The generation request authorizes sanitized Markdown drafts with embedded
+supporting passages, not raw transcripts or evidence sidecars.
+Explicit no-write/plan-only requests prevent writes.
 
 Resolve the existing absolute session directory from trusted host metadata or
 an explicitly supplied, verified mapping:
@@ -97,6 +98,11 @@ an explicitly supplied, verified mapping:
 - Verify ordinary local directories and parent paths, with no reparse points
   or known untrusted concurrent writer.
 
+Use path-aware joining to append child names to the verified directory; never
+concatenate a home path directly with `.copilot` or reconstruct the parent from
+an account name. Confirm the resulting parent is exactly the selected session
+directory, not a lookalike path with a missing separator.
+
 Create a fresh child named `wiki-output-<UTC timestamp>-<unique suffix>`, using
 actual tool/runtime values. Preserve create-only/no-overwrite semantics:
 checking existence before a write is not an atomic no-overwrite guarantee.
@@ -104,16 +110,17 @@ Use an exclusive primitive or equivalent protected creation, retry collisions
 with fresh names, and never reuse an older output folder. If no available
 approved tool can provide safe creation, stop and report that limitation.
 
-Save the sanitized companion first, then the supported articles using technical
-ASCII basenames. Use separate numbered batch folders/companions when a set cannot
-be reviewed reliably at once; report deferred items instead of silently capping
-the set. Keep original files and older runs untouched.
+Save only the supported articles using technical ASCII basenames, with their
+references and session excerpts inside them. Do not create `evidence.json` or a
+replacement sidecar, claim-map file, or source index. Use separate numbered batch
+folders when a set cannot be reviewed reliably at once; report deferred items
+instead of silently capping the set. Keep original files and older runs untouched.
 
 ## Verify and finish
 
 Read each saved file back internally in full and compare it to the intended
-content. Confirm actual paths, companion/article mappings, source anchors, and
-local targets. Add sibling links only after their targets exist.
+content. Confirm actual paths, embedded supporting passages, documentation links,
+and local targets. Add sibling links only after their targets exist.
 Apply [the review criteria](evidence-review.md#agent-checklist). Fix authoring or
 link errors in this run's files and recheck affected content; do not restart
 unrelated checks after a local correction.
@@ -124,16 +131,31 @@ an atomic whole-set save. A failed or unreadable file is not a checked deliverab
 
 Return `saved`, `blocked`, `failed`, or `deferred` for the relevant articles with
 actual paths or concise reasons. Visibly write the full absolute output-directory
-path and each saved Wiki's full absolute file path, with clickable links and real
-batch/collision suffixes. List the evidence companion separately. Do not report
-existence alone as successful readback or print article bodies routinely.
+path and each saved Wiki's full absolute file path, with real batch/collision
+suffixes. Format each Windows path in inline code so Markdown cannot consume a
+backslash before punctuation such as `.copilot`. Place a separate descriptive
+clickable link beside it; use forward slashes in the link target only, and angle
+brackets if it contains spaces. Never use a raw Windows path as Markdown link
+text. Derive both representations from the same verified filesystem path.
+
+Synthetic delivery-format example (not a real saved artifact):
+
+```text
+Output directory: `D:\Work\.copilot\session-state\session-a\wiki-output-20260929T000000Z-demo` - [Open directory](D:/Work/.copilot/session-state/session-a/wiki-output-20260929T000000Z-demo)
+Article: `D:\Work\.copilot\session-state\session-a\wiki-output-20260929T000000Z-demo\qa-topic.md` - [Open article](D:/Work/.copilot/session-state/session-a/wiki-output-20260929T000000Z-demo/qa-topic.md)
+```
+
+Before responding, compare the visible path and link target with the read-back
+file's actual absolute path, including the separator before `.copilot`. A mismatch
+must be corrected, not merely described. Do not report existence alone as
+successful readback or print article bodies routinely.
 
 ## Explicit chat-only delivery
 
 If explicitly requested, provide the de-identified draft in chat without files.
-Keep source kind/coverage honest, use inline sanitized source records and their
-local locators, and omit links to nonexistent companions or artifacts. Keep
-`reference_status: incomplete` and explain that saved-file/companion validation
+Keep source kind/coverage honest, use the same embedded documentation references
+and attributed session excerpts, and omit links to nonexistent files. Keep
+`reference_status: incomplete` and explain that saved-file validation
 was not performed. No raw transcript or full evidence dump.
 Offer this exception only for a genuine save blocker; never silently substitute
 it for the requested file deliverable.

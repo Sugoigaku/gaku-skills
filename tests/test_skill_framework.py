@@ -1,8 +1,7 @@
-import json
 import re
 import subprocess
 import unittest
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from urllib.parse import unquote, urlsplit
 
 
@@ -12,7 +11,7 @@ SUPPORTING = {
     "session-workflow.md", "authoring.md", "sources.md",
     "evidence-review.md", "templates.md", "diagrams.md",
 }
-VERSION = "Version: 0.9.0. Last reviewed: 2026-09-28."
+VERSION = "Version: 0.10.0. Last reviewed: 2026-09-29."
 HEADINGS = {
     "qa": ["Questions and answers", "References", "Double-check"],
     "how-to": [
@@ -82,7 +81,7 @@ class SkillFrameworkTests(unittest.TestCase):
         text = read("SKILL.md")
         self.assertLessEqual(len(text.encode("utf-8")), 6000)
         self.assertIn("do not preload every file", text)
-        self.assertIn("Planning-only work need not load save/schema instructions", text)
+        self.assertIn("Planning-only work need not load save/review instructions", text)
         self.assertIn("selected type and Source entry only", text)
         self.assertNotIn("| Always", text)
         self.assertNotIn("### 1.", text)
@@ -160,7 +159,8 @@ class SkillFrameworkTests(unittest.TestCase):
                     "content_mode: documentation-enriched", "reference_status: incomplete",
                 ):
                     self.assertRegex(text, rf"(?m)^{re.escape(field)}$")
-                self.assertIn("[Evidence details](evidence.json)", text)
+                self.assertNotIn("evidence.json", text)
+                self.assertIn("omit this section for session-only sources", text)
                 self.assertNotIn("**Provenance:**", text)
                 self.assertNotIn("**Conditions and exceptions:**", text)
 
@@ -224,7 +224,8 @@ class SkillFrameworkTests(unittest.TestCase):
             "create-only", "not an atomic no-overwrite guarantee",
             "stop and report that limitation", "Read each saved file back internally",
             "stop further writes", "Do not delete partial output",
-            "each saved Wiki's", "full absolute file path", "List the evidence companion separately",
+            "each saved Wiki's", "full absolute file path", "separate descriptive",
+            "same verified filesystem path", "path-aware joining",
         ):
             self.assertIn(term, text)
 
@@ -232,7 +233,7 @@ class SkillFrameworkTests(unittest.TestCase):
         text = read("session-workflow.md")
         for term in (
             "ordinary approved host", "exclusive files/directories",
-            "parse sanitized JSON", "Respect the host's approval policy",
+            "read back generated files", "Respect the host's approval policy",
             "not authorize a general script", "replacement\nvalidator",
             "Lack of one preferred tool alone is not a blocker",
         ):
@@ -243,7 +244,7 @@ class SkillFrameworkTests(unittest.TestCase):
         for term in (
             "unchanged provider/ID", "explicitly requested\ncomplete-history",
             "continue with a narrowly", "same selected identity",
-            "omit links to nonexistent companions", "`reference_status: incomplete`",
+            "omit links to nonexistent files", "`reference_status: incomplete`",
             "never silently substitute",
         ):
             self.assertIn(term, text)
@@ -267,56 +268,79 @@ class SkillFrameworkTests(unittest.TestCase):
         text = read("sources.md")
         for term in (
             "exact", "private archive", "reverse map", "Never send customer names",
-            "`extraction-only`", "`not-run`", "cannot inherit",
+            "`extraction-only`", "new sequence has not been run", "cannot inherit",
             "accept-all certificate", "preserve-view", "access-controlled",
             "Keep interpretation outside", "original language",
         ):
             self.assertIn(term, text)
 
-    def test_source_entry_keeps_short_original_and_locator(self):
+    def test_source_formats_separate_document_links_from_unlinked_session_quotes(self):
         text = read("templates.md").split("## Source entry\n", 1)[1]
-        for field in ("Source", "Location", "Original excerpt"):
-            self.assertIn(f"**{field}:**", text)
-        self.assertIn("**Excerpt handling:** redacted", text)
+        official, session = text.split("### Session conversation or visible tool result\n", 1)
+        self.assertIn("safe-canonical-HTTPS-URL", official)
+        self.assertIn("Relevant section; applicable version", official)
+        self.assertIn("not a few isolated", official)
+        self.assertIn("**Session excerpt (Engineer; reported):**", session)
+        self.assertIn("Do not link the excerpt", session)
+        self.assertIn("Assistant; proposed", session)
+        self.assertIn("Tool result; observed", session)
+        self.assertIn("original not independently inspected", session)
+        self.assertIn("Excerpt redacted", session)
+        quote_template = re.search(r"(?ms)^```markdown\n(.*?)^```", session).group(1)
+        self.assertEqual(markdown_links(quote_template), [])
+        self.assertNotIn("Location:", quote_template)
         self.assertRegex(text, r"(?m)^> <.+>$")
+
+    def test_windows_delivery_examples_preserve_separators_and_link_identity(self):
+        text = read("session-workflow.md")
+        examples = re.findall(
+            r"(?m)^(?:Output directory|Article): `([^`]+)` - \[[^\]]+\]\(([^)]+)\)$",
+            text,
+        )
+        self.assertEqual(len(examples), 2)
+        for visible, target in examples:
+            with self.subTest(visible=visible):
+                self.assertIn("\\.copilot\\", visible)
+                self.assertTrue(PureWindowsPath(visible).is_absolute())
+                self.assertEqual(target, PureWindowsPath(visible).as_posix())
+                self.assertEqual(PureWindowsPath(visible), PureWindowsPath(target))
+        self.assertEqual(PureWindowsPath(examples[1][0]).parent, PureWindowsPath(examples[0][0]))
+        for term in (
+            "Never use a raw Windows path as Markdown link",
+            "angle\nbrackets if it contains spaces", "file's actual absolute path",
+            "not merely described", "not a lookalike path with a missing separator",
+        ):
+            self.assertIn(term, text)
+
+    def test_embedded_sources_replace_sidecar_schema_across_the_bundle(self):
+        text = read("evidence-review.md")
+        self.assertIn("Save Markdown articles only", text)
+        self.assertIn("Do not create `evidence.json`", text)
+        self.assertIn("| Embedded sources |", text)
+        self.assertNotIn("```json", text)
+        self.assertNotIn("schema_version", text)
+        self.assertIn("No `evidence.json`, replacement sidecar", read("sources.md"))
+        self.assertIn("Do not generate `evidence.json`", read("SKILL.md"))
+        self.assertIn("The absence of an evidence sidecar is not a blocker", read("sources.md"))
+        for name in SUPPORTING | {"SKILL.md"}:
+            document = read(name)
+            with self.subTest(name=name):
+                self.assertNotRegex(document, r"\]\((?:evidence\.json|#s\d+)\)")
+                self.assertNotIn("approved-evidence:", document)
+                self.assertNotIn("in the companion", document)
+        self.assertIn(
+            "not an original dialogue excerpt", " ".join(read("templates.md").split())
+        )
+        self.assertIn("not silently rewritten, deleted", text)
+        self.assertIn("No line\nnumbering or reverse map", read("sources.md"))
 
     def test_mermaid_only_has_sourced_caption_and_text_fallback(self):
         text = read("diagrams.md")
         for term in (
-            "`Diagram:`", "companion", "No click handlers", "plain-text explanation",
+            "`Diagram:`", "article itself", "No click handlers", "plain-text explanation",
             "does not generate SVG", "rendering as unverified", "Never upload",
         ):
             self.assertIn(term, text)
-
-    def test_evidence_example_preserves_v1_schema_and_consistent_ids(self):
-        blocks = re.findall(r"(?ms)^```json\n(.*?)^```", read("evidence-review.md"))
-        self.assertEqual(len(blocks), 1)
-
-        def unique_object(pairs):
-            result = {}
-            for key, value in pairs:
-                self.assertNotIn(key, result, f"Duplicate example key: {key}")
-                result[key] = value
-            return result
-
-        evidence = json.loads(blocks[0], object_pairs_hook=unique_object)
-        self.assertEqual(set(evidence), {"schema_version", "sources", "articles"})
-        self.assertIs(type(evidence["schema_version"]), int)
-        self.assertEqual(evidence["schema_version"], 1)
-        source = evidence["sources"][0]
-        self.assertEqual(set(source), {
-            "id", "kind", "title", "publisher", "origin", "locator", "version",
-            "inspection_status", "text", "excerpt_handling",
-        })
-        self.assertEqual(source["kind"], "sanitized-evidence")
-        self.assertEqual(source["locator"], "Lines 1")
-        self.assertEqual(len(source["text"].splitlines()), 1)
-        article = evidence["articles"][0]
-        self.assertEqual(set(article), {"file", "claims", "enrichments"})
-        self.assertEqual(article["enrichments"], [])
-        self.assertEqual(set(article["claims"][0]), {"id", "text", "source_ids", "basis"})
-        self.assertEqual(article["claims"][0]["source_ids"], [source["id"]])
-        self.assertEqual(article["claims"][0]["basis"], "reported")
 
     def test_case_artifact_paths_are_ignored_but_skill_is_not(self):
         paths = (

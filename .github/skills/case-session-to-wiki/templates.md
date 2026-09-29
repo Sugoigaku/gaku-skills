@@ -7,7 +7,9 @@ the relevant portion with its necessary citation and qualifications, not the
 whole template, front matter, or unrelated sections.
 The fenced blocks below are authoring templates, not articles to save unchanged.
 Replace placeholders and remove instructional text. Keep the selected H2 order,
-one H1, and sequential H3 Q/Step headings. Omit Before you start only if there
+one H1, and sequential H3 Q/Step headings. Omit References when no documentation
+is used; session excerpts belong beside the answers/actions they support.
+Omit Before you start only if there
 are no essential prerequisites or significant impact. Omit Double-check when
 there are no actual open items; otherwise it must be last.
 
@@ -17,8 +19,8 @@ the templates organize the article, not limit its necessary detail.
 
 Default statuses are conservative. Follow [metadata and evidence rules](evidence-review.md#article-metadata)
 before changing them. Source kind must reflect actual input, not the request's
-wording. Every substantive claim needs a nearby source citation and a companion
-mapping. Do not copy example IDs as evidence without actual supporting records.
+wording. Every substantive claim needs a nearby documentation citation or
+attributed session excerpt. Do not create source IDs, claim maps, or sidecars.
 
 ## QA template
 
@@ -44,15 +46,14 @@ tags: []
 
 ### Q1. <Question>
 
-<Direct answer with essential version/scope limits and an inline citation.
+<Direct answer with essential version/scope limits and a descriptive documentation
+link or an adjacent attributed session excerpt.
 Repeat Q headings only for distinct questions. Do not force a case timeline,
 cause, or repair section into QA.>
 
 ## References
 
-[Evidence details](evidence.json)
-
-<Insert a compact source entry for each used source.>
+<Insert compact documentation entries; omit this section for session-only sources.>
 
 ## Double-check
 
@@ -106,9 +107,7 @@ it. Distinguish observed results from checks that have not been executed.>
 
 ## References
 
-[Evidence details](evidence.json)
-
-<Insert compact source entries.>
+<Insert compact documentation entries; omit this section for session-only sources.>
 
 ## Double-check
 
@@ -169,9 +168,7 @@ recorded results separate from proposed checks or reported success.>
 
 ## References
 
-[Evidence details](evidence.json)
-
-<Insert compact source entries.>
+<Insert compact documentation entries; omit this section for session-only sources.>
 
 ## Double-check
 
@@ -180,30 +177,43 @@ recorded results separate from proposed checks or reported success.>
 
 ## Source entry
 
-Under References, repeat this block per used passage. Use nearby `[S1](#s1)`
-citations in the article body. Public source links target the actual safe
-canonical URL; sanitized private sources target `evidence.json`. That file is
-in the same directory as the article. For explicit chat-only delivery, use
-inline source records instead of nonexistent file links, following
-[the chat-only contract](session-workflow.md#explicit-chat-only-delivery).
+Choose the source format below. No `S1`/`C1` identifiers, artificial `Lines 1-N`
+locators, provenance forms, or evidence-file links. The article must be usable
+without another file. Keep qualifications relevant to the technical answer.
+
+### Official documentation
+
+Use a descriptive document/section link near the supported claim. In References,
+include the exact title, relevant section, applicable version if needed, and a
+short inspected passage that actually supports the answer, not a few isolated
+words. A verified section anchor is useful but not required. Group references
+to the same document rather than repeating metadata for every sentence.
 
 ```markdown
-### S1
-
-**Source:** [<Exact source title>](<safe-public-origin-or-evidence.json>)
-
-**Location:** <Exact locator matching the companion>
-
-**Original excerpt:**
-
-> <Short exact supporting passage matching the companion text.>
+- [<Exact official document title>](<safe-canonical-HTTPS-URL>) - <Relevant section; applicable version if needed>.
+  > <Short exact supporting passage, preserving essential conditions and values.>
 ```
 
-For a visibly redacted/shortened passage, insert
-`**Excerpt handling:** redacted` immediately before Original excerpt.
-Keep the exact quote separate from interpretation. Do not paraphrase quoted
-words or invent locators. Publisher, inspection, claim basis, enrichment,
-execution state, and other provenance stay in the companion.
+### Session conversation or visible tool result
+
+Place the relevant excerpt directly after the answer/action it supports. Attribute
+the actual visible role and distinguish a report, proposal, or observed result.
+Do not link the excerpt to a session, message, file, or same-page source anchor.
+Do not invent a message number, timestamp, source ID, or line locator.
+
+```markdown
+**Session excerpt (Engineer; reported):**
+> <Relevant original words with only necessary visible redactions.>
+```
+
+Use `Assistant; proposed` or `Tool result; observed` only when that matches the
+source. If an engineer supplied a document excerpt without an inspected official
+origin, use a plain-text label with its supplied title/section and say "supplied
+excerpt; original not independently inspected"; do not invent a link.
+
+Mark edited quotations "Excerpt redacted" and show omissions with `[...]`.
+Keep original wording distinct from interpretation. A compacted summary is not
+an original dialogue excerpt; disclose that limit rather than reconstruct speech.
 
 ## Optional diagram placement
 
